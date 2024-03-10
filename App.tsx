@@ -1,20 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+/**
+ * Sample React Native App
+ * https://github.com/facebook/react-native
+ *
+ * @format
+ */
+import React from 'react';
+import {AppRegistry} from 'react-native';
+import {Provider as PaperProvider} from 'react-native-paper';
+import {Provider} from 'react-redux';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
+import {store} from './src/redux/store';
+import NavigationRouter from './src/navigation/NavigationRouter';
 
-export default function App() {
+const App: React.FC<{}> = () => {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <SafeAreaProvider>
+      <Provider store={store}>
+        <PaperProvider>
+          <NavigationRouter />
+        </PaperProvider>
+      </Provider>
+    </SafeAreaProvider>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+AppRegistry.registerComponent('main', () => App);
+
+export default App;

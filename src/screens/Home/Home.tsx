@@ -14,7 +14,7 @@ import { RouteNames } from '../../utils/contants';
 import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import majorAPI from '../../api/major';
-import termrAPI from '../../api/term';
+import termAPI from '../../api/term';
 import groupAPI from '../../api/group';
 import authAPI from '../../api/auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -64,17 +64,17 @@ const HomeScreen: React.FC<{}> = () => {
   const termState = useAppSelector((state) => state.term.term);
 
   useEffect(() => {
-    if (userState?.user?.majors?.id) {
-      dispatch(majorAPI.getMajorById()(userState?.user?.majors?.id));
-      dispatch(termrAPI.getTermNow()(userState?.user?.majors?.id));
+    if (userState?.user?.major_id) {
+      dispatch(majorAPI.getMajorById()(userState?.user?.major_id));
+      dispatch(termAPI.getTermNow()());
     }
   }, [userState]);
 
-  useEffect(() => {
-    if (userState.allow === false) {
-      navigation.navigate(RouteNames.DisAcceptedUser);
-    }
-  }, [userState, termState]);
+  // useEffect(() => {
+  //   if (userState.allow === false) {
+  //     navigation.navigate(RouteNames.DisAcceptedUser);
+  //   }
+  // }, [userState, termState]);
 
   useEffect(() => {
     if (termState?.id) {
@@ -82,15 +82,15 @@ const HomeScreen: React.FC<{}> = () => {
     }
   }, [termState]);
 
-  useEffect(() => {
-    if (termState.id) {
-      dispatch(authAPI.getTranscripts()(termState.id));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (termState.id) {
+  //     dispatch(authAPI.getTranscripts()(termState.id));
+  //   }
+  // }, []);
 
   return (
     <SafeAreaView style={[GlobalStyles.container]}>
-      <Header logo home title="Trang chủ" iconRight={true}></Header>
+      <Header logo title="Trang chủ" iconRight={true}></Header>
       <View style={styles.contentTop}>
         <View style={styles.iconUser}>
           <Lottie
@@ -101,7 +101,7 @@ const HomeScreen: React.FC<{}> = () => {
         </View>
 
         <View style={styles.nameContent}>
-          <Text style={styles.nameTitle}>{userState?.user?.name}</Text>
+          <Text style={styles.nameTitle}>{userState?.user?.fullName}</Text>
         </View>
       </View>
       <View style={[GlobalStyles.container, styles.content]}>

@@ -14,19 +14,19 @@ import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../util
 import NoneData from '../../../components/NoneData';
 import { Card } from 'react-native-paper';
 import IconView from '../../../components/IconView';
-// import topicService from '../../../services/topic';
-import Topic from '../../../utils/types';
+import topicService from '../../../services/topic';
+import { Topic } from '../../../utils/types';
 import ItemTopic from './ItemTopic';
 
 import Loading from '../../../components/Loading';
 import groupAPI from '../../../api/group';
 // import {AlertNotificationRoot} from 'react-native-alert-notification';
-import { showMessageEror, showMessageSuccess } from '../../../utils/handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TopicMenu = () => {
   const termState = useAppSelector((state) => state.term.term);
   const groupState = useAppSelector((state) => state.group.group);
+  const majorState = useAppSelector((state) => state.major.major);
 
   const [isLoading, setLoading] = useState(false);
   const [isLoadingTopic, setLoadingTopic] = useState(false);
@@ -34,41 +34,39 @@ const TopicMenu = () => {
   const [topics, setTopics] = useState<Topic[]>();
 
   useEffect(() => {
-    getToppicList();
+    setLoadingTopic(true);
+    if (termState?.id) {
+      topicService.getTopicList(termState?.id, majorState?.id).then((result) => {
+        setLoadingTopic(false);
+
+        const _data = result?.data?.topics?.filter(
+          (i: { status: string }) => i.status === 'APPROVED',
+        );
+
+        setTopics(_data);
+      });
+    }
   }, [termState]);
 
   const dispatch = useAppDispatch();
 
-  const getToppicList = () => {
-    setLoadingTopic(true);
-    if (termState?.id) {
-      // topicService.getTopicList(termState?.id).then((result) => {
-      //   setLoadingTopic(false);
-      //   const _data = result?.data?.filter((i: { status: string }) => i.status === 'ACCEPT');
-      //   setTopics(_data);
-      // });
-    }
-  };
+  // var startDateChooseTopicFormat = moment(termState?.startDateChooseTopic)
+  //   .locale('vi')
+  //   .format('dddd, DD/MM/YYYY, h:mm:ss A');
 
-  const isStartDateChooseTopic = () => moment().isAfter(termState?.startDateChooseTopic);
-
-  var startDateChooseTopicFormat = moment(termState?.startDateChooseTopic)
-    .locale('vi')
-    .format('dddd, DD/MM/YYYY, h:mm:ss A');
-
-  const renderContentTopic = useMemo(() => {
-    return (
-      <View style={styles.content}>
-        {/* <FlatList
-          horizontal={true}
-          data={DATETOPIC}
-          initialNumToRender={20}
-          renderItem={(item: any) => renderBannerDate(item?.item)}
-          keyExtractor={(item) => item.icon}
-        /> */}
-      </View>
-    );
-  }, []);
+  // const renderContentTopic = useMemo(() => {
+  //   return (
+  //     <View style={styles.content}>
+  //       <FlatList
+  //         horizontal={true}
+  //         data={DATETOPIC}
+  //         initialNumToRender={20}
+  //         renderItem={(item: any) => renderBannerDate(item?.item)}
+  //         keyExtractor={(item) => item.icon}
+  //       />
+  //     </View>
+  //   );
+  // }, []);
 
   useEffect(() => {
     if (termState?.id) {
@@ -116,10 +114,10 @@ const TopicMenu = () => {
                 source={require('../../../assets/jsonAmination/loading_cricle.json')}
                 autoPlay
                 loop
-                style={{ width: 60 }}
+                style={{ width: 60, height: 60 }}
               />
               <View style={styles.viewTitle}>
-                <Text style={styles.topTitle}>Danh sách Đề tài</Text>
+                <Text style={styles.topTitle}>DANH SÁCH ĐỀ TÀI</Text>
                 <Text style={styles.topTitle}>Số lượng: {topics?.length}</Text>
               </View>
               <Lottie
@@ -130,12 +128,11 @@ const TopicMenu = () => {
               />
             </View>
             <FlatList
-              horizontal={true}
               data={topics}
               initialNumToRender={20}
               renderItem={(item: any) => (
                 <ItemTopic
-                  key={item}
+                  key={item?.item?.id}
                   topicInfo={item?.item}
                   handleChosseTopic={() => handleChosseTopic(item?.item?.id)}
                   handleCancelTopic={() => handleCancelTopic(item?.item?.id)}
@@ -162,34 +159,19 @@ const TopicMenu = () => {
         iconRight={true}
       ></Header>
 
-      {isStartDateChooseTopic() === false ? (
+      {/* {termState?.isChooseTopic === false ? (
         <View style={styles.nonChooseTopic}>
           <View style={styles.contentNoData}>
             <NoneData icon title="Chưa đến thời gian chọn đề tài!"></NoneData>
           </View>
-
-          <View style={styles.bottomView}>
-            <Text style={styles.dateNoChooseTopic}>Thời gian chọn đề tài là:</Text>
-            <Lottie
-              source={require('../../../assets/jsonAmination/start.json')}
-              autoPlay
-              loop
-              style={styles.logo}
-            />
-            <Text style={[styles.dateNoChooseTopic, styles.leftTitle]}>
-              {startDateChooseTopicFormat}
-            </Text>
-          </View>
         </View>
-      ) : (
-        <>
-          {/* {renderContentTopic} */}
-          {renderTopicList}
-        </>
-      )}
-      {/* </AlertNotificationRoot> */}
+      ) : ( */}
+      <>
+        {/* {renderContentTopic} */}
+        {renderTopicList}
+      </>
       {isLoading && <Loading />}
-      {/* {isLoadingTopic && <Loading />} */}
+      {isLoadingTopic && <Loading />}
     </SafeAreaView>
   );
 };
@@ -218,16 +200,6 @@ const styles = StyleSheet.create({
   },
   dateNoChooseTopic: {
     fontSize: responsiveFont(18),
-  },
-  bottomView: {
-    paddingHorizontal: responsiveWidth(10),
-    paddingVertical: responsiveHeight(20),
-    marginHorizontal: responsiveWidth(10),
-    // backgroundColor: '#cbdfbd',
-    borderRadius: 10,
-    borderColor: '#76c893',
-    marginTop: responsiveHeight(20),
-    // flexDirection: 'row',
   },
   leftTitle: {
     color: Colors.rosyBrown,
@@ -291,7 +263,7 @@ const styles = StyleSheet.create({
     marginRight: responsiveWidth(20),
     fontSize: responsiveFont(17),
     color: Colors.textPrimary,
-    fontWeight: '400',
+    fontWeight: '600',
     paddingHorizontal: responsiveWidth(10),
   },
   subtitleStyle: {
@@ -299,7 +271,8 @@ const styles = StyleSheet.create({
     color: Colors.black,
   },
   logoList: {
-    width: 40,
+    width: 60,
+    height: 60,
   },
   viewTitle: {
     flexDirection: 'column',

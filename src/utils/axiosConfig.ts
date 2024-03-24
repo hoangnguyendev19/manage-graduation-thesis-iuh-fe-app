@@ -1,35 +1,34 @@
 // import {log} from 'react-native-reanimated';
-import axios, {AxiosRequestHeaders} from 'axios';
+import axios, { AxiosRequestHeaders } from 'axios';
 // import Config from 'react-native-config';
 import tokenService from '../services/token';
 
-const API_URL = "http://localhost:3000";
+const API_URL = 'http://192.168.1.6:3000';
 
 const axiosAuth = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-type': 'application/json',
   },
-  timeout: 10000, // 10 seconds
 });
 
 axiosAuth.interceptors.request.use(
-  async config => {
+  async (config) => {
     const access_token = await tokenService.getAccessToken();
     console.log('access_token', access_token);
 
-    (config.headers as AxiosRequestHeaders).Authorization =
-      'Bearer ' + access_token;
+    (config.headers as AxiosRequestHeaders).Authorization = `Bearer ${access_token}`;
+
     return config;
   },
-  error => Promise.reject(error),
+  (error) => Promise.reject(error),
 );
 
 axiosAuth.interceptors.response.use(
-  response => {
+  (response) => {
     return response;
   },
-  async error => {
+  async (error) => {
     const config = error.config;
     // Access Token was expired
     if (error.response && error.response.status === 422 && !config._retry) {
@@ -40,7 +39,7 @@ axiosAuth.interceptors.response.use(
 
         if (refresh_token) {
           const res = await axios({
-            url: API_URL + 'api/student/auth/Refresh-token',
+            url: API_URL + 'api/students/refresh-token',
             method: 'post',
             data: {
               refreshToken: refresh_token,
@@ -60,14 +59,18 @@ axiosAuth.interceptors.response.use(
   },
 );
 
-const axiosNotAuth = axios.create();
+const axiosNotAuth = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-type': 'application/json',
+  },
+});
 
 axiosNotAuth.interceptors.request.use(
-  async config => {
-    config.baseURL = API_URL;
+  async (config) => {
     return config;
   },
-  error => Promise.reject(error),
+  (error) => Promise.reject(error),
 );
 
 const axiosFormData = axios.create({
@@ -79,13 +82,12 @@ const axiosFormData = axios.create({
 axiosFormData.interceptors.response = axiosAuth.interceptors.response;
 
 axiosFormData.interceptors.request.use(
-  async config => {
+  async (config) => {
     const access_token = await tokenService.getAccessToken();
-    (config.headers as AxiosRequestHeaders).Authorization =
-      'Bearer ' + access_token;
+    (config.headers as AxiosRequestHeaders).Authorization = 'Bearer ' + access_token;
     return config;
   },
-  error => Promise.reject(error),
+  (error) => Promise.reject(error),
 );
 
-export {axiosAuth, axiosNotAuth, axiosFormData};
+export { axiosAuth, axiosNotAuth, axiosFormData };

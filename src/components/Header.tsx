@@ -52,13 +52,13 @@ const Header: React.FC<Props> = ({ title, style, back, iconLeft, home, iconRight
   return (
     <View style={[styles.sectionContainer, style]}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
-      {iconLeft && home && (
-        <TouchableOpacity
-          onPress={() => navigation.navigate(RouteNames.HomeTab)}
+      {home && (
+        <View
+          // onPress={() => navigation.navigate(RouteNames.HomeTab)}
           style={[styles.contentIcon, styles.contentIconLeft]}
         >
-          <IconView name="home-outline" color={Colors.textPrimary} size={24} />
-        </TouchableOpacity>
+          {/* <IconView name="home-outline" color={Colors.textPrimary} size={24} /> */}
+        </View>
       )}
 
       {iconLeft && back && (
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   },
   _contentText: {
     marginRight: responsiveWidth(20),
+    // textAlign: 'center',
   },
   textView: {
     // textAlign: 'center',

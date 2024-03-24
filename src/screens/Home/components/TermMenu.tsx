@@ -6,9 +6,9 @@ import Colors from '../../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import { useAppSelector } from '../../../redux/hooks';
 
-import moment from 'moment';
 import { DataTable } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { formatDate } from '../../../utils/handler';
 
 const TermMenu = () => {
   const termState = useAppSelector((state) => state.term.term);
@@ -30,50 +30,26 @@ const TermMenu = () => {
 
   const INFO_TERM = [
     {
-      title: 'Ngày bắt đầu chọn đề tài',
-      value: termState?.startDateChooseTopic,
+      title: 'Trạng thái chọn đề tài',
+      value: termState?.isChooseTopic ? 'Đang mở' : 'Đã đóng',
     },
     {
-      title: 'Ngày kết thúc chọn đề tài',
-      value: termState?.endDateChooseTopic,
+      title: 'Trạng thái nộp đề tài',
+      value: termState?.isSubmitTopic ? 'Đang mở' : 'Đã đóng',
     },
     {
-      title: 'Ngày bắt đầu đề tài',
-      value: termState?.startDateSubmitTopic,
+      title: 'Trạng thái phản biện',
+      value: termState?.isDiscussion ? 'Đang mở' : 'Đã đóng',
     },
     {
-      title: 'Ngày kết thúc đề tài',
-      value: termState?.endDateSubmitTopic,
+      title: 'Trạng thái báo cáo',
+      value: termState?.isReport ? 'Đang mở' : 'Đã đóng',
     },
     {
-      title: 'Khoản thời gian bắt đầu phản biện',
-      value: termState?.startDateDiscussion,
-    },
-    {
-      title: 'Khoản thời gian kết thúc phản biện',
-      value: termState?.endDateDiscussion,
-    },
-    {
-      title: 'Ngày phản biện',
-      value: termState?.dateDiscussion,
-    },
-    {
-      title: 'Khoản thời gian bắt đầu báo cáo',
-      value: termState?.startDateReport,
-    },
-    {
-      title: 'Khoản thời gian kết thúc báo cáo',
-      value: termState?.endDateReport,
-    },
-    {
-      title: 'Ngày báo cáo hội đồng',
-      value: termState?.dateReport,
+      title: 'Trạng thái công bố kêt quả',
+      value: termState?.isPublicResult ? 'Đang mở' : 'Đã đóng',
     },
   ];
-
-  const formatDate = (date: string) => {
-    return moment(date).locale('vi').format('dddd, DD/MM/YYYY, h:mm:ss A');
-  };
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -123,17 +99,15 @@ const TermMenu = () => {
 
       <View style={styles.containner}>
         <ScrollView>
-          {INFO_TERM.map((item) => {
+          {INFO_TERM.map((item, index) => {
             return (
-              <DataTable>
+              <DataTable key={index}>
                 <DataTable.Header>
                   <DataTable.Title textStyle={styles.title_Group}>{item?.title}</DataTable.Title>
                 </DataTable.Header>
 
                 <DataTable.Row>
-                  <DataTable.Cell textStyle={styles.textValue}>
-                    {formatDate(item?.value)}
-                  </DataTable.Cell>
+                  <DataTable.Cell textStyle={styles.textValue}>{item?.value}</DataTable.Cell>
                 </DataTable.Row>
               </DataTable>
             );

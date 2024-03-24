@@ -2,13 +2,14 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import termService from '../services/term';
 import { setAllow } from '../redux/slices/UserSlices';
 
-class TermrAPI {
+class TermAPI {
   getTermNow() {
-    return createAsyncThunk('term/get-term-last', async (majorsId: number, thunkAPI) => {
+    return createAsyncThunk('term/get-term-last', async () => {
       try {
-        const result = await termService.getTermNow(majorsId);
+        const result = await termService.getTermNow();
+
         if (result.status === 200) {
-          thunkAPI.dispatch(setAllow(result.data.allow));
+          // thunkAPI.dispatch(setAllow(result.data.allow));
           return result.data.term;
         }
       } catch (error) {
@@ -18,6 +19,6 @@ class TermrAPI {
   }
 }
 
-const termrAPI = new TermrAPI();
+const termAPI = new TermAPI();
 
-export default termrAPI;
+export default termAPI;

@@ -1,74 +1,49 @@
-import {axiosAuth, axiosFormData, axiosNotAuth} from '../utils/axiosConfig';
+import { axiosAuth, axiosFormData, axiosNotAuth } from '../utils/axiosConfig';
 
 class AuthService {
-  login(data: {username: string; password: string}) {
-    console.log('data - AuthService', data);
-    return axiosNotAuth({
-      url: 'api/student/auth/login',
+  async login(data: { userName: string; password: string }) {
+    return await axiosNotAuth({
+      url: 'api/v1/students/login',
       method: 'post',
       data,
     });
   }
-  getInfo() {
-    return axiosAuth({
-      url: 'api/student/me',
+
+  async getMe() {
+    return await axiosAuth({
+      url: 'api/v1/students/me',
       method: 'get',
     });
   }
 
-  updateUserInfo = async (data: FormData) => {
+  async updateMe(data: FormData) {
     return axiosFormData({
-      url: 'api/student/me',
+      url: 'api/v1/students/me',
       method: 'put',
       data,
     });
-  };
-
-  getStudent(termId: number, groupExists: boolean) {
-    return axiosAuth({
-      url: `api/student/students?termId=${termId}&groupExists=${groupExists}`,
-      method: 'get',
-    });
   }
 
-  getTranscripts(termId: number) {
+  // getStudent(termId: number, groupExists: boolean) {
+  //   return axiosAuth({
+  //     url: `api/student/students?termId=${termId}&groupExists=${groupExists}`,
+  //     method: 'get',
+  //   });
+  // }
+
+  // resetPassword(data: {username: string}) {
+  //   return axiosNotAuth({
+  //     url: `api/students/auth/send-mail-forgot-password`,
+  //     method: 'post',
+  //     data,
+  //   });
+  // }
+
+  updatePassword(data: { password: string; newPassword: string }) {
     return axiosAuth({
-      url: `api/student/transcripts?termId=${termId}`,
-      method: 'get',
-    });
-  }
-  resetPassword(data: {username: string}) {
-    return axiosNotAuth({
-      url: `api/student/auth/send-mail-forgot-password`,
-      method: 'post',
+      url: `api/v1/students/update-password`,
+      method: 'put',
       data,
-    });
-  }
-  updatePassword(data: {oldPassword: string; newPassword: string}) {
-    return axiosAuth({
-      url: `api/student/me/password`,
-      method: 'patch',
-      data,
-    });
-  }
-  getAllMotify() {
-    return axiosAuth({
-      url: 'api/student/me/notifications',
-      method: 'get',
-    });
-  }
-
-  readNotify(id: number) {
-    return axiosAuth({
-      url: `api/student/me/notification/${id}/read`,
-      method: 'post',
-    });
-  }
-
-  readAllNotify() {
-    return axiosAuth({
-      url: `api/student/me/notification/read-all`,
-      method: 'post',
     });
   }
 }

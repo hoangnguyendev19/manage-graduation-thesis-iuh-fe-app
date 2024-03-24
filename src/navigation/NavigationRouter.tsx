@@ -26,7 +26,7 @@ const NavigationRouter = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="TabNavigation"
+        initialRouteName="Login"
         screenOptions={{
           headerShown: false,
         }}
@@ -39,7 +39,7 @@ const NavigationRouter = () => {
         <Stack.Screen
           name="Login"
           component={Login}
-          //   options={{title: 'Login'}}
+          // options={{title: 'Login'}}
         />
         <Stack.Screen name={'TabNavigation'} component={TabNavigation} />
 

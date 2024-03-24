@@ -17,14 +17,14 @@ import TextItemAccount from './components/TextItemAccount';
 import languages from '../../utils/languages';
 import Colors from '../../themes/Colors';
 import IconView from '../../components/IconView';
-// import tokenService from '../../services/token';
+import tokenService from '../../services/token';
 import { useNavigation } from '@react-navigation/native';
 import { useAppSelector } from '../../redux/hooks';
 import { RouteNames } from '../../utils/contants';
 import ModalAccount from './components/ModalAccount';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 
-import { checkGenger, checkTypeTraining } from '../../utils/handler';
+import { checkGender, checkTypeTraining } from '../../utils/handler';
 // import {AlertNotificationRoot} from 'react-native-alert-notification';
 import { DataTable } from 'react-native-paper';
 import { isEmpty, showMessageWarning } from '../../utils/handler';
@@ -39,7 +39,7 @@ const Account: React.FC<{}> = ({}) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleLogout = async () => {
-    // tokenService.reset().then(() => navigation.navigate(RouteNames.loginNavigation));
+    tokenService.reset().then(() => navigation.navigate(RouteNames.loginNavigation));
   };
 
   const handleChangePass = () => {
@@ -67,7 +67,7 @@ const Account: React.FC<{}> = ({}) => {
 
         <TextItemAccount
           textLeft={languages['vi'].gender}
-          textRight={checkGenger(userState?.gender)}
+          textRight={checkGender(userState?.gender)}
           line={true}
         ></TextItemAccount>
 

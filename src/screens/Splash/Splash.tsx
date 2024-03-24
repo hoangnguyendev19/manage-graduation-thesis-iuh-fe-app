@@ -6,11 +6,11 @@ import Lottie from 'lottie-react-native';
 
 import { Images } from '../../assets/images/Images';
 import { RouteNames } from '../../utils/contants';
-// import tokenService from '../services/token';
+import tokenService from '../../services/token';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
-// import authAPI from '../redux/apis/auth';
-// import authService from '../services/auth';
+import authAPI from '../../api/auth';
+import authService from '../../services/auth';
 import { setUser } from '../../redux/slices/UserSlices';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import GlobalStyles from '../../themes/GlobalStyles';
@@ -31,18 +31,18 @@ const SplashScreen = () => {
   };
 
   const getInfoUser = async () => {
-    // const token = await tokenService.getRefreshToken();
-    // console.log(' getRefreshToken token -> ', token);
-    // if (token !== null) {
-    //   await authService
-    //     .getInfo()
-    //     .then(result => {
-    //       console.log('getInfo', result);
-    //       dispatch(setUser(result.data));
-    //     })
-    //     .catch(er => console.log('er getInfo', er));
-    //   navigation.navigate(RouteNames.TabNavigation);
-    // } else navigation.navigate(RouteNames.loginNavigation);
+    const token = await tokenService.getRefreshToken();
+    console.log(' getRefreshToken token -> ', token);
+    if (token !== null) {
+      await authService
+        .getInfo()
+        .then((result) => {
+          console.log('getInfo', result);
+          dispatch(setUser(result.data));
+        })
+        .catch((er) => console.log('er getInfo', er));
+      navigation.navigate(RouteNames.TabNavigation);
+    } else navigation.navigate(RouteNames.loginNavigation);
   };
 
   useEffect(() => {

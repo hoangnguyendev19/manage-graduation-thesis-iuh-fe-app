@@ -1,51 +1,48 @@
 import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import authAPI from '../../api/auth';
-import Major from '../../utils/types';
-import Topic from '../../utils/types';
+import { Topic } from '../../utils/types';
 import topicAPI from '../../api/topic';
 
 interface StateType {
   topic: Topic;
-  error: boolean;
-  is_loading: boolean;
+  isLoading: boolean;
+  isError: boolean;
 }
 
 const initialState = {
   topic: {
     id: NaN,
     name: '',
-    quantityGroupMax: NaN,
     description: '',
+    quantityGroupMax: NaN,
     note: '',
     target: '',
-    standradOutput: '',
+    standardOutput: '',
     requireInput: '',
     comment: '',
     status: '',
-    createdt: '',
-    updatedt: '',
-    lecturer: {
+    level: '',
+    created_at: '',
+    updated_at: '',
+    lecturerTerm: {
       id: NaN,
-      username: '',
-      avatar: '',
-      phoneNumber: '',
-      email: '',
-      name: '',
-      gender: '',
-      createdt: '',
-      updatedt: '',
-      majors: {
+      lecturer: {
         id: NaN,
+        fullName: '',
+        avatarUrl: '',
+        email: '',
+        phoneNumber: '',
+        gender: '',
+        degree: '',
+        major: {
+          id: NaN,
+          name: '',
+        },
       },
-      degree: '',
-      isdmin: '',
     },
-    term: {
-      id: NaN,
-    },
-  },
-  is_loading: false,
-  error: false,
+  } as Topic,
+  isLoading: false,
+  isError: false,
 } as StateType;
 
 export const TopicSlices = createSlice({
@@ -58,16 +55,15 @@ export const TopicSlices = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(topicAPI.getTopicById().pending, (state) => {
-      state.is_loading = true;
+      state.isLoading = true;
     });
     builder.addCase(topicAPI.getTopicById().fulfilled, (state, action) => {
       state.topic = action.payload;
-      state.is_loading = false;
-      state.error = false;
+      state.isLoading = false;
     });
     builder.addCase(topicAPI.getTopicById().rejected, (state) => {
-      state.error = true;
-      state.is_loading = false;
+      state.isError = true;
+      state.isLoading = false;
     });
   },
 });

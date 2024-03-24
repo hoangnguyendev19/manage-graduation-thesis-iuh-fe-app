@@ -15,7 +15,11 @@ const ModalDes = ({ title, visible, modalClose }: Props) => {
   return (
     <>
       <Portal>
-        <Modal visible={visible} style={{ height: '100%', marginHorizontal: responsiveWidth(20) }}>
+        <Modal
+          visible={visible}
+          style={{ height: '100%', marginHorizontal: responsiveWidth(20), borderRadius: 20 }}
+          onDismiss={() => modalClose(false)}
+        >
           <View style={{ backgroundColor: Colors.white }}>
             <Text style={styles.title}>Chi tiết</Text>
             <CloseButton style={styles.logo} onPress={() => modalClose(false)} />
@@ -45,6 +49,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     backgroundColor: Colors.white,
     margin: responsiveHeight(20),
+    fontWeight: 'bold',
   },
   sub: {
     color: Colors.textPrimary,

@@ -4,11 +4,8 @@ class TokenService {
   getAccessToken = async () => {
     try {
       const value = await AsyncStorage.getItem('access_token');
-      if (value !== null) {
-        return value;
-      }
 
-      return null;
+      return value;
     } catch (error) {
       console.log('Error getAccessToken', error);
     }
@@ -16,12 +13,7 @@ class TokenService {
 
   setAccessToken = async (token: string) => {
     try {
-      const value = await AsyncStorage.setItem('access_token', token);
-      console.log('TokenService setAccessToken ', value);
-
-      if (value !== null) {
-        return value;
-      }
+      await AsyncStorage.setItem('access_token', token);
     } catch (error) {
       console.log('Error setAccessToken', error);
     }
@@ -30,7 +22,6 @@ class TokenService {
   getRefreshToken = async () => {
     try {
       const value = await AsyncStorage.getItem('refresh_token');
-      console.log('TokenService getRefreshToken ', value);
       return value;
     } catch (error) {
       console.log('Error getRefreshToken', error);
@@ -38,8 +29,11 @@ class TokenService {
   };
 
   setRefreshToken = async (token: string) => {
-    const value = await AsyncStorage.setItem('refresh_token', token);
-    return value;
+    try {
+      await AsyncStorage.setItem('refresh_token', token);
+    } catch (error) {
+      console.log('Error setRefreshToken', error);
+    }
   };
 
   reset = async () => {

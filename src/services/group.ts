@@ -1,11 +1,9 @@
-import {axiosAuth} from '../utils/axiosConfig';
+import { axiosAuth } from '../utils/axiosConfig';
 
 class GroupService {
   getMyGroup(termId: number) {
-    console.log(' getMyGroup termId', termId);
-
     return axiosAuth({
-      url: `api/student/groups/me?termId=${termId}`,
+      url: `api/v1/group-students/me?termId=${termId}`,
       method: 'get',
     });
   }
@@ -21,7 +19,7 @@ class GroupService {
       method: 'get',
     });
   }
-  createGroup(data: {termId: number; name: string}) {
+  createGroup(data: { termId: number; name: string }) {
     return axiosAuth({
       url: 'api/student/groups',
       method: 'post',
@@ -32,7 +30,7 @@ class GroupService {
     return axiosAuth({
       url: 'api/student/groups',
       method: 'delete',
-      data: {termId},
+      data: { termId },
     });
   }
 
@@ -40,14 +38,14 @@ class GroupService {
     return axiosAuth({
       url: `api/student/groups/${groupId}/my-requests`,
       method: 'post',
-      data: {message},
+      data: { message },
     });
   }
   inviteStudentJoinMyGroup(termId: number, studentId: string, message: string) {
     return axiosAuth({
       url: `api/student/groups/group-requests`,
       method: 'post',
-      data: {termId, studentId, message},
+      data: { termId, studentId, message },
     });
   }
   getMyrequestJoinGroup(termId: number, type: string) {

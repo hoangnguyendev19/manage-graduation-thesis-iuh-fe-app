@@ -45,7 +45,7 @@ export const RouteNames = {
 
   TermMenu: 'TermMenu',
   TopicMenu: 'TopicMenu',
-  ResultMenu: 'ResultMenu',
+  EvaluationMenu: 'EvaluationMenu',
   LectureMenu: 'LectureMenu',
 
   ItemListGroup: 'ItemListGroup',

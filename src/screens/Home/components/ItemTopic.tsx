@@ -4,7 +4,7 @@ import { DataTable, List } from 'react-native-paper';
 import Lottie from 'lottie-react-native';
 import IconView from '../../../components/IconView';
 import Colors from '../../../themes/Colors';
-import Topic from '../../../utils/types';
+import { Lecturer, Topic } from '../../../utils/types';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import ModalDes from './ModalDes';
 import ButtonHandle from '../../../components/ButtonHandle';
@@ -12,7 +12,7 @@ import GlobalStyles from '../../../themes/GlobalStyles';
 import { useAppSelector } from '../../../redux/hooks';
 import { Images } from '../../../assets/images/Images';
 // import { AlertNotificationRoot } from 'react-native-alert-notification';
-import { isEmpty } from '../../../utils/handler';
+import { checkDegree, checkGender, isEmpty } from '../../../utils/handler';
 import { getLevelColorTopic, getLevelTopic, getNameStatus } from '../../../utils/handler';
 
 interface Props {
@@ -31,29 +31,28 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
   const [valueModal, setValueModal] = useState<string>();
   const [allow, setAllow] = useState(true);
 
-  const membermaxOfGroup = topicInfo?.totalGroupChoose;
+  // const membermaxOfGroup = topicInfo?.totalGroupChoose;
 
   const TOPIC_DATA = [
     { name: topicInfo?.quantityGroupMax, key: 'Số lượng nhóm tối đa' },
-    {
-      name: topicInfo?.totalGroupChoose ? topicInfo?.totalGroupChoose : '0',
-      key: 'Số lượng nhóm đã chọn',
-    },
+    // {
+    //   name: topicInfo?.totalGroupChoose ? topicInfo?.totalGroupChoose : '0',
+    //   key: 'Số lượng nhóm đã chọn',
+    // },
     { name: topicInfo?.description, key: 'Mô tả' },
     { name: topicInfo?.note, key: 'Ghi chú' },
     { name: topicInfo?.target, key: 'Mục tiêu' },
-    { name: topicInfo?.standradOutput, key: 'Mục đích' },
+    { name: topicInfo?.standardOutput, key: 'Mục đích' },
     { name: topicInfo?.requireInput, key: 'Yêu cầu đầu vào' },
     { name: getNameStatus(String(topicInfo?.status)), key: 'Tình trạng' },
   ];
   const LECTURER_DATA = [
-    { name: topicInfo?.lecturer?.avatar, key: '' },
-
-    { name: topicInfo?.lecturer?.name, key: 'Tên Giảng viên' },
-    { name: topicInfo?.lecturer?.gender, key: 'Giới tính' },
-    { name: topicInfo?.lecturer?.phoneNumber, key: 'Số điện thoại' },
-    { name: topicInfo?.lecturer?.degree, key: 'Trình độ' },
-    { name: topicInfo?.lecturer?.email, key: 'Email' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.avatarUrl, key: '' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.fullName, key: 'Tên Giảng viên' },
+    { name: checkGender(topicInfo?.lecturerTerm?.lecturer?.gender), key: 'Giới tính' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.phoneNumber, key: 'Số điện thoại' },
+    { name: checkDegree(topicInfo?.lecturerTerm?.lecturer?.degree), key: 'Trình độ' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.email, key: 'Email' },
   ];
 
   const renderButton = useMemo(() => {
@@ -68,21 +67,22 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                     style={styles.btnCancel}
                     onPress={handleCancelTopic}
                     colorIcon={Colors.red}
-                    iconName="ios-close-outline"
+                    iconName="close-outline"
                     title="Hủy chọn đề tài"
                   />
                 )}
               </>
             ) : (
-              <View style={styles.vewButton}>
+              <View>
                 <ButtonHandle
                   style={styles.btn}
                   onPress={handleChosseTopic}
                   colorIcon={Colors.white}
-                  iconName="md-arrow-redo-outline"
+                  iconName="arrow-redo-outline"
                   title="Chọn đề tài"
                 />
-                <Text style={styles.vewButton_text}>Nhóm đã chọn đề tài: {membermaxOfGroup}</Text>
+                {/* <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: {membermaxOfGroup}</Text> */}
+                <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: 0</Text>
               </View>
             )}
           </View>
@@ -91,7 +91,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
             disabled={true}
             style={styles.btn_dis}
             colorIcon={Colors.grayLight}
-            iconName="md-arrow-redo-outline"
+            iconName="arrow-redo-outline"
             title="Chọn đề tài"
           />
         )}
@@ -120,7 +120,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                   setValueModal(topicInfo?.name as string);
                 }}
               >
-                <IconView name="ios-ellipsis-vertical" color={Colors.grayLight} size={24} />
+                <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
               </TouchableOpacity>
             </View>
           </DataTable>
@@ -160,7 +160,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
               />
             )}
           >
-            <ScrollView style={{ height: 200 }}>
+            <ScrollView>
               {TOPIC_DATA.map((item, index) => {
                 return (
                   <List.Item
@@ -174,6 +174,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                     }
                     right={(props) => (
                       <TouchableOpacity
+                        style={{ justifyContent: 'center' }}
                         onPress={() => {
                           showModal(true);
                           setValueModal(item?.name as string);
@@ -181,7 +182,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                       >
                         <IconView
                           {...props}
-                          name="ios-ellipsis-vertical"
+                          name="ellipsis-vertical"
                           color={Colors.grayLight}
                           size={24}
                         />
@@ -208,20 +209,20 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
             expanded={expanded}
             onPress={handlePress}
           >
-            <ScrollView style={{ height: 300 }}>
+            <ScrollView>
               {LECTURER_DATA.map((item, index) => {
                 if (item?.key === '') {
                   return (
-                    <>
-                      <View style={styles.contentAvatr}>
-                        <Image
-                          source={item?.name ? { uri: item?.name } : Images.avatar}
-                          style={styles.imgaAvatar}
-                        />
+                    <View key={index} style={styles.contentAvatr}>
+                      <Image
+                        source={item?.name ? { uri: item?.name } : Images.avatar}
+                        style={styles.imgaAvatar}
+                      />
 
-                        <Text style={styles.title}>Mã GV: {topicInfo?.lecturer?.id}</Text>
-                      </View>
-                    </>
+                      <Text style={styles.title}>
+                        Mã GV: {topicInfo?.lecturerTerm?.lecturer?.id}
+                      </Text>
+                    </View>
                   );
                 }
 
@@ -241,10 +242,11 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                           showModal(true);
                           setValueModal(item?.name as string);
                         }}
+                        style={{ justifyContent: 'center' }}
                       >
                         <IconView
                           {...props}
-                          name="ios-ellipsis-vertical"
+                          name="ellipsis-vertical"
                           color={Colors.grayLight}
                           size={24}
                         />
@@ -266,16 +268,15 @@ export default ItemTopic;
 
 const styles = StyleSheet.create({
   mainTopic: {
-    // height: Dimensions.get('window').height - 100,
     backgroundColor: '#fff0f3',
     borderColor: '#f08080',
     borderWidth: 1,
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    width: responsiveWidth(360),
+    marginVertical: responsiveWidth(10),
     marginHorizontal: responsiveWidth(5),
-    paddingHorizontal: responsiveWidth(10),
+    paddingHorizontal: responsiveWidth(5),
   },
   contentTop: {
     display: 'flex',
@@ -321,8 +322,9 @@ const styles = StyleSheet.create({
     color: Colors.headerColor,
   },
   titleMain: {
-    fontSize: responsiveFont(18),
+    fontSize: responsiveFont(16),
     color: Colors.textPrimary,
+    fontWeight: '600',
   },
   contentListItem: {},
   imgaAvatar: {
@@ -349,23 +351,18 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   textValue: {
-    fontSize: responsiveFont(16),
+    fontSize: responsiveFont(14),
     color: '#277da1',
     fontWeight: '500',
     textTransform: 'uppercase',
     // paddingHorizontal: responsiveWidth(10),
   },
-  vewButton_text: {
-    fontSize: responsiveFont(16),
+  viewButton_text: {
+    fontSize: responsiveFont(14),
     color: '#277da1',
     fontWeight: '500',
     textTransform: 'uppercase',
-    // paddingHorizontal: responsiveWidth(10),
-  },
-  vewButton: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    marginLeft: responsiveWidth(5),
   },
   contentAvatr: {
     display: 'flex',

@@ -1,11 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
-import Term from '../../utils/types';
-import termrAPI from '../../api/term';
+import { Term } from '../../utils/types';
+import termAPI from '../../api/term';
 
 interface StateType {
   term: Term;
-  error: boolean;
-  is_loading: boolean;
+  isLoading: boolean;
+  isError: boolean;
 }
 
 const initialState = {
@@ -14,24 +14,16 @@ const initialState = {
     name: '',
     startDate: '',
     endDate: '',
-    startDateSubmitTopic: '',
-    endDateSubmitTopic: '',
-    startDateChooseTopic: '',
-    endDateChooseTopic: '',
-    dateDiscussion: '',
-    dateReport: '',
-    createdAt: '',
-    updatedAt: '',
-    startDateDiscussion: '',
-    endDateDiscussion: '',
-    startDateReport: '',
-    endDateReport: '',
-    majors: {
-      id: NaN,
-    },
-  },
-  is_loading: false,
-  error: false,
+    isSubmitTopic: false,
+    isChooseTopic: false,
+    isDiscussion: false,
+    isReport: false,
+    isPublicResult: false,
+    created_at: '',
+    updated_at: '',
+  } as Term,
+  isLoading: false,
+  isError: false,
 } as StateType;
 
 export const TermSlices = createSlice({
@@ -39,17 +31,16 @@ export const TermSlices = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(termrAPI.getTermNow().pending, (state) => {
-      state.is_loading = true;
+    builder.addCase(termAPI.getTermNow().pending, (state) => {
+      state.isLoading = true;
     });
-    builder.addCase(termrAPI.getTermNow().fulfilled, (state, action) => {
+    builder.addCase(termAPI.getTermNow().fulfilled, (state, action) => {
       state.term = action.payload;
-      state.is_loading = false;
-      state.error = false;
+      state.isLoading = false;
     });
-    builder.addCase(termrAPI.getTermNow().rejected, (state) => {
-      state.error = true;
-      state.is_loading = false;
+    builder.addCase(termAPI.getTermNow().rejected, (state) => {
+      state.isError = true;
+      state.isLoading = false;
     });
   },
 });

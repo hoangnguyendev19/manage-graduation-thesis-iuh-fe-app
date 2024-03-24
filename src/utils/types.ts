@@ -10,88 +10,59 @@ export interface Notification {
 export interface Group {
   id: number;
   name: string;
-  term: {
-    id: number;
-  };
   status: string;
-  topic: Topic;
-  members: [
-    {
-      id: number;
-      student: {
-        id: number;
-        username: string;
-        avatar: string;
-        phoneNumber: string;
-        email: string;
-        name: string;
-        gender: string;
-        createdAt: string;
-        updatedAt: string;
-        majors: {
-          id: number;
-        };
-        typeTraining: string;
-        schoolYear: string;
-      };
-      group: {
-        id: number;
-      };
-    },
-  ];
+  typeReport: string;
+  topic_id: number;
+  term_id: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Topic {
   id: number;
   name: string;
-  quantityGroupMax: number;
   description: string;
+  quantityGroupMax: number;
   note: string;
   target: string;
-  standradOutput: string;
+  standardOutput: string;
   requireInput: string;
   comment: string;
   status: string;
-  createdt: string;
-  updatedt: string;
-  lecturer: {
-    id: number;
-    username: string;
-    avatar: string;
-    phoneNumber: string;
-    email: string;
-    name: string;
-    gender: string;
-    createdt: string;
-    updatedt: string;
-    majors: {
-      id: number;
-    };
-    degree: string;
-    isdmin: string;
-  };
-  term: {
-    id: number;
-  };
-  totalGroupChoose: number;
   level: string;
+  created_at: string;
+  updated_at: string;
+  lecturerTerm: {
+    id: number;
+    lecturer: {
+      id: number;
+      fullName: string;
+      avatarUrl: string;
+      email: string;
+      phoneNumber: string;
+      gender: string;
+      degree: string;
+      major: {
+        id: number;
+        name: string;
+      };
+    };
+  };
 }
 
-export default interface Lecturer {
+export interface Lecturer {
   id: number;
-  username: string;
-  avatar: string;
-  createdAt: string;
-  degree: string;
-  email: string;
-  name: string;
-  gender: string;
+  userName: string;
+  fullName: string;
+  avatarUrl: string;
   phoneNumber: string;
-  updatedAt: string;
-  majors: {
-    id: number;
-  };
+  email: string;
+  gender: string;
+  degree: string;
   role: string;
+  created_at: string;
+  updated_at: string;
+  major_id: number;
 }
 
 export interface Notify {
@@ -106,78 +77,42 @@ export interface Term {
   name: string;
   startDate: string;
   endDate: string;
-  startDateSubmitTopic: string;
-  endDateSubmitTopic: string;
-  startDateChooseTopic: string;
-  endDateChooseTopic: string;
-  dateDiscussion: string;
-  dateReport: string;
-  createdAt: string;
-  updatedAt: string;
-  startDateDiscussion: string;
-  endDateDiscussion: string;
-  startDateReport: string;
-  endDateReport: string;
-  majors: {
-    id: number;
-  };
-  isPublicResult: number;
+  isSubmitTopic: boolean;
+  isChooseTopic: boolean;
+  isDiscussion: boolean;
+  isReport: boolean;
+  isPublicResult: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Transcript {
-  student: User;
-  gradeSummary: number;
-  missings: Array<{}>;
-  achievements: [
-    {
-      id: number;
-      name: string;
-      bonusGrade: number;
-      student: User;
-    },
-  ];
-  ADVISOR: {
-    avgGrader: number;
-    details: Array<Lecturer>;
-  };
-  REVIEWER: {
-    avgGrader: number;
-    details: Array<Lecturer>;
-  };
-  SESSION_HOST: {
-    avgGrader: number;
-    details: Array<Lecturer>;
-  };
+  id: number;
+  score: number;
+  // evaluation_id: number;
+
+  created_at: string;
+  updated_at: string;
 }
 
-
-export interface User {
-  id: string;
-  username: string;
-  avatar: string;
+export interface Student {
+  id: number;
+  userName: string;
+  fullName: string;
+  avatarUrl: string;
   phoneNumber: string;
   email: string;
-  name: string;
   gender: string;
-  createdAt: string;
-  updatedAt: string;
-  majors: {
-    id: number;
-  };
-  typeTraining: string;
   schoolYear: string;
+  typeTraining: string;
+  created_at: string;
+  updated_at: string;
+  major_id: number;
 }
 
 export interface Major {
-  id: string;
+  id: number;
   name: string;
-  headLecturer: {
-    id: number;
-    majors: Object;
-    degree: string;
-    isAdmin: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  created_at: string;
+  updated_at: string;
 }
-

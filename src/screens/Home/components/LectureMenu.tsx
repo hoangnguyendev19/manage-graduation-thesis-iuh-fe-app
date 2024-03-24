@@ -5,45 +5,41 @@ import GlobalStyles from '../../../themes/GlobalStyles';
 import Colors from '../../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import { useAppSelector } from '../../../redux/hooks';
-// import majorService from '../../../services/major';
-import Lecturer from '../../../utils/types';
+import { Lecturer } from '../../../utils/types';
 import { List } from 'react-native-paper';
 
 import { Images } from '../../../assets/images/Images';
-import { checkDegree, checkGenger, checkRole, isEmpty } from '../../../utils/handler';
+import { checkDegree, checkGender, checkRole, isEmpty } from '../../../utils/handler';
 import LoadingScreen from '../../../components/Loading';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import lecturerService from '../../../services/lecturer';
 
 const LectureMenu = () => {
   const majorState = useAppSelector((state) => state.major.major);
-  const [lecturer, setLecturer] = useState<Lecturer[]>();
-  const [list, setList] = useState();
+  const [lecturers, setLecturers] = useState<Lecturer[]>();
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    getLecturersOfmajor();
-  }, [majorState]);
-
-  const getLecturersOfmajor = async () => {
     setLoading(true);
-    if (!isEmpty(majorState?.id)) {
-      // await majorService
-      //   .getLecturerByMajor(Number(majorState?.id))
-      //   .then((result) => {
-      //     setLoading(false);
-      //     setLecturer(result?.data);
-      //     setList(result?.data?.length);
-      //   })
-      //   .catch((er) => console.log(er));
-    }
-  };
+    const getLecturersOfmajor = async () => {
+      try {
+        const { data } = await lecturerService.getLecturerByMajor(Number(majorState?.id));
+        setLecturers(data.lecturers);
+        setLoading(false);
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    getLecturersOfmajor();
+  }, []);
 
   const renderItem = (item: any) => {
     const LECTURER_DATA = [
-      { name: item.avatar, key: '' },
-      { name: item.name, key: 'Tên Giảng viên' },
+      { name: item.avatarUrl, key: '' },
+      { name: item.fullName, key: 'Tên Giảng viên' },
       { name: checkRole(item.role), key: 'Chức vụ' },
-      { name: checkGenger(item.gender), key: 'Giới tính' },
+      { name: checkGender(item.gender), key: 'Giới tính' },
       { name: item.phoneNumber, key: 'Số điện thoại' },
       { name: checkDegree(item.degree), key: 'Trình độ' },
       { name: item.email, key: 'Email' },
@@ -55,6 +51,7 @@ const LectureMenu = () => {
           if (i?.key === '') {
             return (
               <List.Item
+                key={index}
                 title={
                   <>
                     <Text numberOfLines={1} style={[styles.titleMain]}>
@@ -64,7 +61,7 @@ const LectureMenu = () => {
                 }
                 description={
                   <Text numberOfLines={1} style={[styles.titleGroup]}>
-                    {item?.username}
+                    {item?.userName}
                   </Text>
                 }
                 left={(props) => (
@@ -105,16 +102,16 @@ const LectureMenu = () => {
     return (
       <>
         <View style={styles.list}>
-          <Text style={styles.numberList}>Số lượng: {list}</Text>
+          <Text style={styles.numberList}>Số lượng: {lecturers?.length}</Text>
         </View>
         <FlatList
-          data={lecturer}
-          renderItem={({ item }) => <View style={styles.contentListItem}>{renderItem(item)}</View>}
+          data={lecturers}
+          renderItem={({ item }) => <View key={item.id}>{renderItem(item)}</View>}
           keyExtractor={(item) => item.id.toString()}
         />
       </>
     );
-  }, [lecturer, list]);
+  }, [lecturers]);
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -132,13 +129,13 @@ const LectureMenu = () => {
 
         <View style={styles.content}>
           <View style={[styles.listTitle]}>
-            <Text style={styles.contentName}>Chuyên ngành</Text>
+            <Text style={styles.titleMain}>Chuyên ngành</Text>
             <Text style={styles.contentName}>{majorState?.name}</Text>
           </View>
           {renderLecturerInfo}
         </View>
       </View>
-      {/* {isLoading && <LoadingScreen />} */}
+      {isLoading && <LoadingScreen />}
     </SafeAreaView>
   );
 };
@@ -178,22 +175,21 @@ const styles = StyleSheet.create({
     fontSize: responsiveFont(17),
     color: Colors.textPrimary,
     fontWeight: '500',
-
     textTransform: 'uppercase',
   },
   contentListItem: {
     flexDirection: 'column',
-    width: responsiveWidth(330),
     borderRadius: 10,
     marginHorizontal: responsiveWidth(10),
     borderColor: '#c9184a',
-    borderWidth: 2,
+    borderWidth: 1,
     backgroundColor: Colors.white,
     shadowOpacity: 0.02,
+    marginVertical: responsiveHeight(10),
   },
   titleMain: {
-    fontSize: responsiveFont(18),
-    color: Colors.grayLight,
+    fontSize: responsiveFont(16),
+    color: Colors.red,
   },
   number: {
     textAlign: 'center',

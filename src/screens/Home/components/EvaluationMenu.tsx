@@ -6,32 +6,62 @@ import Colors from '../../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-// import authAPI from '../../../redux/apis/auth';
 import { DataTable, Text } from 'react-native-paper';
-// import authService from '../../../services/auth';
-import Transcript from '../../../utils/types';
+import { Transcript } from '../../../utils/types';
 import NoneData from '../../../components/NoneData';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import transcriptService from '../../../services/transcript';
 
 const EvaluationMenu = () => {
   const layout = useWindowDimensions();
-  const dispatch = useAppDispatch();
-
   const termState = useAppSelector((state) => state.term.term);
 
-  const [transcript, setTranscript] = useState<Transcript>();
+  const [transcriptAdvisor, setTranscriptAdvisor] = useState(null);
+  const [transcriptReviewer, setTranscriptReviewer] = useState(null);
+  const [transcriptHost, setTranscriptHost] = useState(null);
 
   useEffect(() => {
-    getTranscript();
-  }, [termState]);
+    const getTranscriptAdvisor = async () => {
+      try {
+        const { data } = await transcriptService.getTranscriptByTypeEvaluation(
+          termState.id,
+          'ADVISOR',
+        );
 
-  const getTranscript = () => {
-    if (termState?.id) {
-      // authService.getTranscripts(termState?.id).then((result) => {
-      //   setTranscript(result.data);
-      // });
-    }
-  };
+        setTranscriptAdvisor(data.transcript);
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    const getTranscriptReviewer = async () => {
+      try {
+        const { data } = await transcriptService.getTranscriptByTypeEvaluation(
+          termState.id,
+          'REVIEWER',
+        );
+        setTranscriptReviewer(data.transcript);
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    const getTranscriptHost = async () => {
+      try {
+        const { data } = await transcriptService.getTranscriptByTypeEvaluation(
+          termState.id,
+          'SESSION_HOST',
+        );
+        setTranscriptHost(data.transcript);
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    getTranscriptAdvisor();
+    getTranscriptReviewer();
+    getTranscriptHost();
+  }, [termState]);
 
   const [index, setIndex] = useState(0);
   const [routes] = useState([
@@ -57,7 +87,6 @@ const EvaluationMenu = () => {
   });
 
   const advisorRender = useMemo(() => {
-    const _data = transcript?.ADVISOR;
     return (
       <>
         <View style={[styles.bottomContent]}>
@@ -65,24 +94,41 @@ const EvaluationMenu = () => {
             Kết Quả GĐ Hướng Dẫn
           </Text>
           <DataTable>
-            <DataTable.Header>
-              <DataTable.Title textStyle={styles._titleCol}>Điểm Trung Bình</DataTable.Title>
-              <DataTable.Title textStyle={styles._titleCol} numeric>
-                {_data?.avgGrader ? (
-                  <>{_data.avgGrader}</>
-                ) : (
-                  <Text style={styles.title_Point}>Chưa có điểm</Text>
-                )}
-              </DataTable.Title>
-            </DataTable.Header>
+            {transcriptAdvisor ? (
+              <>
+                <DataTable.Header>
+                  <DataTable.Title textStyle={styles._titleColLeft}>Tên giảng viên</DataTable.Title>
+                  <DataTable.Title textStyle={styles._titleColRight}>Điểm</DataTable.Title>
+                </DataTable.Header>
+                {transcriptAdvisor?.transcripts.map((item, index) => (
+                  <DataTable.Row key={index}>
+                    <DataTable.Cell>{item?.lecturerTerm?.lecturer?.fullName}</DataTable.Cell>
+                    <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+                <DataTable.Row>
+                  <DataTable.Cell>
+                    <Text variant="labelLarge" style={{ color: 'red' }}>
+                      Điểm Trung Bình
+                    </Text>
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>
+                    <Text variant="labelLarge" style={{ color: 'red' }}>
+                      {transcriptAdvisor?.averageScore}
+                    </Text>
+                  </DataTable.Cell>
+                </DataTable.Row>
+              </>
+            ) : (
+              <Text style={styles.title_Point}>Chưa có điểm</Text>
+            )}
           </DataTable>
         </View>
       </>
     );
-  }, [transcript]);
+  }, [transcriptAdvisor]);
 
   const reviewRender = useMemo(() => {
-    const _data = transcript?.REVIEWER;
     return (
       <>
         <View style={[styles.bottomContent]}>
@@ -90,24 +136,41 @@ const EvaluationMenu = () => {
             Kết Quả GĐ Phản biện
           </Text>
           <DataTable>
-            <DataTable.Header>
-              <DataTable.Title textStyle={styles._titleCol}>Điểm Trung Bình</DataTable.Title>
-              <DataTable.Title textStyle={styles._titleCol} numeric>
-                {_data?.avgGrader ? (
-                  <>{_data.avgGrader}</>
-                ) : (
-                  <Text style={styles.title_Point}>Chưa có điểm</Text>
-                )}
-              </DataTable.Title>
-            </DataTable.Header>
+            {transcriptReviewer ? (
+              <>
+                <DataTable.Header>
+                  <DataTable.Title textStyle={styles._titleColLeft}>Tên giảng viên</DataTable.Title>
+                  <DataTable.Title textStyle={styles._titleColRight}>Điểm</DataTable.Title>
+                </DataTable.Header>
+                {transcriptReviewer?.transcripts.map((item, index) => (
+                  <DataTable.Row key={index}>
+                    <DataTable.Cell>{item?.lecturerTerm?.lecturer?.fullName}</DataTable.Cell>
+                    <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+                <DataTable.Row>
+                  <DataTable.Cell>
+                    <Text variant="labelLarge" style={{ color: 'red' }}>
+                      Điểm Trung Bình
+                    </Text>
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>
+                    <Text variant="labelLarge" style={{ color: 'red' }}>
+                      {transcriptReviewer?.averageScore}
+                    </Text>
+                  </DataTable.Cell>
+                </DataTable.Row>
+              </>
+            ) : (
+              <Text style={styles.title_Point}>Chưa có điểm</Text>
+            )}
           </DataTable>
         </View>
       </>
     );
-  }, [transcript]);
+  }, [transcriptReviewer]);
 
   const hostRender = useMemo(() => {
-    const _data = transcript?.SESSION_HOST;
     return (
       <>
         <View style={[styles.bottomContent]}>
@@ -115,21 +178,39 @@ const EvaluationMenu = () => {
             Kết Quả GĐ Hội đồng
           </Text>
           <DataTable>
-            <DataTable.Header>
-              <DataTable.Title textStyle={styles._titleCol}>Điểm Trung Bình</DataTable.Title>
-              <DataTable.Title textStyle={styles._titleCol} numeric>
-                {_data?.avgGrader ? (
-                  <>{_data.avgGrader}</>
-                ) : (
-                  <Text style={styles.title_Point}>Chưa có điểm</Text>
-                )}
-              </DataTable.Title>
-            </DataTable.Header>
+            {transcriptHost ? (
+              <>
+                <DataTable.Header>
+                  <DataTable.Title textStyle={styles._titleColLeft}>Tên giảng viên</DataTable.Title>
+                  <DataTable.Title textStyle={styles._titleColRight}>Điểm</DataTable.Title>
+                </DataTable.Header>
+                {transcriptHost?.transcripts.map((item, index) => (
+                  <DataTable.Row key={index}>
+                    <DataTable.Cell>{item?.lecturerTerm?.lecturer?.fullName}</DataTable.Cell>
+                    <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
+                  </DataTable.Row>
+                ))}
+                <DataTable.Row>
+                  <DataTable.Cell>
+                    <Text variant="labelLarge" style={{ color: 'red' }}>
+                      Điểm Trung Bình
+                    </Text>
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>
+                    <Text variant="labelLarge" style={{ color: 'red' }}>
+                      {transcriptHost?.averageScore}
+                    </Text>
+                  </DataTable.Cell>
+                </DataTable.Row>
+              </>
+            ) : (
+              <Text style={styles.title_Point}>Chưa có điểm</Text>
+            )}
           </DataTable>
         </View>
       </>
     );
-  }, [transcript]);
+  }, [transcriptHost]);
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -141,16 +222,16 @@ const EvaluationMenu = () => {
         style={styles.header}
         back={true}
       ></Header>
-      {/* {termState.isPublicResult === 1 ? ( */}
-      <TabView
-        navigationState={{ index, routes }}
-        renderScene={renderScene}
-        onIndexChange={setIndex}
-        initialLayout={{ width: layout.width }}
-      />
-      {/* ) : (
+      {termState.isPublicResult ? (
+        <TabView
+          navigationState={{ index, routes }}
+          renderScene={renderScene}
+          onIndexChange={setIndex}
+          initialLayout={{ width: layout.width }}
+        />
+      ) : (
         <NoneData icon title="Chưa được xem đi"></NoneData>
-      )} */}
+      )}
     </SafeAreaView>
   );
 };
@@ -201,10 +282,16 @@ const styles = StyleSheet.create({
     fontSize: responsiveFont(16),
     textTransform: 'uppercase',
   },
-  _titleCol: {
+  _titleColLeft: {
     fontSize: responsiveFont(16),
     fontWeight: '700',
     textTransform: 'uppercase',
+  },
+  _titleColRight: {
+    fontSize: responsiveFont(16),
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    marginLeft: 'auto',
   },
   title_Point: {
     textAlign: 'center',

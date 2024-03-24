@@ -1,31 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
-import authAPI from '../../api/auth';
-import Major from '../../utils/types';
-import { isNull, isNumber } from 'lodash';
-import { number } from 'yup';
+import { Major } from '../../utils/types';
 import majorAPI from '../../api/major';
 
 interface StateType {
   major: Major;
-  error: boolean;
-  is_loading: boolean;
+  isLoading: boolean;
+  isError: boolean;
 }
 
 const initialState = {
   major: {
-    id: '',
+    id: NaN,
     name: '',
-    headLecturer: {
-      id: NaN,
-      majors: {},
-      degree: '',
-      isAdmin: '',
-      createdAt: '',
-      updatedAt: '',
-    },
+    created_at: '',
+    updated_at: '',
   },
-  is_loading: false,
-  error: false,
+  isLoading: false,
+  isError: false,
 } as StateType;
 
 export const MajorSlices = createSlice({
@@ -36,16 +27,15 @@ export const MajorSlices = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(majorAPI.getMajorById().pending, (state) => {
-      state.is_loading = true;
+      state.isLoading = true;
     });
     builder.addCase(majorAPI.getMajorById().fulfilled, (state, action) => {
       state.major = action.payload;
-      state.is_loading = false;
-      state.error = false;
+      state.isLoading = false;
     });
     builder.addCase(majorAPI.getMajorById().rejected, (state) => {
-      state.error = true;
-      state.is_loading = false;
+      state.isError = true;
+      state.isLoading = false;
     });
   },
 });

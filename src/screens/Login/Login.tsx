@@ -27,12 +27,10 @@ import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/s
 
 import LoadingScreen from '../../components/Loading';
 import { RouteNames } from '../../utils/contants';
-// import authService from '../../services/auth';
+import authService from '../../services/auth';
 import { Button, Dialog, Portal } from 'react-native-paper';
 import ButtonHandle from '../../components/ButtonHandle';
-
-// import {AlertNotificationRoot} from 'react-native-alert-notification';
-import { showMessageEror, showMessageSuccess, showMessageWarning } from '../../utils/handler';
+import { Snackbar } from 'react-native-paper';
 import { setUser } from '../../redux/slices/UserSlices';
 import { Images } from '../../assets/images/Images';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -43,26 +41,23 @@ const userState = {
 };
 
 const Login: React.FC<{}> = () => {
-  // const userState = useAppSelector(state => state.user);
-
+  const userState = useAppSelector((state) => state.user);
   const userNameRef = useRef();
-
   const navigation = useNavigation();
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
+
   const [isLoading, setLoading] = useState(false);
   const [isPassWord, setPassword] = useState(true);
-  const [inputUsername, setUserName] = useState('');
-  const [inputPassword, setPass] = useState('');
+  const [userName, setUserName] = useState('');
+  const [password, setPass] = useState('');
   const [errorPass, setErrorPass] = useState('');
   const [isResetPass, setResetPass] = useState(false);
 
   const [modalRestPass, setModalRestPass] = useState(false);
-  const [inputUserName, setInputUserName] = useState('');
+  const [visible, setVisible] = useState(false);
+  const [error, setError] = useState('');
 
   const hideDialog = () => setModalRestPass(false);
-  const onChangeText = (text: string) => {
-    setInputUserName(text);
-  };
 
   useFocusEffect(
     useCallback(() => {
@@ -72,13 +67,14 @@ const Login: React.FC<{}> = () => {
   );
 
   useEffect(() => {
-    if (userState.is_login === true) {
+    if (userState.isLogin === true) {
       setLoading(false);
-      // navigation.navigate(RouteNames.TabNavigation);
+      navigation.navigate(RouteNames.TabNavigation);
     }
-    if (userState.error === true) {
+    if (userState.isLoading === false && userState.isError === true) {
       setLoading(false);
-      // showMessageEror('Thông tin đăng nhập không đúng'!);
+      setError('Thông tin đăng nhập không đúng');
+      setVisible(true);
     }
   }, [userState]);
 
@@ -87,35 +83,36 @@ const Login: React.FC<{}> = () => {
   };
 
   const handleSubmit = async () => {
-    console.log(inputUsername, inputPassword);
-
-    if (inputUsername.length > 5 && inputUsername != '') {
-      if (inputPassword.length < 6) {
-        // showMessageWarning('Mật khẩu phải lớn hơn 5 ký tự!');
+    if (userName.trim().length >= 8) {
+      if (password.trim().length < 8) {
+        setError('Mật khẩu phải lớn hơn 7 ký tự!');
+        setVisible(true);
         setResetPass(false);
       } else {
         setErrorPass('');
         setLoading(true);
         try {
-          // await dispatch(
-          //   authAPI.login()({
-          //     username: inputUsername,
-          //     password: inputPassword,
-          //   }),
-          // );
+          await dispatch(
+            authAPI.login()({
+              userName: userName,
+              password: password,
+            }),
+          );
         } catch (error) {
           setLoading(false);
-          // showMessageWarning('Có lỗi xảy ra. VUi lòng thử lại!');
+          setError('Có lỗi xảy ra. Vui lòng thử lại!');
+          setVisible(true);
         }
       }
     } else {
-      // showMessageWarning('Tên phải lớn hơn 5 ký tự!');
+      setError('Tên đăng nhập phải lớn hơn 7 ký tự!');
+      setVisible(true);
     }
     setLoading(false);
   };
 
   const handleResetPassword = () => {
-    if (inputUserName !== '' && inputUserName.length >= 6) {
+    if (userName !== '' && userName.length >= 6) {
       setResetPass(true);
       // setTimeout(async () => {
       //   await authService
@@ -153,7 +150,7 @@ const Login: React.FC<{}> = () => {
           </View>
           <TextInput
             placeholder={'Tên đăng nhập'}
-            value={inputUsername}
+            value={userName}
             onChangeText={(text) => setUserName(text)}
             style={styles.input}
             ref={userNameRef.current}
@@ -166,7 +163,7 @@ const Login: React.FC<{}> = () => {
           </View>
           <TextInput
             placeholder={'Mật khẩu'}
-            value={inputPassword}
+            value={password}
             onChangeText={(text) => setPass(text)}
             secureTextEntry={isPassWord}
             style={styles.input}
@@ -205,13 +202,13 @@ const Login: React.FC<{}> = () => {
         />
       </View>
     );
-  }, [errorPass, inputPassword, inputUsername, handleCheck, handleSubmit, userNameRef, userState]);
+  }, [errorPass, password, userName, handleCheck, handleSubmit, userNameRef, userState]);
 
   return (
     <SafeAreaView style={[GlobalStyles.container, { backgroundColor: Colors.white }]}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.black} />
       {/* <AlertNotificationRoot> */}
-      <Header title="Đăng nhập"></Header>
+      <Header title="Đăng nhập" home></Header>
 
       <ScrollView>
         <KeyboardAvoidingView
@@ -262,6 +259,19 @@ const Login: React.FC<{}> = () => {
           </Dialog.Actions>
         </Dialog>
       </Portal>
+
+      <Snackbar
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        action={{
+          label: 'OK',
+          onPress: () => {
+            setVisible(false);
+          },
+        }}
+      >
+        {error}
+      </Snackbar>
     </SafeAreaView>
   );
 };

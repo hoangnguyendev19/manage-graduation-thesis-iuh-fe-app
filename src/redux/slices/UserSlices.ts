@@ -55,7 +55,9 @@ const userSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(authAPI.getInfo().fulfilled, (state, action) => {
+        state.isLoading = false;
         state.user = action.payload;
+        state.isLogin = true;
       })
       .addCase(authAPI.getInfo().rejected, (state) => {
         state.isError = true;

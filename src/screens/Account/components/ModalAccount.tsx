@@ -12,21 +12,20 @@ import CloseButton from '../../../components/CloseButton';
 import Colors from '../../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-// import DocumentPicker from 'react-native-document-picker';
-import { Modal, Portal } from 'react-native-paper';
+import { Avatar, Modal, Portal, Snackbar } from 'react-native-paper';
 import languages from '../../../utils/languages';
-
+import * as ImagePicker from 'expo-image-picker';
 import GlobalStyles from '../../../themes/GlobalStyles';
 import TextInputView from '../../../components/TextInputView';
 import IconView from '../../../components/IconView';
-import { showMessageEror, showMessageSuccess, validateEmail } from '../../../utils/handler';
+import { validateEmail } from '../../../utils/handler';
 import GenderButton from '../../../components/GenderButton';
 import { Images } from '../../../assets/images/Images';
 import ButtonHandle from '../../../components/ButtonHandle';
 import LoadingScreen from '../../../components/Loading';
+import uploadService from '../../../services/upload';
+import authAPI from '../../../api/auth';
 // import { AlertNotificationRoot } from 'react-native-alert-notification';
-// import authService from '../../../services/auth';
-// import { updateUser } from '../../../redux/slices/UserSlices';
 
 interface Props {
   title: string;
@@ -35,7 +34,6 @@ interface Props {
 }
 interface ImagePicker {
   fileName: string;
-
   uri: string;
   type: string;
 }
@@ -44,6 +42,8 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
   const [selectedAvatar, setSelectedAvatar] = useState<ImagePicker | any>();
   const dispatch = useAppDispatch();
 
+  const [show, setShow] = useState(false);
+  const [error, setError] = useState('');
   const [isLoading, setLoading] = useState(false);
 
   const BASIC_INFO = [
@@ -53,8 +53,8 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
       title: `${languages['vi'].code}`,
     },
     {
-      key: 'name',
-      placeholder: userState?.user?.name,
+      key: 'fullName',
+      placeholder: userState?.user?.fullName,
       title: `${languages['vi'].name}`,
     },
     {
@@ -80,9 +80,9 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
   ];
 
   const [basicInfo, setBasicInfo] = useState({
-    avatar: selectedAvatar ? selectedAvatar : userState?.user?.avatar,
-    username: userState?.user?.username,
-    name: userState?.user?.name,
+    avatarUrl: userState?.user?.avatarUrl || Images.avatar,
+    userName: userState?.user?.userName || '',
+    fullName: userState?.user?.fullName || '',
     gender: userState?.user?.gender || '',
     schoolYear: userState?.user?.schoolYear || '',
     typeTraining: userState?.user?.typeTraining,
@@ -92,45 +92,39 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
 
   const handleSubmitForm = async () => {
     setLoading(true);
-    setBasicInfo({
-      ...basicInfo,
-    });
 
     const formData = new FormData();
-    formData.append('username', basicInfo.username);
-    formData.append('name', basicInfo.name);
-    formData.append('gender', basicInfo.gender);
-    formData.append('schoolYear', basicInfo.schoolYear);
-    formData.append('typeTraining', basicInfo.typeTraining);
-    formData.append('phoneNumber', basicInfo.phoneNumber);
-    formData.append('email', basicInfo.email);
+    formData.append('image', {
+      uri: basicInfo.avatarUrl,
+      name: 'image',
+      type: 'image/jpeg',
+    });
 
-    if (selectedAvatar) {
-      formData.append('avatar', selectedAvatar[0]);
+    const data = await uploadService.uploadAvatar(formData);
+
+    if (data) {
+      const newUser = {
+        avatarUrl: data.path,
+        fullName: basicInfo.fullName,
+        gender: basicInfo.gender,
+        phoneNumber: basicInfo.phoneNumber,
+        email: basicInfo.email,
+      };
+
+      try {
+        await dispatch(authAPI.updateInfo()(newUser));
+        setLoading(false);
+        onPressClose(false);
+      } catch (error) {
+        setLoading(false);
+        setShow(true);
+        setError('Cập nhật không thành công!');
+      }
     } else {
-      formData.append('avatar', basicInfo?.avatar);
+      setLoading(false);
+      setShow(true);
+      setError('Cập nhật không thành công!');
     }
-
-    // await authService
-    //   .updateUserInfo(formData)
-    //   .then((result) => {
-    //     showMessageSuccess('Cập nhật thành công!');
-    //     setLoading(false);
-    //     dispatch(updateUser(result.data));
-    //     onPressClose(false);
-    //   })
-    //   .catch((er) => {
-    //     if (er.response.data.code === 'DUPLICATE_EMAIL') {
-    //       setLoading(false);
-    //       showMessageEror('Email này đã tồn tại!');
-    //       showMessageEror('Cập nhật không thành công!');
-    //       onPressClose(false);
-    //     } else {
-    //       setLoading(false);
-    //       showMessageEror('Cập nhật không thành công!');
-    //       onPressClose(false);
-    //     }
-    //   });
   };
 
   const isError = basicInfo.email ? !validateEmail(basicInfo.email) : false;
@@ -164,24 +158,20 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
     );
   };
 
-  const handleGetAvatar = () => {
-    if (selectedAvatar?.[0]?.uri) {
-      return { uri: selectedAvatar?.[0]?.uri };
-    }
-    return basicInfo?.avatar ? { uri: basicInfo?.avatar } : Images.avatar;
-  };
-
-  const openPicker = async () => {
+  const handlePickerAvatar = async () => {
     try {
-      // const res = await DocumentPicker.pick({
-      //   // Provide which type of file you want user to pick
-      //   type: [DocumentPicker.types.images],
-      //   allowMultiSelection: true,
-      // });
-      // console.log('res : ' + JSON.stringify(res));
-      // setSelectedAvatar(res);
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (!result.canceled) {
+        setBasicInfo({ ...basicInfo, avatarUrl: result.assets[0].uri });
+      }
     } catch (e: any) {
-      console.log(e.code, e.message);
+      console.log('error', e);
     }
   };
 
@@ -189,14 +179,18 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
     return (
       <>
         <View style={[styles.contentImage, GlobalStyles.flexDirectionRow]}>
-          <Image source={handleGetAvatar()} style={styles.imgAvatar} />
-          <TouchableOpacity style={styles.contentIcon} onPress={openPicker}>
+          <Avatar.Image
+            size={100}
+            source={{ uri: basicInfo.avatarUrl }}
+            style={{ alignSelf: 'center', marginBottom: 20 }}
+          />
+          <TouchableOpacity style={styles.contentIcon} onPress={handlePickerAvatar}>
             <IconView name={'camera'} size={24} color={'#2c312c'} />
           </TouchableOpacity>
         </View>
       </>
     );
-  }, [selectedAvatar]);
+  }, [basicInfo.avatarUrl]);
 
   return (
     <>
@@ -226,28 +220,31 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
                       return genderBlock(index);
                     }
 
-                    const isUserName = () => item?.key === 'username';
+                    const isUserName = () => item?.key === 'userName';
+                    const isCode = () => item?.key === 'code';
+                    const isSchoolYear = () => item?.key === 'schoolYear';
+
                     return (
-                      <TextInputView
-                        key={index}
-                        inputStyle={{
-                          borderColor: Colors.blueBoder,
-                          borderRadius: 6,
-                        }}
-                        isRequire={!isUserName()}
-                        editable={!isUserName()}
-                        title={item.title}
-                        titleStyle={[styles.label]}
-                        textInputStyle={{
-                          fontSize: responsiveFont(14),
-                          color: Colors.black,
-                        }}
-                        value={''}
-                        placeholder={item.placeholder}
-                        onChangeText={(text) => setBasicInfo({ ...basicInfo, [item.key]: text })}
-                        style={{ marginBottom: responsiveHeight(20) }}
-                        messageError={item.key === 'email' && isError}
-                      />
+                      <View key={index}>
+                        <TextInputView
+                          inputStyle={{
+                            borderColor: Colors.blueBoder,
+                            borderRadius: 6,
+                          }}
+                          isRequire={!isUserName() && !isCode() && !isSchoolYear()}
+                          editable={!isUserName() && !isCode() && !isSchoolYear()}
+                          title={item.title}
+                          titleStyle={[styles.label]}
+                          textInputStyle={{
+                            fontSize: responsiveFont(14),
+                            color: Colors.black,
+                          }}
+                          placeholder={item.placeholder.toString()}
+                          onChangeText={(text) => setBasicInfo({ ...basicInfo, [item.key]: text })}
+                          style={{ marginBottom: responsiveHeight(20) }}
+                          messageError={item.key === 'email' && isError}
+                        />
+                      </View>
                     );
                   })}
                 </View>
@@ -264,7 +261,16 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
           </ScrollView>
         </Modal>
       </Portal>
-      {/* </AlertNotificationRoot> */}
+      <Snackbar
+        visible={show}
+        onDismiss={() => setShow(false)}
+        action={{
+          label: 'OK',
+          onPress: () => setShow(false),
+        }}
+      >
+        {error}
+      </Snackbar>
       {isLoading && <LoadingScreen />}
     </>
   );
@@ -335,16 +341,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: responsiveWidth(20),
   },
-  imgAvatar: {
-    width: 100,
-    height: 100,
-    resizeMode: 'contain',
-    borderRadius: 50,
-    borderColor: Colors.blueBoder,
-    borderWidth: 1,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 2, height: 3 },
-  },
+  // imgAvatar: {
+  //   width: 100,
+  //   height: 100,
+  //   resizeMode: 'contain',
+  //   borderRadius: 50,
+  //   borderColor: Colors.blueBoder,
+  //   borderWidth: 1,
+  //   shadowOpacity: 0.02,
+  //   shadowOffset: { width: 2, height: 3 },
+  // },
   viewBtn: {
     marginTop: responsiveHeight(20),
     alignItems: 'flex-end',

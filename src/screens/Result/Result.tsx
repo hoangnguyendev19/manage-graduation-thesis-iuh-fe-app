@@ -7,10 +7,10 @@ import { DataTable, Text } from 'react-native-paper';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 import { useEffect, useMemo, useState } from 'react';
 
-import { checkGenger, getStatusFinal } from '../../utils/handler';
+import { checkGender, getStatusFinal } from '../../utils/handler';
 import NoneData from '../../components/NoneData';
 import { isEmpty } from '../../utils/handler';
-import Transcript from '../../utils/types';
+import { Transcript } from '../../utils/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 // import authService from '../../services/auth';
 
@@ -66,7 +66,7 @@ const Result: React.FC<{}> = ({}) => {
 
     const _DATA = [
       { name: _data.name, key: 'Tên Sinh viên:' },
-      { name: checkGenger(_data.gender), key: 'Giới tính:' },
+      { name: checkGender(_data.gender), key: 'Giới tính:' },
       { name: _data.phoneNumber, key: 'Số điện thoại:' },
       { name: _data.email, key: 'Email:' },
     ];

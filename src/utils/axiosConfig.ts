@@ -39,7 +39,7 @@ axiosAuth.interceptors.response.use(
 
         if (refresh_token) {
           const res = await axios({
-            url: API_URL + 'api/students/refresh-token',
+            url: API_URL + 'api/v1/students/refresh-token',
             method: 'post',
             data: {
               refreshToken: refresh_token,
@@ -79,7 +79,10 @@ const axiosFormData = axios.create({
     'Content-type': 'multipart/form-data',
   },
 });
-axiosFormData.interceptors.response = axiosAuth.interceptors.response;
+
+axiosFormData.interceptors.response.use((response) => {
+  return response;
+});
 
 axiosFormData.interceptors.request.use(
   async (config) => {

@@ -6,7 +6,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../utils/sizeScreen';
 
 interface Props {
-  key?: number | string;
   value?: string | [];
   onChangeText(text: any): any;
   title?: string;
@@ -35,8 +34,6 @@ interface Props {
 }
 
 const TextInputView = ({
-  key,
-  value,
   title,
   secureTextEntry,
   placeholder,
@@ -62,9 +59,10 @@ const TextInputView = ({
 }: Props) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isFocus, setFocus] = useState(false);
+  const [value, setValue] = useState('');
 
   return (
-    <TouchableOpacity onPress={onPress} disabled={!onPress} activeOpacity={1} key={key}>
+    <TouchableOpacity onPress={onPress} disabled={!onPress} activeOpacity={1}>
       {!!title && (
         <View style={styles.cotentIsRequire}>
           <Text style={[styles.titleStyle, messageError && { color: Colors.red }]}>{title}</Text>
@@ -84,6 +82,7 @@ const TextInputView = ({
           ref={refs}
           style={[styles.textInput]}
           onChangeText={(text) => {
+            setValue(text);
             onChangeText(text);
           }}
           maxLength={maxLength}
@@ -109,7 +108,7 @@ const TextInputView = ({
             setFocus(false);
           }}
           autoCapitalize="none"
-          editable={editable && !onPress}
+          editable={editable}
           scrollEnabled={scrollEnabled}
           numberOfLines={numberOfLines}
           textAlignVertical={textAlignVertical}

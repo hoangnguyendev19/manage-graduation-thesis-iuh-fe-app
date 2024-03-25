@@ -17,7 +17,7 @@ class AuthService {
   }
 
   async updateMe(data: FormData) {
-    return axiosFormData({
+    return await axiosAuth({
       url: 'api/v1/students/me',
       method: 'put',
       data,
@@ -39,8 +39,8 @@ class AuthService {
   //   });
   // }
 
-  updatePassword(data: { password: string; newPassword: string }) {
-    return axiosAuth({
+  async updatePassword(data: { password: string; newPassword: string }) {
+    return await axiosAuth({
       url: `api/v1/students/update-password`,
       method: 'put',
       data,

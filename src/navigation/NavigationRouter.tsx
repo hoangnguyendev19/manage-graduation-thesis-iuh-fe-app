@@ -18,7 +18,7 @@ import ItemTopicMenu from '../screens/Group/components/ItemTopicMenu';
 import LectureMenu from '../screens/Home/components/LectureMenu';
 import Notification from '../screens/Home/components/Notification';
 import DisAcceptedUser from '../screens/Login/components/NotificationLogin';
-import ForgotPassword from '../screens/Login/components/ForgotPassword';
+import ForgotPassword from '../screens/Account/components/ForgotPassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,7 +26,7 @@ const NavigationRouter = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Login"
+        initialRouteName="SplashScreen"
         screenOptions={{
           headerShown: false,
         }}

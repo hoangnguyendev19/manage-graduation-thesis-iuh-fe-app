@@ -11,14 +11,12 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import GlobalStyles from '../../../themes/GlobalStyles';
 import Header from '../../../components/Header';
-// import {AlertNotificationRoot} from 'react-native-alert-notification';
 import Colors from '../../../themes/Colors';
 import { Images } from '../../../assets/images/Images';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 
 import ButtonView from '../../../components/ButtonView';
-import { showMessageSuccess, showMessageWarning } from '../../../utils/handler';
 // import authService from '../../services/auth';
 import LoadingScreen from '../../../components/Loading';
 
@@ -84,10 +82,10 @@ const ForgotPassword = () => {
   const handleSubmit = async () => {
     if (inputOldPassword !== '' && inputNewPassword !== '' && inputConfirmPassword !== '') {
       if (inputOldPassword.length < 6 || inputNewPassword.length < 6) {
-        showMessageWarning('Mật khẩu phải lớn hơn 5 ký tự!');
+        // showMessageWarning('Mật khẩu phải lớn hơn 5 ký tự!');
       } else {
         if (comparePass() === false) {
-          showMessageWarning('Mật khẩu mới chưa khóp');
+          // showMessageWarning('Mật khẩu mới chưa khóp');
         } else {
           setLoading(true);
           // authService
@@ -109,7 +107,7 @@ const ForgotPassword = () => {
         }
       }
     } else {
-      showMessageWarning('Vui lòng nhập đầy đủ thông tin');
+      // showMessageWarning('Vui lòng nhập đầy đủ thông tin');
     }
   };
 
@@ -166,17 +164,16 @@ const ForgotPassword = () => {
   return (
     <>
       <View style={[GlobalStyles.container, { backgroundColor: Colors.white }]}>
-        {/* <AlertNotificationRoot>
-          <Header iconLeft back={true} title="Quên mật khẩu"></Header>
-          <ScrollView>
-            <KeyboardAvoidingView
-              style={{flex: 1}}
-              keyboardVerticalOffset={responsiveHeight(150)}
-              behavior={'position'}>
-              <View style={styles.formView}>{Form}</View>
-            </KeyboardAvoidingView>
-          </ScrollView>
-        </AlertNotificationRoot> */}
+        <Header iconLeft back={true} title="Quên mật khẩu"></Header>
+        <ScrollView>
+          <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            keyboardVerticalOffset={responsiveHeight(150)}
+            behavior={'position'}
+          >
+            <View style={styles.formView}>{Form}</View>
+          </KeyboardAvoidingView>
+        </ScrollView>
         {isLoading === true && <LoadingScreen />}
       </View>
     </>

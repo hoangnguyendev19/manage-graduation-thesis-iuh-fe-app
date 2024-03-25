@@ -7,7 +7,8 @@ class AuthAPI {
   getInfo() {
     return createAsyncThunk('user/get-info', async () => {
       const result = await authService.getMe();
-      if (result.status === 200) return result.data;
+
+      if (result.status === 200) return result.data.user;
     });
   }
 
@@ -33,10 +34,10 @@ class AuthAPI {
   }
 
   updateInfo() {
-    return createAsyncThunk('user/update-info', async (data: FormData, thunkAPI) => {
+    return createAsyncThunk('user/update-info', async (data: any, thunkAPI) => {
       try {
         const result = await authService.updateMe(data);
-        if (result.status === 200) return result.data;
+        if (result.status === 200) return result.data.user;
       } catch (error) {
         return thunkAPI.rejectWithValue('update fail');
       }

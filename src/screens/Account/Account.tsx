@@ -25,9 +25,8 @@ import ModalAccount from './components/ModalAccount';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 
 import { checkGender, checkTypeTraining } from '../../utils/handler';
-// import {AlertNotificationRoot} from 'react-native-alert-notification';
-import { DataTable } from 'react-native-paper';
-import { isEmpty, showMessageWarning } from '../../utils/handler';
+import { Avatar, DataTable } from 'react-native-paper';
+import { isEmpty } from '../../utils/handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Account: React.FC<{}> = ({}) => {
@@ -39,12 +38,14 @@ const Account: React.FC<{}> = ({}) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleLogout = async () => {
-    tokenService.reset().then(() => navigation.navigate(RouteNames.loginNavigation));
+    // tokenService.reset().then(() => navigation.navigate(RouteNames.loginNavigation));
+    await tokenService.reset();
+    navigation.navigate(RouteNames.Login);
   };
 
   const handleChangePass = () => {
     if (isEmpty(userState.email)) {
-      showMessageWarning('Vui lòng cập nhật email');
+      // showMessageWarning('Vui lòng cập nhật email');
     } else {
       navigation.navigate(RouteNames.ForgotPassword);
     }
@@ -55,13 +56,13 @@ const Account: React.FC<{}> = ({}) => {
       <ScrollView style={styles.main}>
         <TextItemAccount
           textLeft={languages['vi'].code}
-          textRight={userState?.username}
+          textRight={userState?.userName}
           line={true}
         ></TextItemAccount>
 
         <TextItemAccount
           textLeft={languages['vi'].name}
-          textRight={userState?.name}
+          textRight={userState?.fullName}
           line={true}
         ></TextItemAccount>
 
@@ -107,13 +108,13 @@ const Account: React.FC<{}> = ({}) => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      {/* <AlertNotificationRoot> */}
       <Header title="Thông tin" logo iconRight={true}></Header>
 
       <View style={styles.content}>
         <View style={[styles.update]}>
-          <Image
-            source={userState?.avatar ? { uri: userState?.avatar } : Images.avatar}
+          <Avatar.Image
+            source={userState?.avatarUrl ? { uri: userState?.avatarUrl } : Images.avatar}
+            size={80}
             style={styles.imgAvatar}
           />
           <TouchableOpacity
@@ -155,7 +156,6 @@ const Account: React.FC<{}> = ({}) => {
           <Text style={styles.logout}>{languages['vi'].logout}</Text>
         </TouchableOpacity>
       </View>
-      {/* </AlertNotificationRoot> */}
 
       <ModalAccount
         visible={showModal}
@@ -176,15 +176,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   imgAvatar: {
-    width: 80,
-    height: 80,
-    resizeMode: 'contain',
-    borderRadius: 50,
-    margin: 10,
-    borderColor: Colors.blueBoder,
-    borderWidth: 1,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 2, height: 3 },
+    marginVertical: responsiveHeight(10),
+    marginLeft: responsiveWidth(10),
   },
   main: {
     marginTop: 20,

@@ -8,17 +8,13 @@ import TermMenu from '../screens/Home/components/TermMenu';
 import TopicMenu from '../screens/Home/components/TopicMenu';
 import EvaluationMenu from '../screens/Home/components/EvaluationMenu';
 
-import ItemStudents from '../screens/Group/components/ItemStudents';
+import ItemGroup from '../screens/Group/components/ItemGroup';
 import ItemListGroup from '../screens/Group/components/ItemListGroup';
-
-import InviteJoinGroup from '../screens/Group/components/InviteJoinGroup';
-import JoinGroupToOrther from '../screens/Group/components/JoinGroupToOrther';
-
 import ItemTopicMenu from '../screens/Group/components/ItemTopicMenu';
 import LectureMenu from '../screens/Home/components/LectureMenu';
 import Notification from '../screens/Home/components/Notification';
 import DisAcceptedUser from '../screens/Login/components/NotificationLogin';
-import ForgotPassword from '../screens/Account/components/ForgotPassword';
+import ChangePassword from '../screens/Account/components/ChangePassword';
 
 const Stack = createNativeStackNavigator();
 
@@ -49,13 +45,11 @@ const NavigationRouter = () => {
         <Stack.Screen name={'LectureMenu'} component={LectureMenu} />
 
         <Stack.Screen name={'ItemListGroup'} component={ItemListGroup} />
-        <Stack.Screen name={'ItemStudents'} component={ItemStudents} />
-        <Stack.Screen name={'JoinGroupToOrther'} component={JoinGroupToOrther} />
-        <Stack.Screen name={'InviteJoinGroup'} component={InviteJoinGroup} />
+        <Stack.Screen name={'ItemGroup'} component={ItemGroup} />
         <Stack.Screen name={'ItemTopicMenu'} component={ItemTopicMenu} />
         <Stack.Screen name={'Notification'} component={Notification} />
         <Stack.Screen name={'DisAcceptedUser'} component={DisAcceptedUser} />
-        <Stack.Screen name={'ForgotPassword'} component={ForgotPassword} />
+        <Stack.Screen name={'ChangePassword'} component={ChangePassword} />
       </Stack.Navigator>
     </NavigationContainer>
   );

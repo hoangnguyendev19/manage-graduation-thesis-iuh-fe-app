@@ -14,8 +14,9 @@ const initialState = {
     name: '',
     startDate: '',
     endDate: '',
-    isSubmitTopic: false,
+    isChooseGroup: false,
     isChooseTopic: false,
+    isSubmitTopic: false,
     isDiscussion: false,
     isReport: false,
     isPublicResult: false,
@@ -26,7 +27,7 @@ const initialState = {
   isError: false,
 } as StateType;
 
-export const TermSlices = createSlice({
+const termSlice = createSlice({
   name: 'term',
   initialState,
   reducers: {},
@@ -44,3 +45,6 @@ export const TermSlices = createSlice({
     });
   },
 });
+
+export const {} = termSlice.actions;
+export default termSlice.reducer;

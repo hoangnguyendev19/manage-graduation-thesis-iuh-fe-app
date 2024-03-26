@@ -20,7 +20,6 @@ import ItemTopic from './ItemTopic';
 
 import Loading from '../../../components/Loading';
 import groupAPI from '../../../api/group';
-// import {AlertNotificationRoot} from 'react-native-alert-notification';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TopicMenu = () => {
@@ -182,7 +181,6 @@ const styles = StyleSheet.create({
   containner: {
     flex: 1,
     alignItems: 'center',
-
     backgroundColor: Colors.white,
   },
   header: {
@@ -262,7 +260,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginRight: responsiveWidth(20),
     fontSize: responsiveFont(17),
-    color: Colors.textPrimary,
+    // color: Colors.textPrimary,
     fontWeight: '600',
     paddingHorizontal: responsiveWidth(10),
   },

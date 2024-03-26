@@ -17,12 +17,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 
 import ButtonView from '../../../components/ButtonView';
-// import authService from '../../services/auth';
+import authService from '../../../services/auth';
 import LoadingScreen from '../../../components/Loading';
+import { Snackbar } from 'react-native-paper';
 
-const ForgotPassword = () => {
+const ChangePassword = () => {
   const navigation = useNavigation();
-
   const [inputOldPassword, setInputOldPassword] = useState('');
   const [inputNewPassword, setInputNewPassword] = useState('');
   const [inputConfirmPassword, setInputConfirmPassword] = useState('');
@@ -30,6 +30,9 @@ const ForgotPassword = () => {
   const [isPassWordNew, setPasswordNew] = useState(true);
   const [isPassWordConfirm, setPasswordNewConfirm] = useState(true);
   const [isLoading, setLoading] = useState(false);
+
+  const [visible, setVisible] = useState(false);
+  const [error, setError] = useState('');
 
   const handleCheck = (str: boolean) => {
     setPassword(!str);
@@ -81,33 +84,36 @@ const ForgotPassword = () => {
 
   const handleSubmit = async () => {
     if (inputOldPassword !== '' && inputNewPassword !== '' && inputConfirmPassword !== '') {
-      if (inputOldPassword.length < 6 || inputNewPassword.length < 6) {
-        // showMessageWarning('Mật khẩu phải lớn hơn 5 ký tự!');
+      if (inputOldPassword.length < 8 || inputNewPassword.length < 8) {
+        setError('Mật khẩu phải lớn hơn 7 ký tự!');
+        setVisible(true);
       } else {
         if (comparePass() === false) {
-          // showMessageWarning('Mật khẩu mới chưa khóp');
+          setError('Mật khẩu không trùng khớp!');
+          setVisible(true);
         } else {
           setLoading(true);
-          // authService
-          //   .updatePassword({
-          //     oldPassword: inputOldPassword,
-          //     newPassword: inputNewPassword,
-          //   })
-          //   .then((result) => {
-          //     setLoading(false);
-          //     showMessageSuccess('Đã cập nhật mật khẩu');
-          //   })
-          //   .then(() => navigation.goBack())
-          //   .catch((err) => {
-          //     setLoading(false);
-          //     console.log('err', err);
-          //     showMessageWarning('Cập nhật mật khẩu thất bại');
-          //     resetValue();
-          //   });
+          const data = {
+            password: inputOldPassword,
+            newPassword: inputNewPassword,
+          };
+
+          const result = await authService.updatePassword(data);
+          if (result.data.success === true) {
+            setLoading(false);
+            setError('Đổi mật khẩu thành công!');
+            setVisible(true);
+            resetValue();
+          } else {
+            setLoading(false);
+            setError('Mật khẩu cũ không đúng!');
+            setVisible(true);
+          }
         }
       }
     } else {
-      // showMessageWarning('Vui lòng nhập đầy đủ thông tin');
+      setError('Vui lòng nhập đầy đủ thông tin!');
+      setVisible(true);
     }
   };
 
@@ -119,33 +125,31 @@ const ForgotPassword = () => {
             source={Images.logo_iuh}
             style={{ width: 100, height: 40, resizeMode: 'contain' }}
           />
-          {DATA_FORM.map((item, key) => {
+          {DATA_FORM.map((item, index) => {
             return (
-              <>
-                <View style={[styles.contentInput, GlobalStyles.centerView]}>
-                  <View style={styles.viewInput}>
-                    <Ionicons name={'key'} color={Colors.iconbr} size={16} />
-                  </View>
-                  <TextInput
-                    placeholder={item.placeholder}
-                    value={item.value}
-                    onChangeText={item.changeText}
-                    secureTextEntry={item.check}
-                    style={styles.input}
-                    autoCapitalize="none"
-                    keyboardAppearance="dark"
-                    returnKeyType="go"
-                    returnKeyLabel="go"
-                  />
-                  <TouchableOpacity style={styles.iconRight} onPress={item.handle}>
-                    {item.check === true ? (
-                      <Ionicons name={'ios-eye-off-outline'} color={Colors.iconbr} size={16} />
-                    ) : (
-                      <Ionicons name={'ios-eye-outline'} color={Colors.iconbr} size={16} />
-                    )}
-                  </TouchableOpacity>
+              <View key={index} style={[styles.contentInput, GlobalStyles.centerView]}>
+                <View style={styles.viewInput}>
+                  <Ionicons name={'key'} color={Colors.iconbr} size={16} />
                 </View>
-              </>
+                <TextInput
+                  placeholder={item.placeholder}
+                  value={item.value}
+                  onChangeText={item.changeText}
+                  secureTextEntry={item.check}
+                  style={styles.input}
+                  autoCapitalize="none"
+                  keyboardAppearance="dark"
+                  returnKeyType="go"
+                  returnKeyLabel="go"
+                />
+                <TouchableOpacity style={styles.iconRight} onPress={item.handle}>
+                  {item.check === true ? (
+                    <Ionicons name={'eye-off-outline'} color={Colors.iconbr} size={16} />
+                  ) : (
+                    <Ionicons name={'eye-outline'} color={Colors.iconbr} size={16} />
+                  )}
+                </TouchableOpacity>
+              </View>
             );
           })}
 
@@ -164,7 +168,7 @@ const ForgotPassword = () => {
   return (
     <>
       <View style={[GlobalStyles.container, { backgroundColor: Colors.white }]}>
-        <Header iconLeft back={true} title="Quên mật khẩu"></Header>
+        <Header iconLeft back={true} title="Đổi mật khẩu"></Header>
         <ScrollView>
           <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -174,13 +178,25 @@ const ForgotPassword = () => {
             <View style={styles.formView}>{Form}</View>
           </KeyboardAvoidingView>
         </ScrollView>
+        <Snackbar
+          visible={visible}
+          onDismiss={() => setVisible(false)}
+          action={{
+            label: 'OK',
+            onPress: () => {
+              setVisible(false);
+            },
+          }}
+        >
+          {error}
+        </Snackbar>
         {isLoading === true && <LoadingScreen />}
       </View>
     </>
   );
 };
 
-export default ForgotPassword;
+export default ChangePassword;
 
 const styles = StyleSheet.create({
   containner: {
@@ -224,9 +240,9 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: '#fae1dd',
-    paddingHorizontal: responsiveWidth(30),
+    paddingHorizontal: responsiveWidth(35),
+    paddingVertical: responsiveHeight(5),
     fontSize: 16,
-    backgroundColor: Colors.white,
   },
   contentInput: {
     flexDirection: 'row',
@@ -247,6 +263,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     borderColor: Colors.blueBoder,
+    marginTop: responsiveHeight(50),
   },
   formView: {
     marginTop: '35%',

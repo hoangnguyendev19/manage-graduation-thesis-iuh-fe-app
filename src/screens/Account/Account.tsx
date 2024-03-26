@@ -39,15 +39,15 @@ const Account: React.FC<{}> = ({}) => {
 
   const handleLogout = async () => {
     // tokenService.reset().then(() => navigation.navigate(RouteNames.loginNavigation));
-    await tokenService.reset();
-    navigation.navigate(RouteNames.Login);
+    await tokenService.logout();
+    navigation.navigate(RouteNames.loginNavigation);
   };
 
   const handleChangePass = () => {
     if (isEmpty(userState.email)) {
       // showMessageWarning('Vui lòng cập nhật email');
     } else {
-      navigation.navigate(RouteNames.ForgotPassword);
+      navigation.navigate(RouteNames.ChangePassword);
     }
   };
 

@@ -48,15 +48,13 @@ export const RouteNames = {
   EvaluationMenu: 'EvaluationMenu',
   LectureMenu: 'LectureMenu',
 
+  ItemGroup: 'ItemGroup',
   ItemListGroup: 'ItemListGroup',
-  ItemStudents: 'ItemStudents',
-  JoinGroupToOrther: 'JoinGroupToOrther',
-  InviteJoinGroup: 'InviteJoinGroup',
   ItemTopicMenu: 'ItemTopicMenu',
 
   Notification: 'Notification',
   DisAcceptedUser: 'DisAcceptedUser',
-  ForgotPassword: 'ForgotPassword',
+  ChangePassword: 'ChangePassword',
 };
 
 export type ITypeNotificationLecturer =

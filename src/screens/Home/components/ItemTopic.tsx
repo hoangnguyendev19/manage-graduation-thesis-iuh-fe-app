@@ -1,17 +1,15 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
-import { DataTable, List } from 'react-native-paper';
+import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, Button } from 'react-native';
+import { DataTable, Divider, List, Modal } from 'react-native-paper';
 import Lottie from 'lottie-react-native';
 import IconView from '../../../components/IconView';
 import Colors from '../../../themes/Colors';
 import { Lecturer, Topic } from '../../../utils/types';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-import ModalDes from './ModalDes';
 import ButtonHandle from '../../../components/ButtonHandle';
 import GlobalStyles from '../../../themes/GlobalStyles';
 import { useAppSelector } from '../../../redux/hooks';
 import { Images } from '../../../assets/images/Images';
-// import { AlertNotificationRoot } from 'react-native-alert-notification';
 import { checkDegree, checkGender, isEmpty } from '../../../utils/handler';
 import { getLevelColorTopic, getLevelTopic, getNameStatus } from '../../../utils/handler';
 
@@ -27,9 +25,8 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
   const [expanded, setExpanded] = useState(true);
 
   const handlePress = () => setExpanded(!expanded);
-  const [ismodal, showModal] = useState(false);
-  const [valueModal, setValueModal] = useState<string>();
-  const [allow, setAllow] = useState(true);
+  const [visible, setVisible] = useState(false);
+  const [content, setContent] = useState('');
 
   // const membermaxOfGroup = topicInfo?.totalGroupChoose;
 
@@ -116,8 +113,8 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
               </Text>
               <TouchableOpacity
                 onPress={() => {
-                  showModal(true);
-                  setValueModal(topicInfo?.name as string);
+                  setContent(topicInfo?.name as string);
+                  setVisible(true);
                 }}
               >
                 <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
@@ -239,8 +236,8 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                     right={(props) => (
                       <TouchableOpacity
                         onPress={() => {
-                          showModal(true);
-                          setValueModal(item?.name as string);
+                          setContent(item?.name as string);
+                          setVisible(true);
                         }}
                         style={{ justifyContent: 'center' }}
                       >
@@ -260,7 +257,31 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
         </List.Section>
       </View>
 
-      <ModalDes visible={ismodal} title={valueModal} modalClose={showModal}></ModalDes>
+      <Modal
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        contentContainerStyle={{
+          backgroundColor: '#fff',
+          padding: 20,
+          margin: 20,
+          borderRadius: 20,
+        }}
+      >
+        <Text style={{ fontWeight: 'bold', fontSize: responsiveFont(18), textAlign: 'center' }}>
+          Thông tin chi tiết
+        </Text>
+        <Divider />
+        <Text
+          style={{
+            fontSize: responsiveFont(16),
+            textAlign: 'center',
+            marginVertical: responsiveHeight(20),
+          }}
+        >
+          {content}
+        </Text>
+        <Button title="Đóng" onPress={() => setVisible(false)} />
+      </Modal>
     </>
   );
 };

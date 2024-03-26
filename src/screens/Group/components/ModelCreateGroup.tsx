@@ -18,7 +18,7 @@ import {
 } from '../../../utils/handler';
 import LoadingScreen from '../../../components/Loading';
 // import groupService from '../../../services/group';
-import { setGroup } from '../../../redux/slices/GroupSlices';
+import { setGroup } from '../../../redux/slices/groupSlice';
 
 interface Props {
   title?: string;

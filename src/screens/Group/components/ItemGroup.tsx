@@ -11,7 +11,7 @@ import { useAppSelector } from '../../../redux/hooks';
 
 // import groupService from '../../../services/group';
 import User from '../../../utils/types';
-import {TypeRequestGroup} from '../../../utils/contants';
+import { TypeRequestGroup } from '../../../utils/contants';
 import { removeAccents } from '../../../utils/handler';
 import StudentOfList from './StudentOfList';
 
@@ -29,7 +29,7 @@ interface ListInvited {
     id: number;
   };
 }
-const ItemStudents = () => {
+const ItemGroup = () => {
   const termState = useAppSelector((state) => state.term);
   const [students, setStudents] = useState([]);
   const [studentsHaveGroup, setStudentsHaveGroup] = useState([]);
@@ -76,7 +76,6 @@ const ItemStudents = () => {
       //       listStudentInvited?.find(
       //         (studentGroup: { student: { id: number } }) => studentGroup?.student?.id === item.id,
       //       );
-
       //     const resultTemp = result?.data.map((item: any) => ({
       //       ...item,
       //       invited: !!checkInvited(item),
@@ -291,7 +290,7 @@ const ItemStudents = () => {
   );
 };
 
-export default ItemStudents;
+export default ItemGroup;
 
 const styles = StyleSheet.create({
   containner: {

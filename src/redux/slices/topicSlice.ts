@@ -45,7 +45,7 @@ const initialState = {
   isError: false,
 } as StateType;
 
-export const TopicSlices = createSlice({
+const topicSlice = createSlice({
   name: 'topic',
   initialState,
   reducers: {
@@ -68,4 +68,5 @@ export const TopicSlices = createSlice({
   },
 });
 
-export const { setTopic } = TopicSlices.actions;
+export const { setTopic } = topicSlice.actions;
+export default topicSlice.reducer;

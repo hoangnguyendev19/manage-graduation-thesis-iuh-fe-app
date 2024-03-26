@@ -9,7 +9,7 @@ import { Badge } from 'react-native-paper';
 import { useEffect, useMemo, useState } from 'react';
 // import authService from '../services/auth';
 import { useAppDispatch, useAppSelector } from '../redux/hooks';
-import { setNotySlice } from '../redux/slices/UserSlices';
+import { setNotySlice } from '../redux/slices/userSlice';
 
 interface Props {
   title: string;

@@ -31,7 +31,7 @@ import authService from '../../services/auth';
 import { Button, Dialog, Portal } from 'react-native-paper';
 import ButtonHandle from '../../components/ButtonHandle';
 import { Snackbar } from 'react-native-paper';
-import { setUser } from '../../redux/slices/UserSlices';
+import { setUser } from '../../redux/slices/userSlice';
 import { Images } from '../../assets/images/Images';
 import { SafeAreaView } from 'react-native-safe-area-context';
 

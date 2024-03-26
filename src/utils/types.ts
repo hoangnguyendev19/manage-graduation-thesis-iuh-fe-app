@@ -67,9 +67,11 @@ export interface Lecturer {
 
 export interface Notify {
   id: number;
-  type: '';
   message: string;
-  read: number;
+  type: string;
+  isRead: boolean;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Term {
@@ -77,8 +79,9 @@ export interface Term {
   name: string;
   startDate: string;
   endDate: string;
-  isSubmitTopic: boolean;
+  isChooseGroup: boolean;
   isChooseTopic: boolean;
+  isSubmitTopic: boolean;
   isDiscussion: boolean;
   isReport: boolean;
   isPublicResult: boolean;

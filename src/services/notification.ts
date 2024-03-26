@@ -10,14 +10,14 @@ class NotificationService {
 
   async readNotify(id: number) {
     return await axiosAuth({
-      url: `api/v1/notification-students/:id/read`,
+      url: `api/v1/notification-students/${id}/read`,
       method: 'put',
     });
   }
 
   async deleteNotify(id: number) {
     return await axiosAuth({
-      url: `api/v1/notification-students/:id`,
+      url: `api/v1/notification-students/${id}`,
       method: 'delete',
     });
   }

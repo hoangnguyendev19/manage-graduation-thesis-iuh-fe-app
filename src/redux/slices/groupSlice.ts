@@ -24,7 +24,7 @@ const initialState = {
   isError: false,
 } as StateType;
 
-export const GroupSlices = createSlice({
+const groupSlice = createSlice({
   name: 'group',
   initialState,
   reducers: {},
@@ -44,4 +44,5 @@ export const GroupSlices = createSlice({
   },
 });
 
-export const {} = GroupSlices.actions;
+export const {} = groupSlice.actions;
+export default groupSlice.reducer;

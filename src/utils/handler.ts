@@ -136,7 +136,9 @@ export const formatDate = (date: string) => {
   return moment(date).locale('vi').format('dddd, DD/MM/YYYY, h:mm:ss A');
 };
 
-// import {ALERT_TYPE, Toast} from 'react-native-alert-notification';
+export const formatTime = (date: string) => {
+  return moment(date).locale('vi').fromNow();
+};
 
 export const validateEmail = (email: string) => {
   var re =

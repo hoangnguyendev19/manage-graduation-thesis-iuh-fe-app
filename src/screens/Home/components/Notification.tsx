@@ -1,130 +1,120 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button, FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Button, FlatList, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Header from '../../../components/Header';
-import NoneData from '../../../components/NoneData';
+import { MaterialIcons } from '@expo/vector-icons';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-import Notify from '../../../utils/types';
-// import authService from '../../services/auth';
-import { Card, Divider, Text } from 'react-native-paper';
+import { Notify } from '../../../utils/types';
+import { Card, Divider, Modal, Text } from 'react-native-paper';
 import IconView from '../../../components/IconView';
 import Colors from '../../../themes/Colors';
-// import { FlatList } from 'react-native-gesture-handler';
-import { showMessageSuccess } from '../../../utils/handler';
-import { TypeNotificationPath } from '../../../utils/contants';
-import { useNavigation } from '@react-navigation/native';
-import { setNotySlice } from '../../../redux/slices/UserSlices';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-
-// import {AlertNotificationRoot} from 'react-native-alert-notification';
-
-const notifyArr = [
-  {
-    id: 1,
-    type: '',
-    message: 'Thông báo 1',
-    read: 0,
-  },
-  {
-    id: 2,
-    type: '',
-    message: 'Thông báo 2',
-    read: 0,
-  },
-  {
-    id: 2,
-    type: '',
-    message: 'Thông báo 2',
-    read: 1,
-  },
-];
+import notificationService from '../../../services/notification';
+import { formatTime } from '../../../utils/handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Notification = () => {
-  const [notify, setNotify] = useState<Array<Notify>>(notifyArr);
-  const userState = useAppSelector((state) => state.user);
-  const navigation = useNavigation();
-  const dispatch = useAppDispatch();
+  const [notify, setNotify] = useState<Array<Notify>>([]);
+  const [visible, setVisible] = useState(false);
+  const [content, setContent] = useState('');
 
   useEffect(() => {
-    getNotifyApi();
+    const getNotifyList = async () => {
+      const { data } = await notificationService.getAllNotify();
+      if (data) {
+        setNotify(data.notifications);
+      }
+    };
+
+    getNotifyList();
   }, []);
 
-  const getNotifyApi = async () => {
-    // authService
-    //   .getAllMotify()
-    //   .then((result) => {
-    //     setNotify(result.data);
-    //     let ary = [];
-    //     result.data.forEach((i: { read: number }) => {
-    //       if (i.read === 0) {
-    //         ary.push(i);
-    //       }
-    //     });
-    //     dispatch(setNotySlice(ary.length));
-    //   })
-    //   .catch((error) => console.log('errr', error));
+  const handleDeleteNotify = async (id: number) => {
+    const { data } = await notificationService.deleteNotify(id);
+    if (data) {
+      const newNotify = notify.filter((item) => item.id !== id);
+      setNotify(newNotify);
+    }
   };
 
-  const handleClickItem = async (id: number) => {
-    const m = notify.filter((item) => id === item.id)[0];
+  const handleReadNotify = async (item: Notify) => {
+    setContent(item.message);
+    setVisible(true);
+    if (!item.isRead) {
+      const { data } = await notificationService.readNotify(item.id);
+      if (data) {
+        const newNotify = notify.map((it) => {
+          if (it.id === item.id) {
+            it.isRead = true;
+          }
+          return it;
+        });
 
-    const path = TypeNotificationPath[m.type];
-
-    // await authService
-    //   .readNotify(id)
-    //   .then((result) => {
-    //     navigation.navigate(`${path}`);
-    //     getNotifyApi();
-    //   })
-    //   .catch((error) => console.log('errr', error));
+        setNotify(newNotify);
+      }
+    }
   };
 
-  const handleReadAllNotify = async () => {
-    // await authService
-    //   .readAllNotify()
-    //   .then((result) => {
-    //     showMessageSuccess('Đánh dấu tất cả là đã đọc');
-    //     getNotifyApi();
-    //   })
-    //   .catch((error) => console.log('errr', error));
+  const renderItemNotySeen = (item: Notify) => {
+    return (
+      <Pressable onPress={() => handleReadNotify(item)}>
+        <Card.Title
+          style={{
+            backgroundColor: '#ffffff',
+            paddingHorizontal: responsiveWidth(20),
+            paddingVertical: responsiveHeight(10),
+          }}
+          title={
+            <Text style={{ color: '#000', fontSize: responsiveFont(16) }}>{item.message}</Text>
+          }
+          titleNumberOfLines={2}
+          subtitle={
+            <Text style={{ color: '#adb5bd', fontSize: responsiveFont(14), fontStyle: 'italic' }}>
+              {formatTime(item.created_at)}
+            </Text>
+          }
+          subtitleStyle={{ marginTop: responsiveHeight(10) }}
+          left={(props) => <IconView name="notifications-outline" color={'#8d99ae'} size={24} />}
+          right={(props) => (
+            <Pressable onPress={() => handleDeleteNotify(item.id)}>
+              <MaterialIcons name="delete-outline" size={24} color="black" />
+            </Pressable>
+          )}
+        />
+        <Divider />
+      </Pressable>
+    );
   };
 
   const renderItemNoty = (item: Notify) => {
     return (
-      <>
+      <Pressable onPress={() => handleReadNotify(item)}>
         <Card.Title
-          style={[styles.itemContent, { backgroundColor: item.read === 0 ? '#ffffff' : '#eaf4f4' }]}
+          style={{
+            backgroundColor: '#eaf4f4',
+            paddingHorizontal: responsiveWidth(20),
+            paddingVertical: responsiveHeight(10),
+          }}
           title={
-            <Text style={[styles.itemTitle, { color: item.read === 0 ? '#f07167' : '#6d6875' }]}>
-              Thông báo
-            </Text>
-          }
-          subtitle={
-            <Text style={[styles.itemTitle, { color: item.read === 0 ? '#264653' : '#adb5bd' }]}>
+            <Text style={{ color: '#6d6875', fontSize: responsiveFont(16), fontWeight: 'bold' }}>
               {item.message}
             </Text>
           }
+          titleNumberOfLines={2}
+          subtitle={
+            <Text style={{ color: '#adb5bd', fontSize: responsiveFont(14), fontStyle: 'italic' }}>
+              {formatTime(item.created_at)}
+            </Text>
+          }
+          subtitleStyle={{ marginTop: responsiveHeight(10) }}
           left={(props) => (
             <IconView
               name="notifications-outline"
-              color={item.read === 0 ? '#38a3a5' : '#8d99ae'}
+              color={!item.isRead ? '#38a3a5' : '#8d99ae'}
               size={24}
             />
           )}
-          right={(props) => (
-            <TouchableOpacity
-              onPress={() => handleClickItem(item?.id)}
-              // disabled={item.read === 0 ? false : true}
-            >
-              <IconView
-                name="checkmark-done"
-                color={item.read === 0 ? '#f07167' : '#6d6875'}
-                size={24}
-              />
-            </TouchableOpacity>
-          )}
         />
         <Divider />
-      </>
+      </Pressable>
     );
   };
 
@@ -133,21 +123,15 @@ const Notification = () => {
       <FlatList
         data={notify}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={(item: any) => renderItemNoty(item?.item)}
+        renderItem={(item: any) =>
+          item.item.isRead ? renderItemNotySeen(item.item) : renderItemNoty(item.item)
+        }
       />
     );
-  }, [notify, userState?.notify]);
+  }, [notify]);
 
-  const renderNewNotify = useMemo(() => {
-    return (
-      <Text style={styles.topTitleNumber}>
-        Thông báo mới: {userState?.notify ? userState?.notify : 0}
-      </Text>
-    );
-  }, [userState?.notify]);
   return (
-    <View style={styles.containner}>
-      {/* <AlertNotificationRoot> */}
+    <SafeAreaView style={styles.containner}>
       <Header
         title="Thông báo"
         iconLeft={true}
@@ -156,21 +140,33 @@ const Notification = () => {
         back={true}
       ></Header>
 
-      <View style={styles.notyContent}>
-        <View style={styles.top}>
-          {renderNewNotify}
-
-          <TouchableOpacity style={styles.topBtn} onPress={() => handleReadAllNotify()}>
-            <Text style={styles.topTitle}>Đánh dấu tất cả là đã đọc</Text>
-            <IconView name="checkmark-done" color={Colors.textPrimary} size={24} />
-          </TouchableOpacity>
-        </View>
-
-        {renderNotify}
-      </View>
-
-      {/* </AlertNotificationRoot> */}
-    </View>
+      <View style={styles.notyContent}>{renderNotify}</View>
+      <Modal
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        contentContainerStyle={{
+          backgroundColor: '#fff',
+          padding: 20,
+          margin: 20,
+          borderRadius: 20,
+        }}
+      >
+        <Text style={{ fontWeight: 'bold', fontSize: responsiveFont(18), textAlign: 'center' }}>
+          Chi tiết thông báo
+        </Text>
+        <Divider />
+        <Text
+          style={{
+            fontSize: responsiveFont(16),
+            textAlign: 'center',
+            marginVertical: responsiveHeight(20),
+          }}
+        >
+          {content}
+        </Text>
+        <Button title="Đóng" onPress={() => setVisible(false)} />
+      </Modal>
+    </SafeAreaView>
   );
 };
 
@@ -189,39 +185,8 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignContent: 'flex-end',
   },
-  top: {
-    paddingTop: responsiveHeight(20),
-    height: responsiveHeight(60),
-    flexDirection: 'row',
-    paddingHorizontal: responsiveWidth(10),
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignContent: 'center',
-  },
-  topBtn: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignContent: 'flex-end',
-    display: 'flex',
-  },
-  topTitleNumber: {
-    textAlign: 'right',
-    fontSize: responsiveFont(15),
-    textTransform: 'uppercase',
-    fontWeight: '700',
-    color: '#f4978e',
-  },
-  topTitle: {
-    fontWeight: '600',
-    textAlign: 'right',
-    fontSize: responsiveFont(15),
-
-    color: '#31572c',
-  },
   itemTitle: {
-    fontSize: responsiveFont(15),
-  },
-  itemContent: {
-    paddingHorizontal: responsiveWidth(10),
+    fontSize: responsiveFont(16),
+    fontWeight: 'bold',
   },
 });

@@ -19,7 +19,7 @@ const initialState = {
   isError: false,
 } as StateType;
 
-export const MajorSlices = createSlice({
+const majorSlice = createSlice({
   name: 'major',
   initialState,
   reducers: {
@@ -39,3 +39,6 @@ export const MajorSlices = createSlice({
     });
   },
 });
+
+export const {} = majorSlice.actions;
+export default majorSlice.reducer;

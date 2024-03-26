@@ -1,4 +1,3 @@
-// import { is } from 'immer/dist/internal';
 import { useEffect, useMemo, useState } from 'react';
 import { TouchableOpacity, View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -12,51 +11,29 @@ import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/s
 import NoneData from '../../components/NoneData';
 import ModalInfoGroup from './components/ModalInfoGroup';
 // import topicService from '../../services/topic';
-import Topic from '../../utils/types';
+import { Topic } from '../../utils/types';
 import ModelCreateGroup from './components/ModelCreateGroup';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RouteNames } from '../../utils/contants';
-// import {AlertNotificationRoot} from 'react-native-alert-notification';
 
 const MENU = [
   {
     key: 'group',
-  },
-  {
-    key: 'listGroup',
     backgroupIcon: '#a2d2ff',
     borderIcon: '#0096c7',
-    title: 'Danh sách nhóm',
-    navigate: RouteNames.ItemListGroup,
+    title: 'Thông tin nhóm',
+    navigate: RouteNames.ItemGroup,
     icon: 'people-sharp',
     iconColor: '#0096c7',
   },
   {
-    key: 'students',
+    key: 'listGroup',
     backgroupIcon: '#fae1dd',
     borderIcon: '#fec5bb',
-    title: 'Danh sách sinh viên',
-    navigate: RouteNames.ItemStudents,
+    title: 'Danh sách nhóm',
+    navigate: RouteNames.ItemListGroup,
     icon: 'people-circle-outline',
     iconColor: '#f4978e',
-  },
-  {
-    key: 'students',
-    backgroupIcon: '#caffbf',
-    borderIcon: '#38b000',
-    title: 'Yêu cầu tham gia nhóm',
-    navigate: RouteNames.JoinGroupToOrther,
-    icon: 'people-circle',
-    iconColor: '#008000',
-  },
-  {
-    key: 'students',
-    backgroupIcon: '#f8edeb',
-    borderIcon: '#bc4749',
-    title: 'Lời mời tham gia nhóm',
-    navigate: RouteNames.InviteJoinGroup,
-    icon: 'person-add',
-    iconColor: '#bc4749',
   },
   {
     key: 'topic',
@@ -73,8 +50,6 @@ const Group: React.FC<{}> = () => {
   const groupState = useAppSelector((state) => state.group);
   const termState = useAppSelector((state) => state.term);
 
-  const [checkStartDate, setcheckStartDate] = useState(false);
-
   const [topic, setTopic] = useState<Topic>();
 
   const navigation = useNavigation();
@@ -82,49 +57,49 @@ const Group: React.FC<{}> = () => {
   const [showModal, setShowModal] = useState(false);
   const [showModalCreateGroup, setShowModalCreateGroup] = useState(false);
 
-  const checkTermStart = () => {
-    const start = new Date(termState?.term?.startDate);
-    const nowDate = new Date();
-    if (start < nowDate) {
-      setcheckStartDate(true);
-    }
-  };
+  // const checkTermStart = () => {
+  //   const start = new Date(termState?.term?.startDate);
+  //   const nowDate = new Date();
+  //   if (start < nowDate) {
+  //     setcheckStartDate(true);
+  //   }
+  // };
 
-  useEffect(() => {
-    checkTermStart();
-    getInfoGroup();
-  }, [checkStartDate, termState, groupState]);
+  // useEffect(() => {
+  //   checkTermStart();
+  //   getInfoGroup();
+  // }, [checkStartDate, termState, groupState]);
 
-  const GroupView = useMemo(() => {
-    return (
-      <>
-        {groupState?.group?.id ? (
-          <TouchableOpacity
-            onPress={() => {
-              setShowModal(true);
-            }}
-            style={[styles.content]}
-          >
-            <View style={styles.viewIcon}>
-              <IconView name="grid-outline" color={Colors.iconbr} size={26} />
-            </View>
-            <Text style={styles.topTitle}>Xem thông tin nhóm</Text>
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => setShowModalCreateGroup(true)} style={[styles.content]}>
-            <View style={styles.viewIcon}>
-              <IconView name="duplicate" color={Colors.iconbr} size={26} />
-            </View>
-            <View style={[styles.menuText, GlobalStyles.centerView]}>
-              <Text numberOfLines={2} style={styles.topTitle}>
-                Tạo nhóm mới
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
-      </>
-    );
-  }, [groupState?.group, topic, setShowModalCreateGroup]);
+  // const GroupView = useMemo(() => {
+  //   return (
+  //     <>
+  //       {groupState?.group?.id ? (
+  //         <TouchableOpacity
+  //           onPress={() => {
+  //             setShowModal(true);
+  //           }}
+  //           style={[styles.content]}
+  //         >
+  //           <View style={styles.viewIcon}>
+  //             <IconView name="grid-outline" color={Colors.iconbr} size={26} />
+  //           </View>
+  //           <Text style={styles.topTitle}>Xem thông tin nhóm</Text>
+  //         </TouchableOpacity>
+  //       ) : (
+  //         <TouchableOpacity onPress={() => setShowModalCreateGroup(true)} style={[styles.content]}>
+  //           <View style={styles.viewIcon}>
+  //             <IconView name="duplicate" color={Colors.iconbr} size={26} />
+  //           </View>
+  //           <View style={[styles.menuText, GlobalStyles.centerView]}>
+  //             <Text numberOfLines={2} style={styles.topTitle}>
+  //               Tạo nhóm mới
+  //             </Text>
+  //           </View>
+  //         </TouchableOpacity>
+  //       )}
+  //     </>
+  //   );
+  // }, [groupState?.group, topic, setShowModalCreateGroup]);
 
   const getInfoGroup = () => {
     // topicService.getTopicId(Number(groupState?.group?.topic?.id)).then((result) => {
@@ -133,9 +108,9 @@ const Group: React.FC<{}> = () => {
   };
 
   const renderMenuItem = (item: any, index: any) => {
-    if (item?.key === 'group') {
-      return <View key={index}>{GroupView}</View>;
-    }
+    // if (item?.key === 'group') {
+    //   return <View key={index}>{GroupView}</View>;
+    // }
     return (
       <TouchableOpacity
         key={index}
@@ -164,16 +139,15 @@ const Group: React.FC<{}> = () => {
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
-      {/* <AlertNotificationRoot> */}
       <Header title="Nhóm" logo iconRight={true}></Header>
       <View style={[GlobalStyles.container, styles.container]}>
-        {/* {checkStartDate ? ( */}
-        <View style={styles.menu}>
-          <FlatList data={MENU} renderItem={({ item, index }) => renderMenuItem(item, index)} />
-        </View>
-        {/* ) : (
+        {termState?.term?.isChooseGroup ? (
+          <View style={styles.menu}>
+            <FlatList data={MENU} renderItem={({ item, index }) => renderMenuItem(item, index)} />
+          </View>
+        ) : (
           <NoneData icon title="Chưa đến thời gian chọn nhóm"></NoneData>
-        )} */}
+        )}
 
         <ModalInfoGroup
           visible={showModal}
@@ -191,7 +165,6 @@ const Group: React.FC<{}> = () => {
           modalClose={setShowModalCreateGroup}
         ></ModelCreateGroup>
       </View>
-      {/* </AlertNotificationRoot> */}
     </SafeAreaView>
   );
 };

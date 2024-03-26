@@ -19,7 +19,7 @@ const initialState = {
   isError: false,
 } as StateType;
 
-export const TranscriptSlices = createSlice({
+const transcriptSlice = createSlice({
   name: 'transcript',
   initialState,
   reducers: {},
@@ -39,4 +39,5 @@ export const TranscriptSlices = createSlice({
   },
 });
 
-export const {} = TranscriptSlices.actions;
+export const {} = transcriptSlice.actions;
+export default transcriptSlice.reducer;

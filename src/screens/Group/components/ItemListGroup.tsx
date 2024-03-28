@@ -1,150 +1,135 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
-import Lottie from 'lottie-react-native';
 import Header from '../../../components/Header';
-import IconView from '../../../components/IconView';
 import GlobalStyles from '../../../themes/GlobalStyles';
 import Colors from '../../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
+import { Entypo } from '@expo/vector-icons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, FlatList, Pressable } from 'react-native';
+import { useEffect, useState } from 'react';
+import groupService from '../../../services/group';
 import { useAppSelector } from '../../../redux/hooks';
-// import groupService from '../../../services/group';
-import GroupItem from './GroupItem';
-// import {AlertNotificationRoot} from 'react-native-alert-notification';
 
 const ItemListGroup = () => {
-  const groupState = useAppSelector((state) => state.group);
-  const termState = useAppSelector((state) => state.term);
-  const [listGroup, setListGroup] = useState();
-
-  const getListGroup = useCallback(async () => {
-    if (termState?.term?.id) {
-      // await groupService
-      //   .getListGroup(termState?.term?.id)
-      //   .then((result) => {
-      //     setListGroup(result.data);
-      //   })
-      //   .catch((error) => console.log(error));
-    }
-  }, [groupState]);
+  const [listGroup, setListGroup] = useState<any[]>([]);
+  const termState = useAppSelector((state) => state.term.term);
+  const majorState = useAppSelector((state) => state.major.major);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const getListGroup = async () => {
+      const { data } = await groupService.getListGroup(termState.id, majorState.id);
+
+      if (data) setListGroup(data.groups);
+    };
+
     getListGroup();
-  }, [termState, groupState]);
+  }, []);
 
-  const renderGroupList = useMemo(
-    () => (item: any) => {
-      return <GroupItem termInfoGroup={termState?.term} groupInfo={item} />;
-    },
-    [],
-  );
+  const handleJoinGroup = async () => {};
 
-  const ListGroup = useMemo(() => {
+  const ItemGroup = (group: any) => {
     return (
-      <>
-        <>
-          <View style={[styles.bottomContent]}>
-            <View style={styles.contentTitle}>
-              <View style={styles.viewIcon}>
-                <IconView name="people-sharp" color={Colors.iconbr} size={26} />
-              </View>
-              <Text style={styles.titleGroup}>Danh sách nhóm</Text>
-              <Lottie
-                source={require('../../../assets/jsonAmination/62114-people-icons-lottie-animation.json')}
-                autoPlay
-                loop
-                style={styles.amination}
-              />
-            </View>
-
-            <View style={[styles.flatList]}>
-              <FlatList
-                data={listGroup}
-                initialNumToRender={20}
-                renderItem={(item: any) => renderGroupList(item?.item)}
-                keyExtractor={(item) => item.id}
-              />
-            </View>
-          </View>
-        </>
-      </>
+      <View
+        style={{
+          borderWidth: 2,
+          borderColor: Colors.blueBoder,
+          borderStyle: 'solid',
+          paddingVertical: responsiveHeight(10),
+          paddingHorizontal: responsiveWidth(10),
+          marginBottom: responsiveHeight(10),
+        }}
+      >
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+              color: Colors.headerColor,
+              fontSize: responsiveFont(16),
+              marginRight: responsiveWidth(20),
+              textTransform: 'uppercase',
+            }}
+          >
+            Tên nhóm
+          </Text>
+          <Text numberOfLines={1} style={{ flex: 1 }}>
+            {group?.name}
+          </Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+              color: Colors.headerColor,
+              fontSize: responsiveFont(16),
+              marginRight: responsiveWidth(25),
+              textTransform: 'uppercase',
+            }}
+          >
+            Số lượng
+          </Text>
+          <Text>{group?.studentTerms?.length}</Text>
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Text
+            style={{
+              fontWeight: 'bold',
+              color: Colors.headerColor,
+              fontSize: responsiveFont(16),
+              marginRight: responsiveWidth(10),
+              textTransform: 'uppercase',
+            }}
+          >
+            Tình trạng
+          </Text>
+          <Text
+            style={{
+              textTransform: 'uppercase',
+              color: group?.studentTerms?.length >= 2 ? 'green' : Colors.red,
+              fontStyle: 'italic',
+            }}
+          >
+            {group?.studentTerms?.length >= 2 ? 'Đã đủ' : 'Chưa đủ'}
+          </Text>
+        </View>
+        {group?.studentTerms?.length < 2 && (
+          <Pressable
+            style={{
+              flexDirection: 'row',
+              paddingVertical: responsiveHeight(5),
+              paddingHorizontal: responsiveWidth(10),
+              backgroundColor: 'green',
+              marginLeft: 'auto',
+              alignItems: 'center',
+              borderRadius: 5,
+            }}
+            onPress={handleJoinGroup}
+          >
+            <Entypo name="login" size={24} color="white" />
+            <Text style={{ color: 'white', marginLeft: responsiveWidth(5) }}>Tham gia</Text>
+          </Pressable>
+        )}
+      </View>
     );
-  }, [listGroup, groupState]);
+  };
 
   return (
-    <>
-      <View style={GlobalStyles.container}>
-        {/* <AlertNotificationRoot>
-          <View style={styles.containner}>
-            <Header
-              title="Danh sách nhóm"
-              iconLeft={true}
-              home={false}
-              style={styles.header}
-              back={true}
-              iconRight={false}></Header>
-            {ListGroup}
-          </View>
-        </AlertNotificationRoot> */}
-      </View>
-    </>
+    <SafeAreaView style={GlobalStyles.container}>
+      <Header
+        title="Danh sách nhóm"
+        iconLeft={true}
+        home={false}
+        style={{ paddingHorizontal: responsiveWidth(10) }}
+        back={true}
+        iconRight={false}
+      ></Header>
+      <FlatList
+        style={{ paddingVertical: responsiveHeight(10), paddingHorizontal: responsiveHeight(15) }}
+        data={listGroup}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <ItemGroup {...item} />}
+      />
+    </SafeAreaView>
   );
 };
 
 export default ItemListGroup;
-
-const styles = StyleSheet.create({
-  containner: {
-    flex: 1,
-    justifyContent: 'space-between',
-    alignContent: 'space-between',
-  },
-  header: {
-    paddingHorizontal: responsiveWidth(10),
-  },
-  bottomContent: {
-    alignItems: 'flex-start',
-    height: '90%',
-    backgroundColor: Colors.white,
-    borderColor: '#caf0f8',
-    marginTop: responsiveHeight(20),
-    shadowOffset: { width: 2, height: 3 },
-  },
-
-  titleGroup: {
-    fontSize: responsiveFont(17),
-    color: Colors.textPrimary,
-    fontWeight: '500',
-    paddingHorizontal: responsiveWidth(10),
-  },
-  viewIcon: {
-    borderRadius: 10,
-    backgroundColor: '#dda15e',
-    borderColor: '#ff9f1c',
-    borderWidth: 1,
-    paddingHorizontal: responsiveWidth(9),
-    paddingVertical: responsiveHeight(9),
-  },
-  viewIconGroup: {
-    backgroundColor: '#fdffb6',
-    borderRadius: 10,
-    paddingHorizontal: responsiveWidth(10),
-    paddingVertical: responsiveHeight(10),
-    marginRight: responsiveWidth(10),
-  },
-  contentTitle: {
-    width: '100%',
-    paddingHorizontal: responsiveWidth(16),
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    paddingVertical: responsiveHeight(8),
-    backgroundColor: '#a2d2ff',
-  },
-  flatList: {
-    width: '100%',
-    height: '85%',
-  },
-  amination: {
-    right: responsiveWidth(-150),
-  },
-});

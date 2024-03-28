@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Result: React.FC<{}> = ({}) => {
   const userState = useAppSelector((state) => state.user);
-  const groupState = useAppSelector((state) => state.group.group);
+  // const groupState = useAppSelector((state) => state.group.group);
 
   const termState = useAppSelector((state) => state.term.term);
   const [transcript, setTranscript] = useState<Transcript>();
@@ -184,11 +184,11 @@ const Result: React.FC<{}> = ({}) => {
             </DataTable>
           </View>
           <View style={styles.contentStstus}>
-            <Text style={styles.titleFinal}>
+            {/* <Text style={styles.titleFinal}>
               {getStatusFinal(String(groupState?.status))
                 ? getStatusFinal(String(groupState?.status))
                 : null}
-            </Text>
+            </Text> */}
           </View>
         </ScrollView>
       </View>

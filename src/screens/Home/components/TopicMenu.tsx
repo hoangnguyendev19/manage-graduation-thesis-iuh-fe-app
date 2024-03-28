@@ -19,12 +19,10 @@ import { Topic } from '../../../utils/types';
 import ItemTopic from './ItemTopic';
 
 import Loading from '../../../components/Loading';
-import groupAPI from '../../../api/group';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const TopicMenu = () => {
   const termState = useAppSelector((state) => state.term.term);
-  const groupState = useAppSelector((state) => state.group.group);
   const majorState = useAppSelector((state) => state.major.major);
 
   const [isLoading, setLoading] = useState(false);
@@ -66,12 +64,6 @@ const TopicMenu = () => {
   //     </View>
   //   );
   // }, []);
-
-  useEffect(() => {
-    if (termState?.id) {
-      dispatch(groupAPI.getMyGroup()(termState?.id));
-    }
-  }, [termState]);
 
   const handleChosseTopic = async (id: any) => {
     setLoading(true);
@@ -144,7 +136,7 @@ const TopicMenu = () => {
         )}
       </>
     );
-  }, [topics, groupState]);
+  }, [topics]);
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />

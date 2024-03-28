@@ -6,7 +6,6 @@ export default {
   grayLight: '#D3D3D3',
   red: '#FF0000',
   primaryButton: '#7fc8f8',
-  // primaryButton: '#3355f0',
   headerColor: '#838690',
   drakCyonBoder: '#1E90FF',
   blueBoder: '#87CEFA',

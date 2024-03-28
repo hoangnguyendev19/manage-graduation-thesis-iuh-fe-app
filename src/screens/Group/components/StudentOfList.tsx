@@ -12,7 +12,6 @@ import User from '../../../utils/types';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 
 import LoadingScreen from '../../../components/Loading';
-import { showMessageSuccess } from '../../../utils/handler';
 
 interface Props {
   title?: string;

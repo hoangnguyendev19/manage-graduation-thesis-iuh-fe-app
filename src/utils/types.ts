@@ -36,6 +36,7 @@ export interface Topic {
     id: number;
     lecturer: {
       id: number;
+      userName: string;
       fullName: string;
       avatarUrl: string;
       email: string;

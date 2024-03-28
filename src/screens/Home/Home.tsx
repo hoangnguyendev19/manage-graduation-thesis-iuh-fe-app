@@ -15,8 +15,6 @@ import { useNavigation } from '@react-navigation/native';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import majorAPI from '../../api/major';
 import termAPI from '../../api/term';
-import groupAPI from '../../api/group';
-import authAPI from '../../api/auth';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const menu = [
@@ -75,12 +73,6 @@ const HomeScreen: React.FC<{}> = () => {
   //     navigation.navigate(RouteNames.DisAcceptedUser);
   //   }
   // }, [userState, termState]);
-
-  useEffect(() => {
-    if (termState?.id) {
-      dispatch(groupAPI.getMyGroup()(termState?.id));
-    }
-  }, [termState]);
 
   // useEffect(() => {
   //   if (termState.id) {

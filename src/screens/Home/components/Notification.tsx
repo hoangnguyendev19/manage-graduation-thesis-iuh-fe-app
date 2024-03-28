@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Button, FlatList, Pressable, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { useEffect, useMemo, useState } from 'react';
+import { FlatList, Pressable, StyleSheet, View } from 'react-native';
 import Header from '../../../components/Header';
 import { MaterialIcons } from '@expo/vector-icons';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
@@ -164,7 +164,17 @@ const Notification = () => {
         >
           {content}
         </Text>
-        <Button title="Đóng" onPress={() => setVisible(false)} />
+        <Pressable
+          style={{
+            backgroundColor: 'black',
+            paddingVertical: 10,
+            borderRadius: 10,
+            alignItems: 'center',
+          }}
+          onPress={() => setVisible(false)}
+        >
+          <Text style={{ color: '#fff', fontSize: responsiveFont(16) }}>Đóng</Text>
+        </Pressable>
       </Modal>
     </SafeAreaView>
   );

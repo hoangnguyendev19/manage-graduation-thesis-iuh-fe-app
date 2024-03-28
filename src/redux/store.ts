@@ -1,6 +1,5 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import groupReducer from './slices/groupSlice';
 import majorReducer from './slices/majorSlice';
 import termReducer from './slices/termSlice';
 import userReducer from './slices/userSlice';
@@ -11,7 +10,6 @@ export const store = configureStore({
     user: userReducer,
     term: termReducer,
     major: majorReducer,
-    group: groupReducer,
     topic: topicReducer,
   },
 });

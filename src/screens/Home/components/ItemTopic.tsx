@@ -1,17 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity, Button } from 'react-native';
-import { DataTable, Divider, List, Modal } from 'react-native-paper';
+import { useState } from 'react';
+import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Pressable } from 'react-native';
+import { Avatar, DataTable, Divider, List, Modal } from 'react-native-paper';
 import Lottie from 'lottie-react-native';
 import IconView from '../../../components/IconView';
 import Colors from '../../../themes/Colors';
-import { Lecturer, Topic } from '../../../utils/types';
+import { Topic } from '../../../utils/types';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-import ButtonHandle from '../../../components/ButtonHandle';
 import GlobalStyles from '../../../themes/GlobalStyles';
-import { useAppSelector } from '../../../redux/hooks';
 import { Images } from '../../../assets/images/Images';
 import { checkDegree, checkGender, isEmpty } from '../../../utils/handler';
 import { getLevelColorTopic, getLevelTopic, getNameStatus } from '../../../utils/handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface Props {
   topicInfo?: Topic;
@@ -21,7 +20,6 @@ interface Props {
 }
 
 const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) => {
-  const groupState = useAppSelector((state) => state.group.group);
   const [expanded, setExpanded] = useState(true);
 
   const handlePress = () => setExpanded(!expanded);
@@ -52,52 +50,52 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
     { name: topicInfo?.lecturerTerm?.lecturer?.email, key: 'Email' },
   ];
 
-  const renderButton = useMemo(() => {
-    return (
-      <>
-        {groupState?.id ? (
-          <View style={GlobalStyles.centerView}>
-            {groupState?.topic?.id ? (
-              <>
-                {topicInfo?.id === groupState?.topic?.id && (
-                  <ButtonHandle
-                    style={styles.btnCancel}
-                    onPress={handleCancelTopic}
-                    colorIcon={Colors.red}
-                    iconName="close-outline"
-                    title="Hủy chọn đề tài"
-                  />
-                )}
-              </>
-            ) : (
-              <View>
-                <ButtonHandle
-                  style={styles.btn}
-                  onPress={handleChosseTopic}
-                  colorIcon={Colors.white}
-                  iconName="arrow-redo-outline"
-                  title="Chọn đề tài"
-                />
-                {/* <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: {membermaxOfGroup}</Text> */}
-                <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: 0</Text>
-              </View>
-            )}
-          </View>
-        ) : (
-          <ButtonHandle
-            disabled={true}
-            style={styles.btn_dis}
-            colorIcon={Colors.grayLight}
-            iconName="arrow-redo-outline"
-            title="Chọn đề tài"
-          />
-        )}
-      </>
-    );
-  }, [groupState?.topic?.id, groupState?.id]);
+  // const renderButton = useMemo(() => {
+  //   return (
+  //     <>
+  //       {groupState?.id ? (
+  //         <View style={GlobalStyles.centerView}>
+  //           {groupState?.topic?.id ? (
+  //             <>
+  //               {topicInfo?.id === groupState?.topic?.id && (
+  //                 <ButtonHandle
+  //                   style={styles.btnCancel}
+  //                   onPress={handleCancelTopic}
+  //                   colorIcon={Colors.red}
+  //                   iconName="close-outline"
+  //                   title="Hủy chọn đề tài"
+  //                 />
+  //               )}
+  //             </>
+  //           ) : (
+  //             <View>
+  //               <ButtonHandle
+  //                 style={styles.btn}
+  //                 onPress={handleChosseTopic}
+  //                 colorIcon={Colors.white}
+  //                 iconName="arrow-redo-outline"
+  //                 title="Chọn đề tài"
+  //               />
+  //               {/* <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: {membermaxOfGroup}</Text> */}
+  //               <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: 0</Text>
+  //             </View>
+  //           )}
+  //         </View>
+  //       ) : (
+  //         <ButtonHandle
+  //           disabled={true}
+  //           style={styles.btn_dis}
+  //           colorIcon={Colors.grayLight}
+  //           iconName="arrow-redo-outline"
+  //           title="Chọn đề tài"
+  //         />
+  //       )}
+  //     </>
+  //   );
+  // }, [groupState?.topic?.id, groupState?.id]);
 
   return (
-    <>
+    <SafeAreaView style={GlobalStyles.container}>
       <View style={styles.mainTopic}>
         <View style={styles.content_Top}>
           <DataTable>
@@ -142,7 +140,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
             </Text>
           </View>
         </View>
-        {renderButton}
+        {/* {renderButton} */}
         <List.Section style={styles.content}>
           <List.Accordion
             title={<Text>Thông tin</Text>}
@@ -162,7 +160,6 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                 return (
                   <List.Item
                     key={index}
-                    style={styles.contentListItem}
                     title={<Text style={styles.titleMain}>{item?.key}</Text>}
                     description={
                       <>
@@ -173,8 +170,8 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                       <TouchableOpacity
                         style={{ justifyContent: 'center' }}
                         onPress={() => {
-                          showModal(true);
-                          setValueModal(item?.name as string);
+                          setContent(item?.name as string);
+                          setVisible(true);
                         }}
                       >
                         <IconView
@@ -210,14 +207,14 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
               {LECTURER_DATA.map((item, index) => {
                 if (item?.key === '') {
                   return (
-                    <View key={index} style={styles.contentAvatr}>
-                      <Image
+                    <View key={index} style={styles.contentAvatar}>
+                      <Avatar.Image
                         source={item?.name ? { uri: item?.name } : Images.avatar}
-                        style={styles.imgaAvatar}
+                        size={60}
                       />
 
                       <Text style={styles.title}>
-                        Mã GV: {topicInfo?.lecturerTerm?.lecturer?.id}
+                        Mã GV: {topicInfo?.lecturerTerm?.lecturer?.userName}
                       </Text>
                     </View>
                   );
@@ -226,7 +223,6 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
                 return (
                   <List.Item
                     key={index}
-                    style={styles.contentListItem}
                     title={<Text style={styles.titleMain}>{item?.key}</Text>}
                     description={
                       <>
@@ -280,18 +276,27 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
         >
           {content}
         </Text>
-        <Button title="Đóng" onPress={() => setVisible(false)} />
+        <Pressable
+          style={{
+            backgroundColor: 'black',
+            paddingVertical: 10,
+            borderRadius: 10,
+            alignItems: 'center',
+          }}
+          onPress={() => setVisible(false)}
+        >
+          <Text style={{ color: '#fff', fontSize: responsiveFont(16) }}>Đóng</Text>
+        </Pressable>
       </Modal>
-    </>
+    </SafeAreaView>
   );
 };
+
 export default ItemTopic;
 
 const styles = StyleSheet.create({
   mainTopic: {
     backgroundColor: '#fff0f3',
-    borderColor: '#f08080',
-    borderWidth: 1,
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
@@ -347,17 +352,10 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     fontWeight: '600',
   },
-  contentListItem: {},
   imgaAvatar: {
     width: 60,
     height: 60,
     resizeMode: 'contain',
-    // borderRadius: 50,
-    // borderColor: Colors.blueBoder,
-    // borderWidth: 1,
-    // shadowOpacity: 0.02,
-    // position: 'absolute',
-    // top: -10,
   },
   btn: {
     width: '40%',
@@ -376,7 +374,6 @@ const styles = StyleSheet.create({
     color: '#277da1',
     fontWeight: '500',
     textTransform: 'uppercase',
-    // paddingHorizontal: responsiveWidth(10),
   },
   viewButton_text: {
     fontSize: responsiveFont(14),
@@ -385,9 +382,9 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginLeft: responsiveWidth(5),
   },
-  contentAvatr: {
+  contentAvatar: {
+    marginTop: responsiveHeight(10),
     display: 'flex',
-
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',

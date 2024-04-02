@@ -15,24 +15,41 @@ class GroupService {
     });
   }
 
-  // getGroupById(id: number) {
-  //   return axiosAuth({
-  //     url: 'api/student/groups/' + id,
-  //     method: 'get',
-  //   });
-  // }
   async createGroup(data: { termId: number; name: string }) {
     return await axiosAuth({
-      url: 'api/student/groups',
+      url: 'api/v1/group-students',
       method: 'post',
       data,
     });
   }
-  outGroup(termId: number) {
-    return axiosAuth({
-      url: 'api/student/groups',
-      method: 'delete',
-      data: { termId },
+
+  async assignAdmin(groupId: number, studentId: number) {
+    return await axiosAuth({
+      url: `api/v1/group-students/${groupId}/assign-admin`,
+      method: 'put',
+      data: { studentId },
+    });
+  }
+
+  async deleteMember(groupId: number, studentId: number) {
+    return await axiosAuth({
+      url: `api/v1/group-students/${groupId}/delete-member`,
+      method: 'put',
+      data: { studentId },
+    });
+  }
+
+  async removeGroup(groupId: number) {
+    return await axiosAuth({
+      url: `api/v1/group-students/${groupId}/remove-group`,
+      method: 'put',
+    });
+  }
+
+  async joinGroup(groupId: number) {
+    return await axiosAuth({
+      url: `api/v1/group-students/${groupId}/join-group`,
+      method: 'put',
     });
   }
 }

@@ -1,9 +1,7 @@
-// import {log} from 'react-native-reanimated';
 import axios, { AxiosRequestHeaders } from 'axios';
-// import Config from 'react-native-config';
 import tokenService from '../services/token';
 
-const API_URL = 'http://192.168.1.6:3000';
+const API_URL = 'http://192.168.1.5:3000';
 
 const axiosAuth = axios.create({
   baseURL: API_URL,

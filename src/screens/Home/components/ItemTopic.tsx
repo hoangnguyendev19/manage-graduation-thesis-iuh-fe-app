@@ -100,7 +100,14 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
         <View style={styles.content_Top}>
           <DataTable>
             <DataTable.Header>
-              <DataTable.Title textStyle={[styles.textValue, { color: 'red', fontWeight: '700' }]}>
+              <DataTable.Title
+                textStyle={{
+                  color: 'red',
+                  fontWeight: '700',
+                  fontSize: responsiveFont(14),
+                  textTransform: 'uppercase',
+                }}
+              >
                 Tên đề tài
               </DataTable.Title>
             </DataTable.Header>
@@ -285,7 +292,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
           }}
           onPress={() => setVisible(false)}
         >
-          <Text style={{ color: '#fff', fontSize: responsiveFont(16) }}>Đóng</Text>
+          <Text style={{ color: '#fff', fontSize: responsiveFont(15) }}>Đóng</Text>
         </Pressable>
       </Modal>
     </SafeAreaView>
@@ -371,7 +378,7 @@ const styles = StyleSheet.create({
   },
   textValue: {
     fontSize: responsiveFont(14),
-    color: '#277da1',
+    // color: '#277da1',
     fontWeight: '500',
     textTransform: 'uppercase',
   },

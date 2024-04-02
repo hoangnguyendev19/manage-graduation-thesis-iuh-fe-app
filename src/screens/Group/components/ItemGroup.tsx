@@ -7,11 +7,12 @@ import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../util
 import { useAppSelector } from '../../../redux/hooks';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import groupService from '../../../services/group';
-import { Avatar } from 'react-native-paper';
+import { Avatar, Snackbar } from 'react-native-paper';
 import { checkGender } from '../../../utils/handler';
 import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { RouteNames } from '../../../utils/contants';
+import NoneData from '../../../components/NoneData';
 
 interface Member {
   student_id: number;
@@ -28,10 +29,13 @@ interface Member {
 
 const ItemGroup = () => {
   const [listMember, setListMember] = useState<Member[]>();
-  const [infoGroup, setInfoGroup] = useState<any>();
+  const [infoGroup, setInfoGroup] = useState<any>(null);
   const termState = useAppSelector((state) => state.term.term);
   const userState = useAppSelector((state) => state.user.user);
   const navigation = useNavigation();
+
+  const [error, setError] = useState('');
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const getInfoGroup = async () => {
@@ -46,9 +50,58 @@ const ItemGroup = () => {
     getInfoGroup();
   }, []);
 
-  const handleRemoveGroup = async () => {};
-  const handleAssignAdmin = async () => {};
-  const handleDeleteMember = async () => {};
+  const handleRemoveGroup = async () => {
+    try {
+      const { data } = await groupService.removeGroup(infoGroup?.id);
+
+      if (data) {
+        navigation.navigate(RouteNames.GroupStack);
+      }
+    } catch (error) {
+      console.log('error', error);
+      setError('Rời nhóm thất bại!');
+      setVisible(true);
+    }
+  };
+
+  const handleAssignAdmin = async (studentId: number) => {
+    try {
+      const { data } = await groupService.assignAdmin(infoGroup?.id, studentId);
+      console.log('data', data);
+      if (data) {
+        const newMembers = listMember?.map((item) => {
+          if (item.student_id === studentId) {
+            item.isAdmin = true;
+          } else if (item.isAdmin) {
+            item.isAdmin = false;
+          }
+          return item;
+        });
+
+        setListMember(newMembers);
+      }
+    } catch (error) {
+      console.log('error', error);
+      setError('Trao quyền thất bại!');
+      setVisible(true);
+    }
+  };
+
+  const handleDeleteMember = async (studentId: number) => {
+    try {
+      const { data } = await groupService.deleteMember(infoGroup?.id, studentId);
+      console.log('data', data);
+      if (data) {
+        const newMembers = listMember?.filter((item) => item.student_id !== studentId);
+        setListMember(newMembers);
+      }
+    } catch (error) {
+      console.log('error', error);
+      setError('Xoá thất bại!');
+      setVisible(true);
+    }
+  };
+
   const handleViewTopic = () => {
     navigation.navigate(RouteNames.ItemTopicMenu, {
       topicId: infoGroup?.topic_id,
@@ -173,7 +226,7 @@ const ItemGroup = () => {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}
-                onPress={handleAssignAdmin}
+                onPress={() => handleAssignAdmin(mem.student_id)}
               >
                 <MaterialIcons name="admin-panel-settings" size={24} color="white" />
                 <Text
@@ -195,7 +248,7 @@ const ItemGroup = () => {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}
-                onPress={handleDeleteMember}
+                onPress={() => handleDeleteMember(mem.student_id)}
               >
                 <Ionicons name="exit-outline" size={22} color="white" />
                 <Text
@@ -224,113 +277,130 @@ const ItemGroup = () => {
         back={true}
         iconRight={false}
       ></Header>
-      <View
-        style={{
-          paddingVertical: responsiveHeight(10),
-          paddingHorizontal: responsiveHeight(15),
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottomWidth: 1,
-          borderBottomColor: Colors.grayLight,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: responsiveFont(18),
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            color: Colors.textPrimary,
-          }}
-        >
-          Tên nhóm
-        </Text>
-        <Text style={{ fontSize: responsiveFont(14) }}>{infoGroup?.name}</Text>
-      </View>
-      <View
-        style={{
-          paddingVertical: responsiveHeight(10),
-          paddingHorizontal: responsiveHeight(15),
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottomWidth: 1,
-          borderBottomColor: Colors.grayLight,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: responsiveFont(18),
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            color: Colors.textPrimary,
-          }}
-        >
-          Danh sách thành viên
-        </Text>
-        <Text style={{ fontSize: responsiveFont(14) }}>Số lượng: {listMember?.length}</Text>
-      </View>
-      {listMember && (
-        <FlatList
-          data={listMember}
-          keyExtractor={(item) => item.student_id.toString()}
-          renderItem={({ item }) => <ItemMember {...item} />}
-        />
+      {infoGroup && listMember?.length > 0 ? (
+        <>
+          <View
+            style={{
+              paddingVertical: responsiveHeight(10),
+              paddingHorizontal: responsiveHeight(15),
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.grayLight,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: responsiveFont(18),
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                color: Colors.textPrimary,
+              }}
+            >
+              Tên nhóm
+            </Text>
+            <Text style={{ fontSize: responsiveFont(14) }}>{infoGroup?.name}</Text>
+          </View>
+          <View
+            style={{
+              paddingVertical: responsiveHeight(10),
+              paddingHorizontal: responsiveHeight(15),
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              borderBottomWidth: 1,
+              borderBottomColor: Colors.grayLight,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: responsiveFont(18),
+                fontWeight: 'bold',
+                textTransform: 'uppercase',
+                color: Colors.textPrimary,
+              }}
+            >
+              Danh sách thành viên
+            </Text>
+            <Text style={{ fontSize: responsiveFont(14) }}>Số lượng: {listMember?.length}</Text>
+          </View>
+          <FlatList
+            data={listMember}
+            keyExtractor={(item) => item.student_id.toString()}
+            renderItem={({ item }) => <ItemMember {...item} />}
+          />
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              marginVertical: responsiveHeight(20),
+              marginHorizontal: responsiveWidth(15),
+            }}
+          >
+            <Pressable
+              style={{
+                backgroundColor: 'green',
+                paddingVertical: responsiveHeight(5),
+                paddingHorizontal: responsiveWidth(10),
+                borderRadius: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+              onPress={handleViewTopic}
+            >
+              <AntDesign name="search1" size={22} color="white" />
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: responsiveFont(14),
+                  paddingLeft: responsiveWidth(10),
+                }}
+              >
+                Xem đề tài
+              </Text>
+            </Pressable>
+            <Pressable
+              style={{
+                backgroundColor: Colors.red,
+                paddingVertical: responsiveHeight(5),
+                paddingHorizontal: responsiveWidth(10),
+                borderRadius: 10,
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+              onPress={handleRemoveGroup}
+            >
+              <Ionicons name="exit-outline" size={22} color="white" />
+              <Text
+                style={{
+                  color: '#fff',
+                  fontSize: responsiveFont(14),
+                  paddingLeft: responsiveWidth(10),
+                }}
+              >
+                Rời khỏi nhóm
+              </Text>
+            </Pressable>
+          </View>
+        </>
+      ) : (
+        <NoneData title="Hiện tại bạn chưa có nhóm" />
       )}
-      <View
-        style={{
-          flexDirection: 'row',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginVertical: responsiveHeight(20),
-          marginHorizontal: responsiveWidth(15),
+
+      <Snackbar
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        action={{
+          label: 'OK',
+          onPress: () => {
+            setVisible(false);
+          },
         }}
       >
-        <Pressable
-          style={{
-            backgroundColor: 'green',
-            paddingVertical: responsiveHeight(5),
-            paddingHorizontal: responsiveWidth(10),
-            borderRadius: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-          onPress={handleViewTopic}
-        >
-          <AntDesign name="search1" size={22} color="white" />
-          <Text
-            style={{
-              color: '#fff',
-              fontSize: responsiveFont(14),
-              paddingLeft: responsiveWidth(10),
-            }}
-          >
-            Xem đề tài
-          </Text>
-        </Pressable>
-        <Pressable
-          style={{
-            backgroundColor: Colors.red,
-            paddingVertical: responsiveHeight(5),
-            paddingHorizontal: responsiveWidth(10),
-            borderRadius: 10,
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-          onPress={handleRemoveGroup}
-        >
-          <Ionicons name="exit-outline" size={22} color="white" />
-          <Text
-            style={{
-              color: '#fff',
-              fontSize: responsiveFont(14),
-              paddingLeft: responsiveWidth(10),
-            }}
-          >
-            Rời khỏi nhóm
-          </Text>
-        </Pressable>
-      </View>
+        {error}
+      </Snackbar>
     </SafeAreaView>
   );
 };

@@ -10,7 +10,6 @@ import Colors from '../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 import NoneData from '../../components/NoneData';
 import { Topic } from '../../utils/types';
-import ModelCreateGroup from './components/ModelCreateGroup';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RouteNames } from '../../utils/contants';
 
@@ -83,13 +82,6 @@ const Group: React.FC<{}> = () => {
         ) : (
           <NoneData icon title="Chưa đến thời gian chọn nhóm"></NoneData>
         )}
-
-        <ModelCreateGroup
-          visible={showModalCreateGroup}
-          title={'Tạo nhóm'}
-          termCreateGroup={termState?.term}
-          modalClose={setShowModalCreateGroup}
-        ></ModelCreateGroup>
       </View>
     </SafeAreaView>
   );

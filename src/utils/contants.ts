@@ -71,7 +71,6 @@ export const TypeNotificationPath: Record<ITypeNotificationLecturer | string, st
   GROUP_MEMBER: RouteNames.GroupTab,
   CHOOSE_TOPIC: RouteNames.TopicMenu,
   NEW_GROUP_MEMBER: RouteNames.GroupTab,
-  REQUEST_JOIN_GROUP: RouteNames.InviteJoinGroup,
 };
 
 export const menu = [

@@ -36,7 +36,6 @@ const ItemTopicMenu = ({ route }) => {
   const [content, setContent] = useState('');
 
   const TOPIC_DATA = [
-    { name: topicInfo?.quantityGroupMax, key: 'Số lượng nhóm tối đa' },
     { name: topicInfo?.description, key: 'Mô tả' },
     { name: topicInfo?.note, key: 'Ghi chú' },
     { name: topicInfo?.target, key: 'Mục tiêu' },
@@ -54,14 +53,16 @@ const ItemTopicMenu = ({ route }) => {
   ];
 
   useEffect(() => {
-    const getTopic = async () => {
-      setIsLoading(true);
-      const { data } = await topicService.getTopicId(topicId);
-      if (data) setTopicInfo(data.topic);
-      setIsLoading(false);
-    };
+    if (topicId) {
+      const getTopic = async () => {
+        setIsLoading(true);
+        const { data } = await topicService.getTopicId(topicId);
+        if (data) setTopicInfo(data.topic);
+        setIsLoading(false);
+      };
 
-    getTopic();
+      getTopic();
+    }
   }, [topicId]);
 
   return (
@@ -76,165 +77,166 @@ const ItemTopicMenu = ({ route }) => {
       ></Header>
 
       {topicInfo ? (
-        <ScrollView>
-          <View style={styles.mainTopic}>
-            <View style={styles.content_Top}>
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title
-                    textStyle={[styles.textValue, { color: 'red', fontWeight: '700' }]}
-                  >
-                    Tên đề tài
-                  </DataTable.Title>
-                </DataTable.Header>
+        <>
+          <ScrollView>
+            <View style={styles.mainTopic}>
+              <View style={styles.content_Top}>
+                <DataTable>
+                  <DataTable.Header>
+                    <DataTable.Title
+                      textStyle={[styles.textValue, { color: 'red', fontWeight: '700' }]}
+                    >
+                      Tên đề tài
+                    </DataTable.Title>
+                  </DataTable.Header>
 
-                <View style={styles.contentTop}>
-                  <Text style={styles.textValue} numberOfLines={1}>
-                    {topicInfo?.name}
+                  <View style={styles.contentTop}>
+                    <Text style={styles.textValue} numberOfLines={1}>
+                      {topicInfo?.name}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setContent(topicInfo?.name as string);
+                        setVisible(true);
+                      }}
+                    >
+                      <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
+                    </TouchableOpacity>
+                  </View>
+                </DataTable>
+
+                <View style={styles.contentTopLevel}>
+                  <Text style={[styles.textValue]} numberOfLines={1}>
+                    Cấp độ đề tài:{' '}
                   </Text>
-                  <TouchableOpacity
-                    onPress={() => {
-                      setContent(topicInfo?.name as string);
-                      setVisible(true);
-                    }}
+                  <Text
+                    style={[
+                      styles.textValue,
+                      {
+                        color: getLevelColorTopic(String(topicInfo?.level))
+                          ? getLevelColorTopic(String(topicInfo?.level))
+                          : Colors.grayLight,
+                      },
+                    ]}
                   >
-                    <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
-                  </TouchableOpacity>
+                    {getLevelTopic(String(topicInfo?.level))
+                      ? getLevelTopic(String(topicInfo?.level))
+                      : 'Chưa xác định'}
+                  </Text>
                 </View>
-              </DataTable>
-
-              <View style={styles.contentTopLevel}>
-                <Text style={[styles.textValue]} numberOfLines={1}>
-                  Cấp độ đề tài:{' '}
-                </Text>
-                <Text
-                  style={[
-                    styles.textValue,
-                    {
-                      color: getLevelColorTopic(String(topicInfo?.level))
-                        ? getLevelColorTopic(String(topicInfo?.level))
-                        : Colors.grayLight,
-                    },
-                  ]}
-                >
-                  {getLevelTopic(String(topicInfo?.level))
-                    ? getLevelTopic(String(topicInfo?.level))
-                    : 'Chưa xác định'}
-                </Text>
               </View>
-            </View>
-            <List.Section style={styles.content}>
-              <List.Accordion
-                title={<Text>Thông tin</Text>}
-                right={(props) => null}
-                left={(props) => (
-                  <Lottie
-                    {...props}
-                    source={require('../../../assets/jsonAmination/more-icon.json')}
-                    autoPlay
-                    loop
-                    style={styles.iconMenu}
-                  />
-                )}
-              >
-                <ScrollView>
-                  {TOPIC_DATA.map((item, index) => {
-                    return (
-                      <List.Item
-                        key={index}
-                        title={<Text style={styles.titleMain}>{item?.key}</Text>}
-                        description={
-                          <>
-                            <Text style={styles.subTitle}>{item?.name}</Text>
-                          </>
-                        }
-                        right={(props) => (
-                          <TouchableOpacity
-                            style={{ justifyContent: 'center' }}
-                            onPress={() => {
-                              setContent(item?.name as string);
-                              setVisible(true);
-                            }}
-                          >
-                            <IconView
-                              {...props}
-                              name="ellipsis-vertical"
-                              color={Colors.grayLight}
-                              size={24}
-                            />
-                          </TouchableOpacity>
-                        )}
-                      />
-                    );
-                  })}
-                </ScrollView>
-              </List.Accordion>
-
-              <List.Accordion
-                title={<Text>Giảng viên</Text>}
-                left={(props) => (
-                  <Lottie
-                    {...props}
-                    source={require('../../../assets/jsonAmination/more-icon.json')}
-                    autoPlay
-                    loop
-                    style={styles.iconMenu}
-                  />
-                )}
-                right={(props) => null}
-                expanded={expanded}
-                onPress={handlePress}
-              >
-                <ScrollView>
-                  {LECTURER_DATA.map((item, index) => {
-                    if (item?.key === '') {
+              <List.Section style={styles.content}>
+                <List.Accordion
+                  title={<Text>Thông tin</Text>}
+                  right={(props) => null}
+                  left={(props) => (
+                    <Lottie
+                      {...props}
+                      source={require('../../../assets/jsonAmination/more-icon.json')}
+                      autoPlay
+                      loop
+                      style={styles.iconMenu}
+                    />
+                  )}
+                >
+                  <ScrollView>
+                    {TOPIC_DATA.map((item, index) => {
                       return (
-                        <View key={index} style={styles.contentAvatar}>
-                          <Avatar.Image
-                            source={item?.name ? { uri: item?.name } : Images.avatar}
-                            size={60}
-                          />
-
-                          <Text style={styles.title}>
-                            Mã GV: {topicInfo?.lecturerTerm?.lecturer?.userName}
-                          </Text>
-                        </View>
+                        <List.Item
+                          key={index}
+                          title={<Text style={styles.titleMain}>{item?.key}</Text>}
+                          description={
+                            <>
+                              <Text style={styles.subTitle}>{item?.name}</Text>
+                            </>
+                          }
+                          right={(props) => (
+                            <TouchableOpacity
+                              style={{ justifyContent: 'center' }}
+                              onPress={() => {
+                                setContent(item?.name as string);
+                                setVisible(true);
+                              }}
+                            >
+                              <IconView
+                                {...props}
+                                name="ellipsis-vertical"
+                                color={Colors.grayLight}
+                                size={24}
+                              />
+                            </TouchableOpacity>
+                          )}
+                        />
                       );
-                    }
+                    })}
+                  </ScrollView>
+                </List.Accordion>
 
-                    return (
-                      <List.Item
-                        key={index}
-                        title={<Text style={styles.titleMain}>{item?.key}</Text>}
-                        description={
-                          <>
-                            <Text style={styles.subTitle}>{item?.name}</Text>
-                          </>
-                        }
-                        right={(props) => (
-                          <TouchableOpacity
-                            onPress={() => {
-                              setContent(item?.name as string);
-                              setVisible(true);
-                            }}
-                            style={{ justifyContent: 'center' }}
-                          >
-                            <IconView
-                              {...props}
-                              name="ellipsis-vertical"
-                              color={Colors.grayLight}
-                              size={24}
+                <List.Accordion
+                  title={<Text>Giảng viên</Text>}
+                  left={(props) => (
+                    <Lottie
+                      {...props}
+                      source={require('../../../assets/jsonAmination/more-icon.json')}
+                      autoPlay
+                      loop
+                      style={styles.iconMenu}
+                    />
+                  )}
+                  right={(props) => null}
+                  expanded={expanded}
+                  onPress={handlePress}
+                >
+                  <ScrollView>
+                    {LECTURER_DATA.map((item, index) => {
+                      if (item?.key === '') {
+                        return (
+                          <View key={index} style={styles.contentAvatar}>
+                            <Avatar.Image
+                              source={item?.name ? { uri: item?.name } : Images.avatar}
+                              size={60}
                             />
-                          </TouchableOpacity>
-                        )}
-                      />
-                    );
-                  })}
-                </ScrollView>
-              </List.Accordion>
-            </List.Section>
-          </View>
 
+                            <Text style={styles.title}>
+                              Mã GV: {topicInfo?.lecturerTerm?.lecturer?.userName}
+                            </Text>
+                          </View>
+                        );
+                      }
+
+                      return (
+                        <List.Item
+                          key={index}
+                          title={<Text style={styles.titleMain}>{item?.key}</Text>}
+                          description={
+                            <>
+                              <Text style={styles.subTitle}>{item?.name}</Text>
+                            </>
+                          }
+                          right={(props) => (
+                            <TouchableOpacity
+                              onPress={() => {
+                                setContent(item?.name as string);
+                                setVisible(true);
+                              }}
+                              style={{ justifyContent: 'center' }}
+                            >
+                              <IconView
+                                {...props}
+                                name="ellipsis-vertical"
+                                color={Colors.grayLight}
+                                size={24}
+                              />
+                            </TouchableOpacity>
+                          )}
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                </List.Accordion>
+              </List.Section>
+            </View>
+          </ScrollView>
           <Modal
             visible={visible}
             onDismiss={() => setVisible(false)}
@@ -270,7 +272,7 @@ const ItemTopicMenu = ({ route }) => {
               <Text style={{ color: '#fff', fontSize: responsiveFont(16) }}>Đóng</Text>
             </Pressable>
           </Modal>
-        </ScrollView>
+        </>
       ) : (
         <View style={[GlobalStyles.centerView, styles.center]}>
           <NoneData icon title="Nhóm chưa có đề tài"></NoneData>

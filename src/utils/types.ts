@@ -49,6 +49,7 @@ export interface Topic {
       };
     };
   };
+  quantityGroup: number;
 }
 
 export interface Lecturer {
@@ -91,12 +92,11 @@ export interface Term {
 }
 
 export interface Transcript {
-  id: number;
-  score: number;
-  // evaluation_id: number;
-
-  created_at: string;
-  updated_at: string;
+  advisorScore: number;
+  sessionHostScore: number;
+  reviewerScore: number;
+  totalBonusScore: number;
+  totalAverageScore: number;
 }
 
 export interface Student {

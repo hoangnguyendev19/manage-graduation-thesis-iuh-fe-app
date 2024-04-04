@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Pressable } from 'react-native';
 import { Avatar, DataTable, Divider, List, Modal } from 'react-native-paper';
 import Lottie from 'lottie-react-native';
@@ -11,29 +11,28 @@ import { Images } from '../../../assets/images/Images';
 import { checkDegree, checkGender, isEmpty } from '../../../utils/handler';
 import { getLevelColorTopic, getLevelTopic, getNameStatus } from '../../../utils/handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import ButtonHandle from '../../../components/ButtonHandle';
 
 interface Props {
   topicInfo?: Topic;
-  handleChosseTopic(): void;
+  handleChooseTopic(): void;
   handleCancelTopic(): void;
-  count?: number;
+  groupState?: any;
 }
 
-const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) => {
+const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState }: Props) => {
   const [expanded, setExpanded] = useState(true);
 
   const handlePress = () => setExpanded(!expanded);
   const [visible, setVisible] = useState(false);
   const [content, setContent] = useState('');
 
-  // const membermaxOfGroup = topicInfo?.totalGroupChoose;
-
   const TOPIC_DATA = [
     { name: topicInfo?.quantityGroupMax, key: 'Số lượng nhóm tối đa' },
-    // {
-    //   name: topicInfo?.totalGroupChoose ? topicInfo?.totalGroupChoose : '0',
-    //   key: 'Số lượng nhóm đã chọn',
-    // },
+    {
+      name: topicInfo?.quantityGroup ? topicInfo?.quantityGroup : '0',
+      key: 'Số lượng nhóm đã chọn',
+    },
     { name: topicInfo?.description, key: 'Mô tả' },
     { name: topicInfo?.note, key: 'Ghi chú' },
     { name: topicInfo?.target, key: 'Mục tiêu' },
@@ -50,49 +49,49 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
     { name: topicInfo?.lecturerTerm?.lecturer?.email, key: 'Email' },
   ];
 
-  // const renderButton = useMemo(() => {
-  //   return (
-  //     <>
-  //       {groupState?.id ? (
-  //         <View style={GlobalStyles.centerView}>
-  //           {groupState?.topic?.id ? (
-  //             <>
-  //               {topicInfo?.id === groupState?.topic?.id && (
-  //                 <ButtonHandle
-  //                   style={styles.btnCancel}
-  //                   onPress={handleCancelTopic}
-  //                   colorIcon={Colors.red}
-  //                   iconName="close-outline"
-  //                   title="Hủy chọn đề tài"
-  //                 />
-  //               )}
-  //             </>
-  //           ) : (
-  //             <View>
-  //               <ButtonHandle
-  //                 style={styles.btn}
-  //                 onPress={handleChosseTopic}
-  //                 colorIcon={Colors.white}
-  //                 iconName="arrow-redo-outline"
-  //                 title="Chọn đề tài"
-  //               />
-  //               {/* <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: {membermaxOfGroup}</Text> */}
-  //               <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: 0</Text>
-  //             </View>
-  //           )}
-  //         </View>
-  //       ) : (
-  //         <ButtonHandle
-  //           disabled={true}
-  //           style={styles.btn_dis}
-  //           colorIcon={Colors.grayLight}
-  //           iconName="arrow-redo-outline"
-  //           title="Chọn đề tài"
-  //         />
-  //       )}
-  //     </>
-  //   );
-  // }, [groupState?.topic?.id, groupState?.id]);
+  const renderButton = useMemo(() => {
+    return (
+      <>
+        {groupState?.info?.id ? (
+          <View style={GlobalStyles.centerView}>
+            {groupState?.info?.topic_id ? (
+              <>
+                {topicInfo?.id === groupState?.info?.topic_id && (
+                  <ButtonHandle
+                    style={styles.btnCancel}
+                    onPress={handleCancelTopic}
+                    colorIcon={Colors.white}
+                    iconName="close-outline"
+                    title="Hủy chọn đề tài"
+                  />
+                )}
+              </>
+            ) : (
+              <View>
+                <ButtonHandle
+                  style={styles.btn}
+                  onPress={handleChooseTopic}
+                  colorIcon={Colors.white}
+                  iconName="arrow-redo-outline"
+                  title="Chọn đề tài"
+                />
+                {/* <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: {membermaxOfGroup}</Text> */}
+                <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: 0</Text>
+              </View>
+            )}
+          </View>
+        ) : (
+          <ButtonHandle
+            disabled={true}
+            style={styles.btn_dis}
+            colorIcon={Colors.grayLight}
+            iconName="arrow-redo-outline"
+            title="Chọn đề tài"
+          />
+        )}
+      </>
+    );
+  }, [groupState, topicInfo]);
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -147,7 +146,7 @@ const ItemTopic = ({ topicInfo, handleChosseTopic, handleCancelTopic }: Props) =
             </Text>
           </View>
         </View>
-        {/* {renderButton} */}
+        {renderButton}
         <List.Section style={styles.content}>
           <List.Accordion
             title={<Text>Thông tin</Text>}
@@ -378,7 +377,6 @@ const styles = StyleSheet.create({
   },
   textValue: {
     fontSize: responsiveFont(14),
-    // color: '#277da1',
     fontWeight: '500',
     textTransform: 'uppercase',
   },

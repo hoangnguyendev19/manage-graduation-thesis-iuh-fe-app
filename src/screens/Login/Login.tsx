@@ -84,7 +84,7 @@ const Login: React.FC<{}> = () => {
 
   const handleSubmit = async () => {
     if (userName.trim().length >= 8) {
-      if (password.trim().length < 8) {
+      if (password.trim().length <= 7) {
         setError('Mật khẩu phải lớn hơn 7 ký tự!');
         setVisible(true);
         setResetPass(false);

@@ -10,7 +10,7 @@ import { List } from 'react-native-paper';
 
 import { Images } from '../../../assets/images/Images';
 import { checkDegree, checkGender, checkRole, isEmpty } from '../../../utils/handler';
-import LoadingScreen from '../../../components/Loading';
+import Loading from '../../../components/Loading';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import lecturerService from '../../../services/lecturer';
 
@@ -36,7 +36,7 @@ const LectureMenu = () => {
 
   const renderItem = (item: any) => {
     const LECTURER_DATA = [
-      { name: item.avatarUrl, key: '' },
+      // { name: item.avatarUrl, key: '' },
       { name: item.fullName, key: 'Tên Giảng viên' },
       { name: checkRole(item.role), key: 'Chức vụ' },
       { name: checkGender(item.gender), key: 'Giới tính' },
@@ -47,32 +47,28 @@ const LectureMenu = () => {
 
     return (
       <View style={styles.contentListItem}>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginTop: responsiveHeight(10),
+            marginLeft: responsiveWidth(10),
+          }}
+        >
+          <Image
+            source={item.avatarUrl ? { uri: item.avatarUrl } : Images.avatar}
+            style={styles.imgaAvatar}
+          />
+          <View style={{ marginLeft: responsiveWidth(10) }}>
+            <Text numberOfLines={1} style={[styles.titleMain]}>
+              Mã giảng viên
+            </Text>
+            <Text numberOfLines={1} style={[styles.titleGroup]}>
+              {item?.userName}
+            </Text>
+          </View>
+        </View>
         {LECTURER_DATA.map((i, index) => {
-          if (i?.key === '') {
-            return (
-              <List.Item
-                key={index}
-                title={
-                  <>
-                    <Text numberOfLines={1} style={[styles.titleMain]}>
-                      Mã giảng viên
-                    </Text>
-                  </>
-                }
-                description={
-                  <Text numberOfLines={1} style={[styles.titleGroup]}>
-                    {item?.userName}
-                  </Text>
-                }
-                left={(props) => (
-                  <Image
-                    source={i?.name ? { uri: i?.name } : Images.avatar}
-                    style={styles.imgaAvatar}
-                  />
-                )}
-              />
-            );
-          }
           return (
             <ScrollView>
               <List.Item
@@ -135,7 +131,7 @@ const LectureMenu = () => {
           {renderLecturerInfo}
         </View>
       </View>
-      {isLoading && <LoadingScreen />}
+      {isLoading && <Loading />}
     </SafeAreaView>
   );
 };

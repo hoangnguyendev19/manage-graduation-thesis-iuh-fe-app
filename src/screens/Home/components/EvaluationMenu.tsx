@@ -7,7 +7,6 @@ import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../util
 import { SceneMap, TabView } from 'react-native-tab-view';
 import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 import { DataTable, Text } from 'react-native-paper';
-import { Transcript } from '../../../utils/types';
 import NoneData from '../../../components/NoneData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import transcriptService from '../../../services/transcript';

@@ -5,7 +5,7 @@ import Header from '../../components/Header';
 import IconView from '../../components/IconView';
 
 import GlobalStyles from '../../themes/GlobalStyles';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import Colors from '../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 import NoneData from '../../components/NoneData';

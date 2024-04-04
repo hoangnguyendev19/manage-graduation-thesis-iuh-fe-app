@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Lottie from 'lottie-react-native';
-import moment from 'moment';
 import 'moment/locale/vi';
 import { StatusBar, StyleSheet, View, Text, FlatList } from 'react-native';
 
@@ -10,25 +9,31 @@ import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 
 import Colors from '../../../themes/Colors';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-
 import NoneData from '../../../components/NoneData';
-import { Card } from 'react-native-paper';
-import IconView from '../../../components/IconView';
 import topicService from '../../../services/topic';
 import { Topic } from '../../../utils/types';
 import ItemTopic from './ItemTopic';
 
 import Loading from '../../../components/Loading';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import groupService from '../../../services/group';
+import { Snackbar } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { RouteNames } from '../../../utils/contants';
 
 const TopicMenu = () => {
   const termState = useAppSelector((state) => state.term.term);
   const majorState = useAppSelector((state) => state.major.major);
+  const userState = useAppSelector((state) => state.user.user);
+  const [groupState, setGroupState] = useState<any>(null);
+  const navigation = useNavigation();
 
   const [isLoading, setLoading] = useState(false);
   const [isLoadingTopic, setLoadingTopic] = useState(false);
 
   const [topics, setTopics] = useState<Topic[]>();
+  const [error, setError] = useState('');
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     setLoadingTopic(true);
@@ -45,54 +50,73 @@ const TopicMenu = () => {
     }
   }, [termState]);
 
-  const dispatch = useAppDispatch();
+  useEffect(() => {
+    const getMyGroup = async () => {
+      try {
+        const { data } = await groupService.getMyGroup(termState?.id);
 
-  // var startDateChooseTopicFormat = moment(termState?.startDateChooseTopic)
-  //   .locale('vi')
-  //   .format('dddd, DD/MM/YYYY, h:mm:ss A');
+        if (data) {
+          setGroupState(data.group);
+        }
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
 
-  // const renderContentTopic = useMemo(() => {
-  //   return (
-  //     <View style={styles.content}>
-  //       <FlatList
-  //         horizontal={true}
-  //         data={DATETOPIC}
-  //         initialNumToRender={20}
-  //         renderItem={(item: any) => renderBannerDate(item?.item)}
-  //         keyExtractor={(item) => item.icon}
-  //       />
-  //     </View>
-  //   );
-  // }, []);
+    getMyGroup();
+  }, [termState]);
 
-  const handleChosseTopic = async (id: any) => {
-    setLoading(true);
-    // await topicService
-    //   .chooseTopic(termState?.id, id)
-    //   .then(async (result) => {
-    //     setLoading(false);
-    //     showMessageSuccess('Đã chọn đề tài');
-    //     await dispatch(groupAPI.getMyGroup()(termState?.id));
-    //   })
-    //   .catch((er) => {
-    //     showMessageEror('Vui lòng thử lại');
-    //     setLoading(false);
-    //   });
+  const handleChooseTopic = async (id: any) => {
+    if (
+      groupState?.members?.find(
+        (mem: any) => mem.student_id === userState?.id && mem.isAdmin === true,
+      )
+    ) {
+      setLoading(true);
+
+      try {
+        const { data } = await groupService.chooseTopic(groupState?.info?.id, id);
+
+        if (data) {
+          setLoading(false);
+          navigation.navigate(RouteNames.HomeStack);
+        }
+      } catch (error) {
+        setLoading(false);
+        setError('Vui lòng thử lại');
+        setVisible(true);
+        console.log('error', error);
+      }
+    } else {
+      setError('Bạn không phải là trưởng nhóm! Bạn không thể chọn đề tài!');
+      setVisible(true);
+    }
   };
-  const handleCancelTopic = async (id: any) => {
-    setLoading(true);
-    // await topicService
-    //   .cancelTopic(termState?.id)
-    //   .then(async (result) => {
-    //     setLoading(false);
-    //     showMessageSuccess('Hủy thành công');
-    //     await dispatch(groupAPI.getMyGroup()(termState?.id));
-    //   })
-    //   .catch((er) => {
-    //     setLoading(false);
-    //     showMessageEror('Vui lòng thử lại');
-    //     console.log('ẻ', er);
-    //   });
+
+  const handleCancelTopic = async () => {
+    if (
+      groupState?.members?.find(
+        (mem: any) => mem.student_id === userState?.id && mem.isAdmin === true,
+      )
+    ) {
+      setLoading(true);
+      try {
+        const { data } = await groupService.cancelTopic(groupState?.info?.id);
+
+        if (data) {
+          setLoading(false);
+          navigation.navigate(RouteNames.HomeStack);
+        }
+      } catch (error) {
+        setLoading(false);
+        setError('Vui lòng thử lại');
+        setVisible(true);
+        console.log('error', error);
+      }
+    } else {
+      setError('Bạn không phải là trưởng nhóm! Bạn không thể hủy đề tài!');
+      setVisible(true);
+    }
   };
 
   const renderTopicList = useMemo(() => {
@@ -125,8 +149,9 @@ const TopicMenu = () => {
                 <ItemTopic
                   key={item?.item?.id}
                   topicInfo={item?.item}
-                  handleChosseTopic={() => handleChosseTopic(item?.item?.id)}
-                  handleCancelTopic={() => handleCancelTopic(item?.item?.id)}
+                  handleChooseTopic={() => handleChooseTopic(item?.item?.id)}
+                  handleCancelTopic={() => handleCancelTopic()}
+                  groupState={groupState}
                 />
               )}
             />
@@ -140,7 +165,6 @@ const TopicMenu = () => {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
-      {/* <AlertNotificationRoot> */}
       <Header
         title="Đề tài"
         iconLeft={true}
@@ -150,17 +174,30 @@ const TopicMenu = () => {
         iconRight={true}
       ></Header>
 
-      {/* {termState?.isChooseTopic === false ? (
+      {termState?.isChooseTopic === false ? (
         <View style={styles.nonChooseTopic}>
           <View style={styles.contentNoData}>
             <NoneData icon title="Chưa đến thời gian chọn đề tài!"></NoneData>
           </View>
         </View>
-      ) : ( */}
-      <>
-        {/* {renderContentTopic} */}
-        {renderTopicList}
-      </>
+      ) : (
+        <>
+          {renderTopicList}
+          <Snackbar
+            visible={visible}
+            onDismiss={() => setVisible(false)}
+            action={{
+              label: 'OK',
+              onPress: () => {
+                setVisible(false);
+              },
+            }}
+          >
+            {error}
+          </Snackbar>
+        </>
+      )}
+
       {isLoading && <Loading />}
       {isLoadingTopic && <Loading />}
     </SafeAreaView>

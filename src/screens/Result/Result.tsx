@@ -2,66 +2,69 @@ import { ScrollView, StatusBar, StyleSheet, View } from 'react-native';
 import GlobalStyles from '../../themes/GlobalStyles';
 import Colors from '../../themes/Colors';
 import Header from '../../components/Header';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { DataTable, Text } from 'react-native-paper';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 import { useEffect, useMemo, useState } from 'react';
-
-import { checkGender, getStatusFinal } from '../../utils/handler';
+import { checkGender } from '../../utils/handler';
 import NoneData from '../../components/NoneData';
-import { isEmpty } from '../../utils/handler';
-import { Transcript } from '../../utils/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import authService from '../../services/auth';
+import transcriptService from '../../services/transcript';
+import { Transcript } from '../../utils/types';
 
 const Result: React.FC<{}> = ({}) => {
-  const userState = useAppSelector((state) => state.user);
-  // const groupState = useAppSelector((state) => state.group.group);
-
+  const userState = useAppSelector((state) => state.user.user);
   const termState = useAppSelector((state) => state.term.term);
   const [transcript, setTranscript] = useState<Transcript>();
 
   useEffect(() => {
-    // authService.getTranscripts(termState?.id).then((result) => {
-    //   setTranscript(result.data);
-    // });
-  }, [transcript]);
+    const getTranscript = async () => {
+      try {
+        const { data } = await transcriptService.getTranscripts(termState?.id);
 
-  const _data = [
+        if (data) setTranscript(data.transcript);
+      } catch (error) {
+        console.log('error', error);
+      }
+    };
+
+    getTranscript();
+  }, [termState]);
+
+  const result = [
     {
       key: 1,
       label: 'Hướng dẫn',
-      grade: transcript?.ADVISOR.avgGrader,
+      grade: transcript?.advisorScore ? transcript?.advisorScore : 0,
     },
     {
       key: 2,
       label: 'Phản Biện',
-      grade: transcript?.REVIEWER.avgGrader,
+      grade: transcript?.sessionHostScore,
     },
     {
       key: 3,
       label: 'Hội Đồng',
-      grade: transcript?.SESSION_HOST.avgGrader,
+      grade: transcript?.reviewerScore,
     },
     {
       key: 4,
       label: 'Điểm Cộng',
-      grade: transcript?.SESSION_HOST.avgGrader,
+      grade: transcript?.totalBonusScore,
     },
     {
       key: 5,
       label: 'Điểm Trung Bình',
-      grade: transcript?.gradeSummary,
+      grade: transcript?.totalAverageScore,
     },
   ];
 
   const infoUser = useMemo(() => {
-    // const _data = userState.user;
     const _data = {
-      name: 'Nguyễn Văn A',
-      gender: 'MALE',
-      phoneNumber: '0123456789',
-      email: 'example@gmail.com',
+      name: userState?.fullName,
+      gender: userState?.gender,
+      phoneNumber: userState?.phoneNumber,
+      email: userState?.email,
     };
 
     const _DATA = [
@@ -89,112 +92,88 @@ const Result: React.FC<{}> = ({}) => {
     );
   }, [transcript]);
 
-  const renderForAchievement = useMemo(() => {
-    const _data = transcript?.achievements;
-    const _dataId = transcript?.achievements;
-    return (
-      <>
-        {_dataId ? (
-          <DataTable style={styles.cotent_Achiev}>
-            <DataTable.Header>
-              <DataTable.Title textStyle={styles._titleCol_Ar}>Điểm cộng</DataTable.Title>
-              <DataTable.Title textStyle={styles._titleCol_Ar} numeric>
-                Điểm
-              </DataTable.Title>
-            </DataTable.Header>
-            {_data?.map((item, key) => {
-              return (
-                <DataTable.Row key={key}>
-                  <DataTable.Cell textStyle={styles._total_Ar} numeric>
-                    {item.name}
-                  </DataTable.Cell>
-                  <DataTable.Cell textStyle={styles._total_Ar} numeric>
-                    {!isEmpty(item.bonusGrade) ? (
-                      <>{item.bonusGrade}</>
-                    ) : (
-                      <Text style={styles.title_Point}>Chưa có điểm</Text>
-                    )}
-                  </DataTable.Cell>
-                </DataTable.Row>
-              );
-            })}
-          </DataTable>
-        ) : (
-          <Text style={styles._titleCol_NON}>Không có điểm cộng</Text>
-        )}
-      </>
-    );
-  }, [transcript]);
-
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
       <Header title="Kết quả" logo iconLeft={true} home={false} iconRight={true}></Header>
 
-      {/* {termState.isPublicResult === 1 ? ( */}
-      <View style={styles.containner}>
-        {infoUser}
-        <Text style={styles.title_Table}>Tổng hợp điểm</Text>
-        <ScrollView>
-          <View>
-            <DataTable>
-              <DataTable.Header>
-                <DataTable.Title textStyle={styles._titleCol}>Điểm thuộc gđ</DataTable.Title>
-                <DataTable.Title textStyle={styles._titleCol} numeric>
-                  Điểm TB
-                </DataTable.Title>
-              </DataTable.Header>
+      {termState.isPublicResult ? (
+        <View style={styles.containner}>
+          {infoUser}
+          <Text style={styles.title_Table}>Tổng hợp điểm</Text>
+          <ScrollView>
+            <View>
+              <DataTable>
+                <DataTable.Header>
+                  <DataTable.Title textStyle={styles._titleCol}>Điểm thuộc gđ</DataTable.Title>
+                  <DataTable.Title textStyle={styles._titleCol} numeric>
+                    Điểm TB
+                  </DataTable.Title>
+                </DataTable.Header>
 
-              {_data.map((item, idx) => {
-                if (item.key === 4) {
-                  return <View key={idx}>{renderForAchievement}</View>;
-                }
+                {result.map((item, idx) => {
+                  if (item.key === 4) {
+                    return (
+                      <DataTable.Row key={idx}>
+                        <DataTable.Cell textStyle={styles._total} numeric>
+                          {item.label}
+                        </DataTable.Cell>
+                        <DataTable.Cell textStyle={styles._total} numeric>
+                          {item.grade !== 0 ? (
+                            <Text>{item.grade}</Text>
+                          ) : (
+                            <Text style={styles.title_Point}>Không có</Text>
+                          )}
+                        </DataTable.Cell>
+                      </DataTable.Row>
+                    );
+                  }
 
-                if (item.key === 5) {
+                  if (item.key === 5) {
+                    return (
+                      <DataTable.Row key={idx}>
+                        <DataTable.Cell textStyle={styles._total} numeric>
+                          {item.label}
+                        </DataTable.Cell>
+                        <DataTable.Cell textStyle={styles._total} numeric>
+                          {item.grade !== 0 ? (
+                            <Text>{item.grade}</Text>
+                          ) : (
+                            <Text style={styles.title_Point}>Chưa có</Text>
+                          )}
+                        </DataTable.Cell>
+                      </DataTable.Row>
+                    );
+                  }
                   return (
                     <DataTable.Row key={idx}>
-                      <DataTable.Cell textStyle={styles._total} numeric>
+                      <DataTable.Cell textStyle={styles._grade} numeric>
                         {item.label}
                       </DataTable.Cell>
-                      <DataTable.Cell textStyle={styles._total} numeric>
-                        {!isEmpty(item.grade) ? (
-                          <>{item.grade}</>
+                      <DataTable.Cell textStyle={styles._grade} numeric>
+                        {item.grade !== 0 ? (
+                          <Text>{item.grade}</Text>
                         ) : (
-                          <Text style={styles.title_Point}>Chưa có điểm</Text>
+                          <Text style={styles.title_Point}>Chưa có</Text>
                         )}
                       </DataTable.Cell>
                     </DataTable.Row>
                   );
-                }
-                return (
-                  <DataTable.Row>
-                    <DataTable.Cell textStyle={styles._grade} numeric>
-                      {item.label}
-                    </DataTable.Cell>
-                    <DataTable.Cell textStyle={styles._grade} numeric>
-                      {!isEmpty(item.grade) ? (
-                        <>{item.grade}</>
-                      ) : (
-                        <Text style={styles.title_Point}>Chưa có điểm</Text>
-                      )}
-                    </DataTable.Cell>
-                  </DataTable.Row>
-                );
-              })}
-            </DataTable>
-          </View>
-          <View style={styles.contentStstus}>
-            {/* <Text style={styles.titleFinal}>
+                })}
+              </DataTable>
+            </View>
+            {/* <View style={styles.contentStstus}>
+              <Text style={styles.titleFinal}>
               {getStatusFinal(String(groupState?.status))
                 ? getStatusFinal(String(groupState?.status))
                 : null}
-            </Text> */}
-          </View>
-        </ScrollView>
-      </View>
-      {/* ) : (
+            </Text>
+            </View> */}
+          </ScrollView>
+        </View>
+      ) : (
         <NoneData icon title="Chưa được xem điểm"></NoneData>
-      )} */}
+      )}
     </SafeAreaView>
   );
 };

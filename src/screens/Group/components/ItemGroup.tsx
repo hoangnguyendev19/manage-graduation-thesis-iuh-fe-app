@@ -50,9 +50,9 @@ const ItemGroup = () => {
     getInfoGroup();
   }, []);
 
-  const handleRemoveGroup = async () => {
+  const handleLeaveGroup = async () => {
     try {
-      const { data } = await groupService.removeGroup(infoGroup?.id);
+      const { data } = await groupService.leaveGroup(infoGroup?.id);
 
       if (data) {
         navigation.navigate(RouteNames.GroupStack);
@@ -67,7 +67,7 @@ const ItemGroup = () => {
   const handleAssignAdmin = async (studentId: number) => {
     try {
       const { data } = await groupService.assignAdmin(infoGroup?.id, studentId);
-      console.log('data', data);
+
       if (data) {
         const newMembers = listMember?.map((item) => {
           if (item.student_id === studentId) {
@@ -87,10 +87,10 @@ const ItemGroup = () => {
     }
   };
 
-  const handleDeleteMember = async (studentId: number) => {
+  const handleRemoveMember = async (studentId: number) => {
     try {
-      const { data } = await groupService.deleteMember(infoGroup?.id, studentId);
-      console.log('data', data);
+      const { data } = await groupService.removeMember(infoGroup?.id, studentId);
+
       if (data) {
         const newMembers = listMember?.filter((item) => item.student_id !== studentId);
         setListMember(newMembers);
@@ -248,7 +248,7 @@ const ItemGroup = () => {
                   flexDirection: 'row',
                   alignItems: 'center',
                 }}
-                onPress={() => handleDeleteMember(mem.student_id)}
+                onPress={() => handleRemoveMember(mem.student_id)}
               >
                 <Ionicons name="exit-outline" size={22} color="white" />
                 <Text
@@ -370,7 +370,7 @@ const ItemGroup = () => {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}
-              onPress={handleRemoveGroup}
+              onPress={handleLeaveGroup}
             >
               <Ionicons name="exit-outline" size={22} color="white" />
               <Text

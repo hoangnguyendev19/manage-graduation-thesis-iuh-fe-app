@@ -31,17 +31,17 @@ class GroupService {
     });
   }
 
-  async deleteMember(groupId: number, studentId: number) {
+  async removeMember(groupId: number, studentId: number) {
     return await axiosAuth({
-      url: `api/v1/group-students/${groupId}/delete-member`,
+      url: `api/v1/group-students/${groupId}/remove-member`,
       method: 'put',
       data: { studentId },
     });
   }
 
-  async removeGroup(groupId: number) {
+  async leaveGroup(groupId: number) {
     return await axiosAuth({
-      url: `api/v1/group-students/${groupId}/remove-group`,
+      url: `api/v1/group-students/${groupId}/leave-group`,
       method: 'put',
     });
   }
@@ -49,6 +49,21 @@ class GroupService {
   async joinGroup(groupId: number) {
     return await axiosAuth({
       url: `api/v1/group-students/${groupId}/join-group`,
+      method: 'put',
+    });
+  }
+
+  async chooseTopic(groupId: number, topicId: number) {
+    return await axiosAuth({
+      url: `api/v1/group-students/${groupId}/choose-topic`,
+      method: 'put',
+      data: { topicId },
+    });
+  }
+
+  async cancelTopic(groupId: number) {
+    return await axiosAuth({
+      url: `api/v1/group-students/${groupId}/cancel-topic`,
       method: 'put',
     });
   }

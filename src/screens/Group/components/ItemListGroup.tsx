@@ -16,20 +16,23 @@ const ItemListGroup = () => {
   const majorState = useAppSelector((state) => state.major.major);
   const [nameGroup, setNameGroup] = useState('');
 
-  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState('');
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const getListGroup = async () => {
-      const { data } = await groupService.getListGroup(termState.id, majorState.id);
+      try {
+        const { data } = await groupService.getListGroup(termState.id, majorState.id);
 
-      if (data) setListGroup(data.groups);
+        if (data) setListGroup(data.groups);
+      } catch (error) {
+        console.log('error', error);
+      }
     };
 
     getListGroup();
-  }, []);
+  }, [termState, majorState]);
 
   const handleJoinGroup = async (groupId: number) => {
     try {
@@ -179,7 +182,7 @@ const ItemListGroup = () => {
           alignItems: 'center',
           borderRadius: 5,
           marginRight: responsiveWidth(15),
-          marginTop: responsiveHeight(10),
+          marginVertical: responsiveHeight(10),
         }}
         onPress={() => setShowModal(true)}
       >

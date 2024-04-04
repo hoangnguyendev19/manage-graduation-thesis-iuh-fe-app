@@ -1,13 +1,5 @@
 import { useMemo, useState } from 'react';
-import {
-  TouchableOpacity,
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  Dimensions,
-  ScrollView,
-} from 'react-native';
+import { TouchableOpacity, View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
 import Lottie from 'lottie-react-native';
 import Header from '../../components/Header';
 import GlobalStyles from '../../themes/GlobalStyles';
@@ -17,9 +9,8 @@ import TextItemAccount from './components/TextItemAccount';
 import languages from '../../utils/languages';
 import Colors from '../../themes/Colors';
 import IconView from '../../components/IconView';
-import tokenService from '../../services/token';
 import { useNavigation } from '@react-navigation/native';
-import { useAppSelector } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { RouteNames } from '../../utils/contants';
 import ModalAccount from './components/ModalAccount';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
@@ -28,19 +19,23 @@ import { checkGender, checkTypeTraining } from '../../utils/handler';
 import { Avatar, DataTable } from 'react-native-paper';
 import { isEmpty } from '../../utils/handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import authAPI from '../../api/auth';
 
 const Account: React.FC<{}> = ({}) => {
   const navigation = useNavigation();
-
+  const dispatch = useAppDispatch();
   const majorState = useAppSelector((state) => state.major.major);
   const userState = useAppSelector((state) => state.user.user);
 
   const [showModal, setShowModal] = useState(false);
 
   const handleLogout = async () => {
-    // tokenService.reset().then(() => navigation.navigate(RouteNames.loginNavigation));
-    await tokenService.logout();
-    navigation.navigate(RouteNames.loginNavigation);
+    try {
+      await dispatch(authAPI.logout()());
+      navigation.navigate(RouteNames.loginNavigation);
+    } catch (error) {
+      console.log('error', error);
+    }
   };
 
   const handleChangePass = () => {

@@ -20,6 +20,7 @@ import ButtonView from '../../../components/ButtonView';
 import authService from '../../../services/auth';
 import LoadingScreen from '../../../components/Loading';
 import { Snackbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ChangePassword = () => {
   const navigation = useNavigation();
@@ -119,80 +120,73 @@ const ChangePassword = () => {
 
   const Form = useMemo(() => {
     return (
-      <>
-        <View style={styles.contentForm}>
-          <Image
-            source={Images.logo_iuh}
-            style={{ width: 100, height: 40, resizeMode: 'contain' }}
-          />
-          {DATA_FORM.map((item, index) => {
-            return (
-              <View key={index} style={[styles.contentInput, GlobalStyles.centerView]}>
-                <View style={styles.viewInput}>
-                  <Ionicons name={'key'} color={Colors.iconbr} size={16} />
-                </View>
-                <TextInput
-                  placeholder={item.placeholder}
-                  value={item.value}
-                  onChangeText={item.changeText}
-                  secureTextEntry={item.check}
-                  style={styles.input}
-                  autoCapitalize="none"
-                  keyboardAppearance="dark"
-                  returnKeyType="go"
-                  returnKeyLabel="go"
-                />
-                <TouchableOpacity style={styles.iconRight} onPress={item.handle}>
-                  {item.check === true ? (
-                    <Ionicons name={'eye-off-outline'} color={Colors.iconbr} size={16} />
-                  ) : (
-                    <Ionicons name={'eye-outline'} color={Colors.iconbr} size={16} />
-                  )}
-                </TouchableOpacity>
+      <View style={styles.contentForm}>
+        <Image source={Images.logo_iuh} style={{ width: 100, height: 40, resizeMode: 'contain' }} />
+        {DATA_FORM.map((item, index) => {
+          return (
+            <View key={index} style={[styles.contentInput, GlobalStyles.centerView]}>
+              <View style={styles.viewInput}>
+                <Ionicons name={'key'} color={Colors.iconbr} size={20} />
               </View>
-            );
-          })}
+              <TextInput
+                placeholder={item.placeholder}
+                value={item.value}
+                onChangeText={item.changeText}
+                secureTextEntry={item.check}
+                style={styles.input}
+                autoCapitalize="none"
+                keyboardAppearance="dark"
+                returnKeyType="go"
+                returnKeyLabel="go"
+              />
+              <TouchableOpacity style={styles.iconRight} onPress={item.handle}>
+                {item.check === true ? (
+                  <Ionicons name={'eye-off-outline'} color={Colors.iconbr} size={20} />
+                ) : (
+                  <Ionicons name={'eye-outline'} color={Colors.iconbr} size={20} />
+                )}
+              </TouchableOpacity>
+            </View>
+          );
+        })}
 
-          <ButtonView
-            title="Xác nhận"
-            disabled={false}
-            onPress={handleSubmit}
-            style={styles.btn}
-            textStyle={Colors.rosyBrown}
-          />
-        </View>
-      </>
+        <ButtonView
+          title="Xác nhận"
+          disabled={false}
+          onPress={handleSubmit}
+          style={styles.btn}
+          textStyle={Colors.rosyBrown}
+        />
+      </View>
     );
   }, [inputConfirmPassword, inputNewPassword, inputOldPassword, isPassWord, handleCheck]);
 
   return (
-    <>
-      <View style={[GlobalStyles.container, { backgroundColor: Colors.white }]}>
-        <Header iconLeft back={true} title="Đổi mật khẩu"></Header>
-        <ScrollView>
-          <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            keyboardVerticalOffset={responsiveHeight(150)}
-            behavior={'position'}
-          >
-            <View style={styles.formView}>{Form}</View>
-          </KeyboardAvoidingView>
-        </ScrollView>
-        <Snackbar
-          visible={visible}
-          onDismiss={() => setVisible(false)}
-          action={{
-            label: 'OK',
-            onPress: () => {
-              setVisible(false);
-            },
-          }}
+    <SafeAreaView style={[GlobalStyles.container, { backgroundColor: Colors.white }]}>
+      <Header iconLeft back={true} title="Đổi mật khẩu"></Header>
+      <ScrollView>
+        <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          keyboardVerticalOffset={responsiveHeight(150)}
+          behavior={'position'}
         >
-          {error}
-        </Snackbar>
-        {isLoading === true && <LoadingScreen />}
-      </View>
-    </>
+          <View style={styles.formView}>{Form}</View>
+        </KeyboardAvoidingView>
+      </ScrollView>
+      <Snackbar
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        action={{
+          label: 'OK',
+          onPress: () => {
+            setVisible(false);
+          },
+        }}
+      >
+        {error}
+      </Snackbar>
+      {isLoading === true && <LoadingScreen />}
+    </SafeAreaView>
   );
 };
 
@@ -227,20 +221,12 @@ const styles = StyleSheet.create({
     marginBottom: responsiveHeight(10),
     alignContent: 'center',
   },
-  viewInputTop: {
-    width: responsiveWidth(13),
-    position: 'relative',
-    left: 10,
-    top: 35,
-    zIndex: 99999,
-    backgroundColor: Colors.white,
-  },
   input: {
     width: '100%',
     borderRadius: 10,
     borderWidth: 2,
     borderColor: '#fae1dd',
-    paddingHorizontal: responsiveWidth(35),
+    paddingLeft: responsiveWidth(40),
     paddingVertical: responsiveHeight(5),
     fontSize: 16,
   },
@@ -251,15 +237,14 @@ const styles = StyleSheet.create({
     marginTop: responsiveHeight(15),
   },
   viewInput: {
-    width: responsiveWidth(13),
     position: 'relative',
-    left: 22,
+    left: 32,
     zIndex: 99999,
     backgroundColor: Colors.white,
   },
   iconRight: {
     position: 'relative',
-    left: -25,
+    left: -35,
   },
   btn: {
     borderColor: Colors.blueBoder,

@@ -23,8 +23,9 @@ export default StyleSheet.create({
     fontWeight: '400',
   },
   rememberText: {
-    fontSize: 14,
+    fontSize: 16,
     color: Colors.headerColor,
+    fontStyle: 'italic',
   },
 
   flexEnd: {

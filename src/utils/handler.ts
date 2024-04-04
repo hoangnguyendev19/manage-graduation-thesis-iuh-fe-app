@@ -98,13 +98,13 @@ export const checkGender = (role: string) => {
   if (role === 'FEMALE') return 'Nữ';
 };
 export const checkDegree = (role: string) => {
-  if (role === 'MASTER') return 'Tiến sĩ';
-  if (role === 'DOCTOR') return 'Thạc sĩ';
+  if (role === 'MASTER') return 'Thạc sĩ';
+  if (role === 'DOCTOR') return 'Tiến sĩ';
   if (role === 'BACHELOR') return 'Cử nhân';
 };
 export const checkTypeTraining = (role: string) => {
-  if (role === 'COLLEGE') return 'Đại học';
-  if (role === 'UNIVERSITY') return 'Cao đẳng';
+  if (role === 'COLLEGE') return 'Cao đẳng';
+  if (role === 'UNIVERSITY') return 'Đại học';
 };
 
 export const removeAccents = (str: string) => {

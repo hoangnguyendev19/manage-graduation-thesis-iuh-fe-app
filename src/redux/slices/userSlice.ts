@@ -73,6 +73,18 @@ const userSlice = createSlice({
       .addCase(authAPI.updateInfo().rejected, (state) => {
         state.isError = true;
         state.isLoading = false;
+      })
+      .addCase(authAPI.logout().pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(authAPI.logout().fulfilled, (state) => {
+        state.isLoading = false;
+        state.isLogin = false;
+        state.user = initialState.user;
+      })
+      .addCase(authAPI.logout().rejected, (state) => {
+        state.isError = true;
+        state.isLoading = false;
       });
   },
 });

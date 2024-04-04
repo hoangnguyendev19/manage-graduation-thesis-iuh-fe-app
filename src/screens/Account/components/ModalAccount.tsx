@@ -49,7 +49,7 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
   const BASIC_INFO = [
     {
       key: 'code',
-      placeholder: userState?.user?.id,
+      placeholder: userState?.user?.userName,
       title: `${languages['vi'].code}`,
     },
     {

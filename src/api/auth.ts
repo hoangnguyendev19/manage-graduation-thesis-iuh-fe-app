@@ -43,6 +43,16 @@ class AuthAPI {
       }
     });
   }
+
+  logout() {
+    return createAsyncThunk('user/logout', async () => {
+      const result = await authService.logout();
+
+      if (result.status === 200) {
+        await tokenService.logout();
+      }
+    });
+  }
 }
 
 const authAPI = new AuthAPI();

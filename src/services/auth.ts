@@ -24,12 +24,20 @@ class AuthService {
     });
   }
 
-  // getStudent(termId: number, groupExists: boolean) {
-  //   return axiosAuth({
-  //     url: `api/student/students?termId=${termId}&groupExists=${groupExists}`,
-  //     method: 'get',
-  //   });
-  // }
+  async updatePassword(data: { password: string; newPassword: string }) {
+    return await axiosAuth({
+      url: `api/v1/students/update-password`,
+      method: 'put',
+      data,
+    });
+  }
+
+  async logout() {
+    return await axiosAuth({
+      url: 'api/v1/students/logout',
+      method: 'delete',
+    });
+  }
 
   // resetPassword(data: {username: string}) {
   //   return axiosNotAuth({
@@ -38,14 +46,6 @@ class AuthService {
   //     data,
   //   });
   // }
-
-  async updatePassword(data: { password: string; newPassword: string }) {
-    return await axiosAuth({
-      url: `api/v1/students/update-password`,
-      method: 'put',
-      data,
-    });
-  }
 }
 
 const authService = new AuthService();

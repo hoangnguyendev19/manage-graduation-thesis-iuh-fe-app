@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Image,
+  Pressable,
 } from 'react-native';
 
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
@@ -27,18 +28,11 @@ import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/s
 
 import LoadingScreen from '../../components/Loading';
 import { RouteNames } from '../../utils/contants';
-import authService from '../../services/auth';
-import { Button, Dialog, Portal } from 'react-native-paper';
+import { Dialog, Portal } from 'react-native-paper';
 import ButtonHandle from '../../components/ButtonHandle';
 import { Snackbar } from 'react-native-paper';
-import { setUser } from '../../redux/slices/userSlice';
 import { Images } from '../../assets/images/Images';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-const userState = {
-  is_login: true,
-  error: false,
-};
 
 const Login: React.FC<{}> = () => {
   const userState = useAppSelector((state) => state.user);
@@ -52,6 +46,7 @@ const Login: React.FC<{}> = () => {
   const [password, setPass] = useState('');
   const [errorPass, setErrorPass] = useState('');
   const [isResetPass, setResetPass] = useState(false);
+  const [email, setEmail] = useState('');
 
   const [modalRestPass, setModalRestPass] = useState(false);
   const [visible, setVisible] = useState(false);
@@ -146,10 +141,10 @@ const Login: React.FC<{}> = () => {
         <Image source={Images.logo_iuh} style={{ width: 100, height: 40, resizeMode: 'contain' }} />
         <View style={[styles.contentInputTop]}>
           <View style={styles.viewInputTop}>
-            <Ionicons name="person" color={Colors.iconbr} size={16} />
+            <Ionicons name="person" color={Colors.iconbr} size={20} />
           </View>
           <TextInput
-            placeholder={'Tên đăng nhập'}
+            placeholder="Tên đăng nhập"
             value={userName}
             onChangeText={(text) => setUserName(text)}
             style={styles.input}
@@ -159,7 +154,7 @@ const Login: React.FC<{}> = () => {
 
         <View style={[styles.contentInput, GlobalStyles.centerView]}>
           <View style={styles.viewInput}>
-            <Ionicons name="key" color={Colors.iconbr} size={16} />
+            <Ionicons name="key" color={Colors.iconbr} size={20} />
           </View>
           <TextInput
             placeholder={'Mật khẩu'}
@@ -175,9 +170,9 @@ const Login: React.FC<{}> = () => {
 
           <TouchableOpacity style={styles.iconRight} onPress={handleCheck}>
             {isPassWord === true ? (
-              <Ionicons name="eye-off-outline" size={16} color={Colors.iconbr} />
+              <Ionicons name="eye-off-outline" size={20} color={Colors.iconbr} />
             ) : (
-              <Ionicons name="eye-outline" color={Colors.iconbr} size={16} />
+              <Ionicons name="eye-outline" color={Colors.iconbr} size={20} />
             )}
           </TouchableOpacity>
         </View>
@@ -207,7 +202,6 @@ const Login: React.FC<{}> = () => {
   return (
     <SafeAreaView style={[GlobalStyles.container, { backgroundColor: Colors.white }]}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.black} />
-      {/* <AlertNotificationRoot> */}
       <Header title="Đăng nhập" home></Header>
 
       <ScrollView>
@@ -230,7 +224,6 @@ const Login: React.FC<{}> = () => {
           </View>
         </KeyboardAvoidingView>
       </ScrollView>
-      {/* </AlertNotificationRoot>  */}
       {isLoading === true && <LoadingScreen />}
       {isResetPass === true && <LoadingScreen />}
 
@@ -244,12 +237,25 @@ const Login: React.FC<{}> = () => {
           <Dialog.Content>
             <TextInput
               style={styles.input}
-              placeholder={'Tên đăng nhập'}
-              onChangeText={(text) => onChangeText(text)}
+              placeholder="Nhập email"
+              value={email}
+              onChangeText={(text) => setEmail(text)}
             />
           </Dialog.Content>
           <Dialog.Actions>
-            <Button onPress={() => setModalRestPass(false)}>Hủy</Button>
+            <Pressable
+              onPress={() => setModalRestPass(false)}
+              style={{
+                paddingVertical: responsiveHeight(5),
+                paddingHorizontal: responsiveWidth(25),
+                borderRadius: 5,
+                borderWidth: 1,
+                borderStyle: 'solid',
+                marginRight: responsiveWidth(10),
+              }}
+            >
+              <Text style={{ fontSize: responsiveFont(16) }}>Đóng</Text>
+            </Pressable>
             <ButtonHandle
               onPress={() => handleResetPassword()}
               icon
@@ -289,7 +295,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: '#fae1dd',
-    paddingLeft: responsiveWidth(35),
+    paddingLeft: responsiveWidth(40),
     fontSize: 16,
     backgroundColor: Colors.white,
     paddingVertical: responsiveHeight(5),
@@ -312,7 +318,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
   viewInputTop: {
-    width: responsiveWidth(13),
     position: 'absolute',
     left: 12,
     top: 12,
@@ -320,9 +325,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.white,
   },
   viewInput: {
-    width: responsiveWidth(13),
     position: 'relative',
-    left: 22,
+    left: 32,
     zIndex: 99999,
     backgroundColor: Colors.white,
   },
@@ -365,7 +369,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.blueBoder,
   },
   titleModal: {
-    fontSize: responsiveFont(15),
+    fontSize: responsiveFont(16),
     fontWeight: 'bold',
     color: '#003049',
   },

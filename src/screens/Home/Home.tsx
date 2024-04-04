@@ -59,7 +59,6 @@ const HomeScreen: React.FC<{}> = () => {
   const dispatch = useAppDispatch();
 
   const userState = useAppSelector((state) => state.user);
-  const termState = useAppSelector((state) => state.term.term);
 
   useEffect(() => {
     if (userState?.user?.major_id) {
@@ -67,18 +66,6 @@ const HomeScreen: React.FC<{}> = () => {
       dispatch(termAPI.getTermNow()());
     }
   }, [userState]);
-
-  // useEffect(() => {
-  //   if (userState.allow === false) {
-  //     navigation.navigate(RouteNames.DisAcceptedUser);
-  //   }
-  // }, [userState, termState]);
-
-  // useEffect(() => {
-  //   if (termState.id) {
-  //     dispatch(authAPI.getTranscripts()(termState.id));
-  //   }
-  // }, []);
 
   return (
     <SafeAreaView style={[GlobalStyles.container]}>

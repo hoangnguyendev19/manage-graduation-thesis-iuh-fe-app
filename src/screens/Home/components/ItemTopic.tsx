@@ -41,10 +41,10 @@ const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState
     { name: getNameStatus(String(topicInfo?.status)), key: 'Tình trạng' },
   ];
   const LECTURER_DATA = [
-    { name: topicInfo?.lecturerTerm?.lecturer?.avatarUrl, key: '' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.avatar, key: '' },
     { name: topicInfo?.lecturerTerm?.lecturer?.fullName, key: 'Tên Giảng viên' },
     { name: checkGender(topicInfo?.lecturerTerm?.lecturer?.gender), key: 'Giới tính' },
-    { name: topicInfo?.lecturerTerm?.lecturer?.phoneNumber, key: 'Số điện thoại' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.phone, key: 'Số điện thoại' },
     { name: checkDegree(topicInfo?.lecturerTerm?.lecturer?.degree), key: 'Trình độ' },
     { name: topicInfo?.lecturerTerm?.lecturer?.email, key: 'Email' },
   ];

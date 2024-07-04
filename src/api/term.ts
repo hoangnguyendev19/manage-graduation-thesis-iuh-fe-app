@@ -1,6 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import termService from '../services/term';
-import { setAllow } from '../redux/slices/userSlice';
 
 class TermAPI {
   getTermNow() {

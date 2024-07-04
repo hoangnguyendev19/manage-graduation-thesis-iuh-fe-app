@@ -20,6 +20,7 @@ import groupService from '../../../services/group';
 import { Snackbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 import { RouteNames } from '../../../utils/contants';
+import { validateDate } from '../../../utils/handler';
 
 const TopicMenu = () => {
   const termState = useAppSelector((state) => state.term.term);
@@ -37,7 +38,7 @@ const TopicMenu = () => {
 
   useEffect(() => {
     setLoadingTopic(true);
-    if (termState?.id) {
+    if (termState?.id && majorState?.id) {
       topicService.getTopicList(termState?.id, majorState?.id).then((result) => {
         setLoadingTopic(false);
 
@@ -174,7 +175,7 @@ const TopicMenu = () => {
         iconRight={true}
       ></Header>
 
-      {termState?.isChooseTopic === false ? (
+      {validateDate(termState?.startChooseTopicDate, termState?.endChooseTopicDate) ? (
         <View style={styles.nonChooseTopic}>
           <View style={styles.contentNoData}>
             <NoneData icon title="Chưa đến thời gian chọn đề tài!"></NoneData>

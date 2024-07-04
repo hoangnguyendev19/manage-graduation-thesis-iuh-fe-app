@@ -10,22 +10,27 @@ import { DataTable, Text } from 'react-native-paper';
 import NoneData from '../../../components/NoneData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import transcriptService from '../../../services/transcript';
+import { validateDate } from '../../../utils/handler';
 
 const EvaluationMenu = () => {
   const layout = useWindowDimensions();
   const termState = useAppSelector((state) => state.term.term);
+  const userState = useAppSelector((state) => state.user.user);
 
   const [transcriptAdvisor, setTranscriptAdvisor] = useState(null);
   const [transcriptReviewer, setTranscriptReviewer] = useState(null);
-  const [transcriptHost, setTranscriptHost] = useState(null);
+  const [transcriptReport, setTranscriptReport] = useState(null);
 
   useEffect(() => {
     const getTranscriptAdvisor = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByTypeEvaluation(
-          termState.id,
+        const { data } = await transcriptService.getTranscriptByType(
+          termState?.id,
           'ADVISOR',
+          userState?.id,
         );
+
+        console.log('data', data);
 
         setTranscriptAdvisor(data.transcript);
       } catch (error) {
@@ -35,9 +40,10 @@ const EvaluationMenu = () => {
 
     const getTranscriptReviewer = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByTypeEvaluation(
-          termState.id,
+        const { data } = await transcriptService.getTranscriptByType(
+          termState?.id,
           'REVIEWER',
+          userState?.id,
         );
         setTranscriptReviewer(data.transcript);
       } catch (error) {
@@ -45,13 +51,14 @@ const EvaluationMenu = () => {
       }
     };
 
-    const getTranscriptHost = async () => {
+    const getTranscriptReport = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByTypeEvaluation(
+        const { data } = await transcriptService.getTranscriptByType(
           termState.id,
-          'SESSION_HOST',
+          'REPORT',
+          userState?.id,
         );
-        setTranscriptHost(data.transcript);
+        setTranscriptReport(data.transcript);
       } catch (error) {
         console.log('error', error);
       }
@@ -59,30 +66,30 @@ const EvaluationMenu = () => {
 
     getTranscriptAdvisor();
     getTranscriptReviewer();
-    getTranscriptHost();
+    getTranscriptReport();
   }, [termState]);
 
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     { key: 'ADVISOR', title: 'Điểm hướng dẫn' },
-    { key: 'REVIEW', title: 'Điểm phản biện' },
-    { key: 'HOST', title: 'Điểm hội đồng' },
+    { key: 'REVIEWER', title: 'Điểm phản biện' },
+    { key: 'REPORT', title: 'Điểm báo cáo' },
   ]);
 
   const TABADVISOR = () => {
     return <>{advisorRender}</>;
   };
-  const TABREVIEW = () => {
-    return <>{reviewRender}</>;
+  const TABREVIEWER = () => {
+    return <>{reviewerRender}</>;
   };
-  const TABHOST = () => {
-    return <>{hostRender}</>;
+  const TABREPORT = () => {
+    return <>{reportRender}</>;
   };
 
   const renderScene = SceneMap({
     ADVISOR: TABADVISOR,
-    REVIEW: TABREVIEW,
-    HOST: TABHOST,
+    REVIEWER: TABREVIEWER,
+    REPORT: TABREPORT,
   });
 
   const advisorRender = useMemo(() => {
@@ -113,7 +120,7 @@ const EvaluationMenu = () => {
                   </DataTable.Cell>
                   <DataTable.Cell numeric>
                     <Text variant="labelLarge" style={{ color: 'red' }}>
-                      {transcriptAdvisor?.averageScore}
+                      {transcriptAdvisor?.avgScore}
                     </Text>
                   </DataTable.Cell>
                 </DataTable.Row>
@@ -127,7 +134,7 @@ const EvaluationMenu = () => {
     );
   }, [transcriptAdvisor]);
 
-  const reviewRender = useMemo(() => {
+  const reviewerRender = useMemo(() => {
     return (
       <>
         <View style={[styles.bottomContent]}>
@@ -155,7 +162,7 @@ const EvaluationMenu = () => {
                   </DataTable.Cell>
                   <DataTable.Cell numeric>
                     <Text variant="labelLarge" style={{ color: 'red' }}>
-                      {transcriptReviewer?.averageScore}
+                      {transcriptReviewer?.avgScore}
                     </Text>
                   </DataTable.Cell>
                 </DataTable.Row>
@@ -169,21 +176,21 @@ const EvaluationMenu = () => {
     );
   }, [transcriptReviewer]);
 
-  const hostRender = useMemo(() => {
+  const reportRender = useMemo(() => {
     return (
       <>
         <View style={[styles.bottomContent]}>
           <Text style={styles.title} variant="titleLarge">
-            Kết Quả GĐ Hội đồng
+            Kết Quả GĐ Báo Cáo
           </Text>
           <DataTable>
-            {transcriptHost ? (
+            {transcriptReport ? (
               <>
                 <DataTable.Header>
                   <DataTable.Title textStyle={styles._titleColLeft}>Tên giảng viên</DataTable.Title>
                   <DataTable.Title textStyle={styles._titleColRight}>Điểm</DataTable.Title>
                 </DataTable.Header>
-                {transcriptHost?.transcripts.map((item, index) => (
+                {transcriptReport?.transcripts.map((item, index) => (
                   <DataTable.Row key={index}>
                     <DataTable.Cell>{item?.lecturerTerm?.lecturer?.fullName}</DataTable.Cell>
                     <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
@@ -197,7 +204,7 @@ const EvaluationMenu = () => {
                   </DataTable.Cell>
                   <DataTable.Cell numeric>
                     <Text variant="labelLarge" style={{ color: 'red' }}>
-                      {transcriptHost?.averageScore}
+                      {transcriptReport?.avgScore}
                     </Text>
                   </DataTable.Cell>
                 </DataTable.Row>
@@ -209,7 +216,7 @@ const EvaluationMenu = () => {
         </View>
       </>
     );
-  }, [transcriptHost]);
+  }, [transcriptReport]);
 
   return (
     <SafeAreaView style={GlobalStyles.container}>
@@ -221,7 +228,7 @@ const EvaluationMenu = () => {
         style={styles.header}
         back={true}
       ></Header>
-      {termState.isPublicResult ? (
+      {validateDate(termState?.startPublicResultDate, termState?.endPublicResultDate) ? (
         <TabView
           navigationState={{ index, routes }}
           renderScene={renderScene}
@@ -229,7 +236,7 @@ const EvaluationMenu = () => {
           initialLayout={{ width: layout.width }}
         />
       ) : (
-        <NoneData icon title="Chưa được xem đi"></NoneData>
+        <NoneData icon title="Bạn chưa thể xem được!"></NoneData>
       )}
     </SafeAreaView>
   );

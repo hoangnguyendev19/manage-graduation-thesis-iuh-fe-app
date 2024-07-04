@@ -19,7 +19,7 @@ export interface Group {
 }
 
 export interface Topic {
-  id: number;
+  id: string;
   name: string;
   description: string;
   quantityGroupMax: number;
@@ -27,24 +27,22 @@ export interface Topic {
   target: string;
   standardOutput: string;
   requireInput: string;
-  comment: string;
   status: string;
-  level: string;
   created_at: string;
   updated_at: string;
   lecturerTerm: {
-    id: number;
+    id: string;
     lecturer: {
-      id: number;
-      userName: string;
+      id: string;
+      username: string;
       fullName: string;
-      avatarUrl: string;
+      avatar: string;
       email: string;
-      phoneNumber: string;
+      phone: string;
       gender: string;
       degree: string;
       major: {
-        id: number;
+        id: string;
         name: string;
       };
     };
@@ -77,18 +75,20 @@ export interface Notify {
 }
 
 export interface Term {
-  id: number;
+  id: string;
   name: string;
   startDate: string;
   endDate: string;
-  isChooseGroup: boolean;
-  isChooseTopic: boolean;
-  isSubmitTopic: boolean;
-  isDiscussion: boolean;
-  isReport: boolean;
-  isPublicResult: boolean;
-  created_at: string;
-  updated_at: string;
+  startChooseGroupDate: string;
+  endChooseGroupDate: string;
+  startChooseTopicDate: string;
+  endChooseTopicDate: string;
+  startDiscussionDate: string;
+  endDiscussionDate: string;
+  startReportDate: string;
+  endReportDate: string;
+  startPublicResultDate: string;
+  endPublicResultDate: string;
 }
 
 export interface Transcript {
@@ -100,22 +100,23 @@ export interface Transcript {
 }
 
 export interface Student {
-  id: number;
-  userName: string;
+  id: string;
+  username: string;
   fullName: string;
-  avatarUrl: string;
-  phoneNumber: string;
+  avatar: string;
+  phone: string;
   email: string;
   gender: string;
-  schoolYear: string;
+  dateOfBirth: string;
+  clazzName: string;
   typeTraining: string;
-  created_at: string;
-  updated_at: string;
-  major_id: number;
+  isActive: boolean;
+  majorId: string;
+  majorName: string;
 }
 
 export interface Major {
-  id: number;
+  id: string;
   name: string;
   created_at: string;
   updated_at: string;

@@ -32,7 +32,7 @@ const Account: React.FC<{}> = ({}) => {
   const handleLogout = async () => {
     try {
       await dispatch(authAPI.logout()());
-      navigation.navigate(RouteNames.loginNavigation);
+      navigation.navigate(RouteNames.LoginNavigation);
     } catch (error) {
       console.log('error', error);
     }
@@ -51,7 +51,7 @@ const Account: React.FC<{}> = ({}) => {
       <ScrollView style={styles.main}>
         <TextItemAccount
           textLeft={languages['vi'].code}
-          textRight={userState?.userName}
+          textRight={userState?.username}
           line={true}
         ></TextItemAccount>
 
@@ -68,8 +68,8 @@ const Account: React.FC<{}> = ({}) => {
         ></TextItemAccount>
 
         <TextItemAccount
-          textLeft={languages['vi'].schoolYear}
-          textRight={userState?.schoolYear}
+          textLeft={languages['vi'].clazzName}
+          textRight={userState?.clazzName}
           line={true}
         ></TextItemAccount>
 
@@ -87,7 +87,7 @@ const Account: React.FC<{}> = ({}) => {
 
         <TextItemAccount
           textLeft={languages['vi'].numberPhone}
-          textRight={userState?.phoneNumber}
+          textRight={userState?.phone}
           line={true}
         ></TextItemAccount>
 
@@ -108,7 +108,7 @@ const Account: React.FC<{}> = ({}) => {
       <View style={styles.content}>
         <View style={[styles.update]}>
           <Avatar.Image
-            source={userState?.avatarUrl ? { uri: userState?.avatarUrl } : Images.avatar}
+            source={userState?.avatar ? { uri: userState?.avatar } : Images.avatar}
             size={80}
             style={styles.imgAvatar}
           />

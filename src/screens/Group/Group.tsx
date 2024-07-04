@@ -12,6 +12,7 @@ import NoneData from '../../components/NoneData';
 import { Topic } from '../../utils/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RouteNames } from '../../utils/contants';
+import { validateDate } from '../../utils/handler';
 
 const MENU = [
   {
@@ -35,14 +36,14 @@ const MENU = [
 ];
 
 const Group: React.FC<{}> = () => {
-  const termState = useAppSelector((state) => state.term);
+  const termState = useAppSelector((state) => state.term.term);
 
   const [topic, setTopic] = useState<Topic>();
 
   const navigation = useNavigation();
 
-  const [showModal, setShowModal] = useState(false);
-  const [showModalCreateGroup, setShowModalCreateGroup] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
+  // const [showModalCreateGroup, setShowModalCreateGroup] = useState(false);
 
   const renderMenuItem = (item: any, index: any) => {
     return (
@@ -75,7 +76,7 @@ const Group: React.FC<{}> = () => {
     <SafeAreaView style={GlobalStyles.container}>
       <Header title="Nhóm" logo iconRight={true}></Header>
       <View style={[GlobalStyles.container, styles.container]}>
-        {termState?.term?.isChooseGroup ? (
+        {validateDate(termState?.startChooseGroupDate, termState?.endChooseGroupDate) ? (
           <View style={styles.menu}>
             <FlatList data={MENU} renderItem={({ item, index }) => renderMenuItem(item, index)} />
           </View>

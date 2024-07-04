@@ -30,24 +30,44 @@ const TermMenu = () => {
 
   const INFO_TERM = [
     {
-      title: 'Trạng thái chọn đề tài',
-      value: termState?.isChooseTopic ? 'Đang mở' : 'Đã đóng',
+      title: 'Ngày bắt đầu chọn nhóm',
+      value: termState?.startChooseGroupDate,
     },
     {
-      title: 'Trạng thái nộp đề tài',
-      value: termState?.isSubmitTopic ? 'Đang mở' : 'Đã đóng',
+      title: 'Ngày kết thúc chọn nhóm',
+      value: termState?.endChooseGroupDate,
     },
     {
-      title: 'Trạng thái phản biện',
-      value: termState?.isDiscussion ? 'Đang mở' : 'Đã đóng',
+      title: 'Ngày bắt đầu chọn đề tài',
+      value: termState?.startChooseTopicDate,
     },
     {
-      title: 'Trạng thái báo cáo',
-      value: termState?.isReport ? 'Đang mở' : 'Đã đóng',
+      title: 'Ngày kết thúc chọn đề tài',
+      value: termState?.endChooseTopicDate,
     },
     {
-      title: 'Trạng thái công bố kêt quả',
-      value: termState?.isPublicResult ? 'Đang mở' : 'Đã đóng',
+      title: 'Ngày bắt đầu phản biện',
+      value: termState?.startDiscussionDate,
+    },
+    {
+      title: 'Ngày kết thúc phản biện',
+      value: termState?.endDiscussionDate,
+    },
+    {
+      title: 'Ngày bắt đầu báo cáo',
+      value: termState?.startReportDate,
+    },
+    {
+      title: 'Ngày kết thúc báo cáo',
+      value: termState?.endReportDate,
+    },
+    {
+      title: 'Ngày bắt đầu công bố kết quả',
+      value: termState?.startPublicResultDate,
+    },
+    {
+      title: 'Ngày kết thúc công bố kết quả',
+      value: termState?.endPublicResultDate,
     },
   ];
 
@@ -107,7 +127,9 @@ const TermMenu = () => {
                 </DataTable.Header>
 
                 <DataTable.Row>
-                  <DataTable.Cell textStyle={styles.textValue}>{item?.value}</DataTable.Cell>
+                  <DataTable.Cell textStyle={styles.textValue}>
+                    {formatDate(item?.value)}
+                  </DataTable.Cell>
                 </DataTable.Row>
               </DataTable>
             );
@@ -165,7 +187,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textTransform: 'uppercase',
     paddingHorizontal: responsiveWidth(10),
-    marginHorizontal: responsiveWidth(10),
+    // marginHorizontal: responsiveWidth(10),
   },
   content: {
     justifyContent: 'center',

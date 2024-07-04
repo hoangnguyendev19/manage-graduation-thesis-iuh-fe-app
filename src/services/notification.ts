@@ -8,14 +8,14 @@ class NotificationService {
     });
   }
 
-  async readNotify(id: number) {
+  async readNotify(id: string) {
     return await axiosAuth({
       url: `api/v1/notification-students/${id}/read`,
       method: 'put',
     });
   }
 
-  async deleteNotify(id: number) {
+  async deleteNotify(id: string) {
     return await axiosAuth({
       url: `api/v1/notification-students/${id}`,
       method: 'delete',

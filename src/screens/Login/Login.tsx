@@ -36,13 +36,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Login: React.FC<{}> = () => {
   const userState = useAppSelector((state) => state.user);
-  const userNameRef = useRef();
+  const usernameRef = useRef();
   const navigation = useNavigation();
   const dispatch = useAppDispatch();
 
   const [isLoading, setLoading] = useState(false);
   const [isPassWord, setPassword] = useState(true);
-  const [userName, setUserName] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPass] = useState('');
   const [errorPass, setErrorPass] = useState('');
   const [isResetPass, setResetPass] = useState(false);
@@ -56,7 +56,7 @@ const Login: React.FC<{}> = () => {
 
   useFocusEffect(
     useCallback(() => {
-      setUserName('');
+      setUsername('');
       setPass('');
     }, []),
   );
@@ -78,7 +78,7 @@ const Login: React.FC<{}> = () => {
   };
 
   const handleSubmit = async () => {
-    if (userName.trim().length >= 8) {
+    if (username.trim().length >= 8) {
       if (password.trim().length <= 7) {
         setError('Mật khẩu phải lớn hơn 7 ký tự!');
         setVisible(true);
@@ -89,7 +89,7 @@ const Login: React.FC<{}> = () => {
         try {
           await dispatch(
             authAPI.login()({
-              userName: userName,
+              username: username,
               password: password,
             }),
           );
@@ -107,7 +107,7 @@ const Login: React.FC<{}> = () => {
   };
 
   const handleResetPassword = () => {
-    if (userName !== '' && userName.length >= 6) {
+    if (username !== '' && username.length >= 6) {
       setResetPass(true);
       // setTimeout(async () => {
       //   await authService
@@ -145,10 +145,10 @@ const Login: React.FC<{}> = () => {
           </View>
           <TextInput
             placeholder="Tên đăng nhập"
-            value={userName}
-            onChangeText={(text) => setUserName(text)}
+            value={username}
+            onChangeText={(text) => setUsername(text)}
             style={styles.input}
-            ref={userNameRef.current}
+            ref={usernameRef.current}
           />
         </View>
 
@@ -197,7 +197,7 @@ const Login: React.FC<{}> = () => {
         />
       </View>
     );
-  }, [errorPass, password, userName, handleCheck, handleSubmit, userNameRef, userState]);
+  }, [errorPass, password, username, handleCheck, handleSubmit, usernameRef, userState]);
 
   return (
     <SafeAreaView style={[GlobalStyles.container, { backgroundColor: Colors.white }]}>

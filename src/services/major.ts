@@ -1,7 +1,7 @@
 import { axiosAuth } from '../utils/axiosConfig';
 
 class MajorService {
-  getMajorById(id: number) {
+  getMajorById(id: string) {
     return axiosAuth({
       url: `api/v1/majors/${id}`,
       method: 'get',

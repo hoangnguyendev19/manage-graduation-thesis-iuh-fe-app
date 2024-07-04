@@ -31,7 +31,7 @@ export const PASSWORD_REGEX = /^[5,]$/;
 
 export const RouteNames = {
   TabNavigation: 'TabNavigation',
-  loginNavigation: 'Login',
+  LoginNavigation: 'Login',
 
   HomeStack: 'Home',
   GroupStack: 'Group',

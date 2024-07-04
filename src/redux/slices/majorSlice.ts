@@ -10,11 +10,11 @@ interface StateType {
 
 const initialState = {
   major: {
-    id: NaN,
+    id: '',
     name: '',
     created_at: '',
     updated_at: '',
-  },
+  } as Major,
   isLoading: false,
   isError: false,
 } as StateType;

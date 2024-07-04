@@ -5,7 +5,6 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
-  Image,
   KeyboardAvoidingView,
 } from 'react-native';
 import CloseButton from '../../../components/CloseButton';
@@ -38,7 +37,7 @@ interface ImagePicker {
   type: string;
 }
 const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
-  const userState = useAppSelector((state) => state.user);
+  const userState = useAppSelector((state) => state.user.user);
   const [selectedAvatar, setSelectedAvatar] = useState<ImagePicker | any>();
   const dispatch = useAppDispatch();
 
@@ -49,45 +48,45 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
   const BASIC_INFO = [
     {
       key: 'code',
-      placeholder: userState?.user?.userName,
+      placeholder: userState?.username,
       title: `${languages['vi'].code}`,
     },
     {
       key: 'fullName',
-      placeholder: userState?.user?.fullName,
+      placeholder: userState?.fullName,
       title: `${languages['vi'].name}`,
     },
     {
       key: 'gender',
-      placeholder: userState?.user?.gender,
+      placeholder: userState?.gender,
       title: `${languages['vi'].gender}`,
     },
     {
-      key: 'schoolYear',
-      placeholder: userState?.user?.schoolYear,
-      title: `${languages['vi'].schoolYear}`,
+      key: 'clazzName',
+      placeholder: userState?.clazzName,
+      title: `${languages['vi'].clazzName}`,
     },
     {
-      key: 'phoneNumber',
-      placeholder: userState?.user?.phoneNumber,
+      key: 'phone',
+      placeholder: userState?.phone,
       title: `${languages['vi'].numberPhone}`,
     },
     {
       key: 'email',
-      placeholder: userState?.user?.email,
+      placeholder: userState?.email,
       title: `${languages['vi'].email}`,
     },
   ];
 
   const [basicInfo, setBasicInfo] = useState({
-    avatarUrl: userState?.user?.avatarUrl || Images.avatar,
-    userName: userState?.user?.userName || '',
-    fullName: userState?.user?.fullName || '',
-    gender: userState?.user?.gender || '',
-    schoolYear: userState?.user?.schoolYear || '',
-    typeTraining: userState?.user?.typeTraining,
-    phoneNumber: userState?.user?.phoneNumber,
-    email: userState?.user?.email,
+    avatar: userState?.avatar,
+    username: userState?.username || '',
+    fullName: userState?.fullName || '',
+    gender: userState?.gender || '',
+    clazzName: userState?.clazzName || '',
+    typeTraining: userState?.typeTraining,
+    phone: userState?.phone,
+    email: userState?.email,
   });
 
   const handleSubmitForm = async () => {
@@ -95,7 +94,7 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
 
     const formData = new FormData();
     formData.append('image', {
-      uri: basicInfo.avatarUrl,
+      uri: basicInfo.avatar,
       name: 'image',
       type: 'image/jpeg',
     });
@@ -104,10 +103,10 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
 
     if (data) {
       const newUser = {
-        avatarUrl: data.path,
+        avatar: data.path,
         fullName: basicInfo.fullName,
         gender: basicInfo.gender,
-        phoneNumber: basicInfo.phoneNumber,
+        phone: basicInfo.phone,
         email: basicInfo.email,
       };
 
@@ -168,7 +167,7 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
       });
 
       if (!result.canceled) {
-        setBasicInfo({ ...basicInfo, avatarUrl: result.assets[0].uri });
+        setBasicInfo({ ...basicInfo, avatar: result.assets[0].uri });
       }
     } catch (e: any) {
       console.log('error', e);
@@ -181,7 +180,7 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
         <View style={[styles.contentImage, GlobalStyles.flexDirectionRow]}>
           <Avatar.Image
             size={100}
-            source={{ uri: basicInfo.avatarUrl }}
+            source={basicInfo.avatar ? { uri: basicInfo.avatar } : Images.avatar}
             style={{ alignSelf: 'center', marginBottom: 20 }}
           />
           <TouchableOpacity style={styles.contentIcon} onPress={handlePickerAvatar}>
@@ -190,7 +189,7 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
         </View>
       </>
     );
-  }, [basicInfo.avatarUrl]);
+  }, [basicInfo.avatar]);
 
   return (
     <>
@@ -220,9 +219,9 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
                       return genderBlock(index);
                     }
 
-                    const isUserName = () => item?.key === 'userName';
+                    const isUsername = () => item?.key === 'username';
                     const isCode = () => item?.key === 'code';
-                    const isSchoolYear = () => item?.key === 'schoolYear';
+                    const isClazzName = () => item?.key === 'clazzName';
 
                     return (
                       <View key={index}>
@@ -231,8 +230,8 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
                             borderColor: Colors.blueBoder,
                             borderRadius: 6,
                           }}
-                          isRequire={!isUserName() && !isCode() && !isSchoolYear()}
-                          editable={!isUserName() && !isCode() && !isSchoolYear()}
+                          isRequire={!isUsername() && !isCode() && !isClazzName()}
+                          editable={!isUsername() && !isCode() && !isClazzName()}
                           title={item.title}
                           titleStyle={[styles.label]}
                           textInputStyle={{

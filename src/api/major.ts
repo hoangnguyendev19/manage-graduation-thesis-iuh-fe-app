@@ -3,7 +3,7 @@ import majorService from '../services/major';
 
 class MajorAPI {
   getMajorById() {
-    return createAsyncThunk('major/get-major-by-id', async (id: number) => {
+    return createAsyncThunk('major/get-major-by-id', async (id: string) => {
       const result = await majorService.getMajorById(id);
 
       if (result.status === 200) return result.data.major;

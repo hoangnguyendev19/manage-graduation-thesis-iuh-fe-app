@@ -34,7 +34,9 @@ const SplashScreen = () => {
           console.log('error', error);
         }
         navigation.navigate(RouteNames.TabNavigation);
-      } else navigation.navigate(RouteNames.loginNavigation);
+      } else {
+        navigation.navigate(RouteNames.LoginNavigation);
+      }
     };
 
     checkLogin();

@@ -11,7 +11,7 @@ interface StateType {
 
 const initialState = {
   topic: {
-    id: NaN,
+    id: '',
     name: '',
     description: '',
     quantityGroupMax: NaN,
@@ -19,23 +19,22 @@ const initialState = {
     target: '',
     standardOutput: '',
     requireInput: '',
-    comment: '',
     status: '',
-    level: '',
     created_at: '',
     updated_at: '',
     lecturerTerm: {
-      id: NaN,
+      id: '',
       lecturer: {
-        id: NaN,
+        id: '',
+        username: '',
         fullName: '',
-        avatarUrl: '',
+        avatar: '',
         email: '',
-        phoneNumber: '',
+        phone: '',
         gender: '',
         degree: '',
         major: {
-          id: NaN,
+          id: '',
           name: '',
         },
       },

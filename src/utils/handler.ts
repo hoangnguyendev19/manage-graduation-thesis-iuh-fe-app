@@ -140,6 +140,13 @@ export const formatTime = (date: string) => {
   return moment(date).locale('vi').fromNow();
 };
 
+export const validateDate = (startDate: string, endDate: string) => {
+  const dateNow = moment();
+  const start = moment(startDate);
+  const end = moment(endDate);
+  return dateNow.isBetween(start, end);
+};
+
 export const validateEmail = (email: string) => {
   var re =
     /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;

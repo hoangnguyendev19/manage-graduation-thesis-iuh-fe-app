@@ -1,7 +1,7 @@
 import { axiosAuth, axiosFormData, axiosNotAuth } from '../utils/axiosConfig';
 
 class AuthService {
-  async login(data: { userName: string; password: string }) {
+  async login(data: { username: string; password: string }) {
     return await axiosNotAuth({
       url: 'api/v1/students/login',
       method: 'post',

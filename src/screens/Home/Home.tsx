@@ -61,8 +61,8 @@ const HomeScreen: React.FC<{}> = () => {
   const userState = useAppSelector((state) => state.user);
 
   useEffect(() => {
-    if (userState?.user?.major_id) {
-      dispatch(majorAPI.getMajorById()(userState?.user?.major_id));
+    if (userState?.user?.majorId) {
+      dispatch(majorAPI.getMajorById()(userState?.user?.majorId));
       dispatch(termAPI.getTermNow()());
     }
   }, [userState]);

@@ -22,7 +22,7 @@ export default {
     teacher: 'Giảng Viên',
     testMajor: 'Kỹ Thuật Phần Mềm',
     detail: 'Xem chi tiết',
-    schoolYear: 'Niên khóa',
+    clazzName: 'Lớp danh nghĩa',
     typeTraining: 'Hệ',
     updateInfo: 'Cập nhật thông tin',
     update: 'Cập nhật',

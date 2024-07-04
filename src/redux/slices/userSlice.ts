@@ -6,7 +6,6 @@ interface StateType {
   user: Student;
   isLoading: boolean;
   isError: boolean;
-  isLogin: boolean;
 }
 
 const initialState = {
@@ -27,7 +26,6 @@ const initialState = {
   } as Student,
   isLoading: false,
   isError: false,
-  isLogin: false,
 } as StateType;
 
 const userSlice = createSlice({
@@ -46,7 +44,6 @@ const userSlice = createSlice({
       .addCase(authAPI.login().fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        state.isLogin = true;
       })
       .addCase(authAPI.login().rejected, (state) => {
         state.isError = true;
@@ -58,7 +55,6 @@ const userSlice = createSlice({
       .addCase(authAPI.getInfo().fulfilled, (state, action) => {
         state.isLoading = false;
         state.user = action.payload;
-        state.isLogin = true;
       })
       .addCase(authAPI.getInfo().rejected, (state) => {
         state.isError = true;
@@ -80,7 +76,6 @@ const userSlice = createSlice({
       })
       .addCase(authAPI.logout().fulfilled, (state) => {
         state.isLoading = false;
-        state.isLogin = false;
         state.user = initialState.user;
       })
       .addCase(authAPI.logout().rejected, (state) => {

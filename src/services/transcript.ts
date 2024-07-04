@@ -8,9 +8,9 @@ class TranscriptService {
     });
   }
 
-  getTranscriptByType(termId: string, type: string, studentId: string) {
+  getTranscriptByStudent(termId: string, type: string) {
     return axiosAuth({
-      url: `api/v1/transcripts?termId=${termId}&type=${type}&studentId=${studentId}`,
+      url: `api/v1/transcripts/student?termId=${termId}&type=${type}`,
       method: 'get',
     });
   }

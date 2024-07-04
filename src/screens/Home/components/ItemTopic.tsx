@@ -125,26 +125,6 @@ const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState
               </TouchableOpacity>
             </View>
           </DataTable>
-
-          <View style={styles.contentTopLevel}>
-            <Text style={[styles.textValue]} numberOfLines={1}>
-              Cấp độ đề tài:{' '}
-            </Text>
-            <Text
-              style={[
-                styles.textValue,
-                {
-                  color: getLevelColorTopic(String(topicInfo?.level))
-                    ? getLevelColorTopic(String(topicInfo?.level))
-                    : Colors.grayLight,
-                },
-              ]}
-            >
-              {getLevelTopic(String(topicInfo?.level))
-                ? getLevelTopic(String(topicInfo?.level))
-                : 'Chưa xác định'}
-            </Text>
-          </View>
         </View>
         {renderButton}
         <List.Section style={styles.content}>
@@ -317,16 +297,6 @@ const styles = StyleSheet.create({
     paddingLeft: responsiveWidth(5),
     marginBottom: responsiveHeight(10),
     justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
-  contentTopLevel: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: responsiveHeight(10),
-    paddingLeft: responsiveWidth(5),
-    marginBottom: responsiveHeight(10),
-    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
   },

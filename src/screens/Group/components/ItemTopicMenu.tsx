@@ -44,10 +44,10 @@ const ItemTopicMenu = ({ route }) => {
     { name: getNameStatus(String(topicInfo?.status)), key: 'Tình trạng' },
   ];
   const LECTURER_DATA = [
-    { name: topicInfo?.lecturerTerm?.lecturer?.avatarUrl, key: '' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.avatar, key: '' },
     { name: topicInfo?.lecturerTerm?.lecturer?.fullName, key: 'Tên Giảng viên' },
     { name: checkGender(topicInfo?.lecturerTerm?.lecturer?.gender), key: 'Giới tính' },
-    { name: topicInfo?.lecturerTerm?.lecturer?.phoneNumber, key: 'Số điện thoại' },
+    { name: topicInfo?.lecturerTerm?.lecturer?.phone, key: 'Số điện thoại' },
     { name: checkDegree(topicInfo?.lecturerTerm?.lecturer?.degree), key: 'Trình độ' },
     { name: topicInfo?.lecturerTerm?.lecturer?.email, key: 'Email' },
   ];
@@ -104,26 +104,6 @@ const ItemTopicMenu = ({ route }) => {
                     </TouchableOpacity>
                   </View>
                 </DataTable>
-
-                <View style={styles.contentTopLevel}>
-                  <Text style={[styles.textValue]} numberOfLines={1}>
-                    Cấp độ đề tài:{' '}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.textValue,
-                      {
-                        color: getLevelColorTopic(String(topicInfo?.level))
-                          ? getLevelColorTopic(String(topicInfo?.level))
-                          : Colors.grayLight,
-                      },
-                    ]}
-                  >
-                    {getLevelTopic(String(topicInfo?.level))
-                      ? getLevelTopic(String(topicInfo?.level))
-                      : 'Chưa xác định'}
-                  </Text>
-                </View>
               </View>
               <List.Section style={styles.content}>
                 <List.Accordion
@@ -198,7 +178,7 @@ const ItemTopicMenu = ({ route }) => {
                             />
 
                             <Text style={styles.title}>
-                              Mã GV: {topicInfo?.lecturerTerm?.lecturer?.userName}
+                              Mã GV: {topicInfo?.lecturerTerm?.lecturer?.username}
                             </Text>
                           </View>
                         );
@@ -344,16 +324,6 @@ const styles = StyleSheet.create({
     paddingLeft: responsiveWidth(5),
     marginBottom: responsiveHeight(10),
     justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-  },
-  contentTopLevel: {
-    display: 'flex',
-    flexDirection: 'row',
-    marginTop: responsiveHeight(10),
-    paddingLeft: responsiveWidth(5),
-    marginBottom: responsiveHeight(10),
-    justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
   },

@@ -23,9 +23,9 @@ const ItemListGroup = () => {
   useEffect(() => {
     const getListGroup = async () => {
       try {
-        const { data } = await groupService.getListGroup(termState.id, majorState.id);
+        const { data } = await groupService.getListGroup(termState?.id, majorState?.id);
 
-        if (data) setListGroup(data.groups);
+        if (data) setListGroup(data.groupStudents);
       } catch (error) {
         console.log('error', error);
       }
@@ -34,7 +34,7 @@ const ItemListGroup = () => {
     getListGroup();
   }, [termState, majorState]);
 
-  const handleJoinGroup = async (groupId: number) => {
+  const handleJoinGroup = async (groupId: string) => {
     try {
       const { data } = await groupService.joinGroup(groupId);
 
@@ -56,25 +56,22 @@ const ItemListGroup = () => {
   };
 
   const handleCreateGroup = async () => {
-    if (!nameGroup) {
-      setError('Vui lòng nhập tên nhóm');
-      setVisible(true);
-      return;
-    }
-
-    try {
-      const { data } = await groupService.createGroup({ termId: termState.id, name: nameGroup });
-      console.log('data', data);
-
-      if (data) {
-        setListGroup([...listGroup, data.group]);
-        setShowModal(false);
-      }
-    } catch (error) {
-      console.log('error', error);
-      setError('Tên nhóm đã tồn tại hoặc bạn đã tham gia nhóm!');
-      setVisible(true);
-    }
+    // if (!nameGroup) {
+    //   setError('Vui lòng nhập tên nhóm');
+    //   setVisible(true);
+    //   return;
+    // }
+    // try {
+    //   const { data } = await groupService.createGroup({ termId: termState.id, name: nameGroup });
+    //   if (data) {
+    //     setListGroup([...listGroup, data.group]);
+    //     setShowModal(false);
+    //   }
+    // } catch (error) {
+    //   console.log('error', error);
+    //   setError('Tên nhóm đã tồn tại hoặc bạn đã tham gia nhóm!');
+    //   setVisible(true);
+    // }
   };
 
   const ItemGroup = (group: any) => {
@@ -117,7 +114,7 @@ const ItemListGroup = () => {
           >
             Số lượng
           </Text>
-          <Text>{group?.total}</Text>
+          <Text>{group?.numOfMembers}</Text>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text
@@ -134,14 +131,14 @@ const ItemListGroup = () => {
           <Text
             style={{
               textTransform: 'uppercase',
-              color: group?.total >= 2 ? 'green' : Colors.red,
+              color: group?.numOfMembers >= 2 ? 'green' : Colors.red,
               fontStyle: 'italic',
             }}
           >
-            {group?.total >= 2 ? 'Đã đủ' : 'Chưa đủ'}
+            {group?.numOfMembers >= 2 ? 'Đã đủ' : 'Chưa đủ'}
           </Text>
         </View>
-        {group?.total < 2 && (
+        {group?.numOfMembers < 2 && (
           <Pressable
             style={{
               flexDirection: 'row',
@@ -172,7 +169,7 @@ const ItemListGroup = () => {
         back={true}
         iconRight={false}
       ></Header>
-      <Pressable
+      {/* <Pressable
         style={{
           flexDirection: 'row',
           paddingVertical: responsiveHeight(5),
@@ -190,14 +187,14 @@ const ItemListGroup = () => {
         <Text style={{ color: '#fff', textAlign: 'center', marginLeft: responsiveWidth(5) }}>
           Thêm nhóm
         </Text>
-      </Pressable>
+      </Pressable> */}
       <FlatList
         style={{ paddingVertical: responsiveHeight(10), paddingHorizontal: responsiveHeight(15) }}
         data={listGroup}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => <ItemGroup {...item} />}
       />
-      <Modal
+      {/* <Modal
         visible={showModal}
         onDismiss={() => setShowModal(false)}
         contentContainerStyle={{
@@ -246,7 +243,7 @@ const ItemListGroup = () => {
             <Text style={{ color: '#fff', textAlign: 'center' }}>Tạo</Text>
           </Pressable>
         </View>
-      </Modal>
+      </Modal> */}
       <Snackbar
         visible={visible}
         onDismiss={() => setVisible(false)}

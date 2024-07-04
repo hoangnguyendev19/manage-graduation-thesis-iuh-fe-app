@@ -6,7 +6,7 @@ import { useAppSelector } from '../../redux/hooks';
 import { DataTable, Text } from 'react-native-paper';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 import { useEffect, useMemo, useState } from 'react';
-import { checkGender } from '../../utils/handler';
+import { checkGender, validateDate } from '../../utils/handler';
 import NoneData from '../../components/NoneData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import transcriptService from '../../services/transcript';
@@ -35,17 +35,17 @@ const Result: React.FC<{}> = ({}) => {
     {
       key: 1,
       label: 'Hướng dẫn',
-      grade: transcript?.advisorScore ? transcript?.advisorScore : 0,
+      grade: transcript?.advisorScore,
     },
     {
       key: 2,
       label: 'Phản Biện',
-      grade: transcript?.sessionHostScore,
+      grade: transcript?.reviewerScore,
     },
     {
       key: 3,
-      label: 'Hội Đồng',
-      grade: transcript?.reviewerScore,
+      label: 'Báo cáo',
+      grade: transcript?.reportScore,
     },
     {
       key: 4,
@@ -63,14 +63,14 @@ const Result: React.FC<{}> = ({}) => {
     const _data = {
       name: userState?.fullName,
       gender: userState?.gender,
-      phoneNumber: userState?.phoneNumber,
+      phone: userState?.phone,
       email: userState?.email,
     };
 
     const _DATA = [
       { name: _data.name, key: 'Tên Sinh viên:' },
       { name: checkGender(_data.gender), key: 'Giới tính:' },
-      { name: _data.phoneNumber, key: 'Số điện thoại:' },
+      { name: _data.phone, key: 'Số điện thoại:' },
       { name: _data.email, key: 'Email:' },
     ];
 
@@ -97,7 +97,7 @@ const Result: React.FC<{}> = ({}) => {
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
       <Header title="Kết quả" logo iconLeft={true} home={false} iconRight={true}></Header>
 
-      {termState.isPublicResult ? (
+      {validateDate(termState?.startPublicResultDate, termState?.endPublicResultDate) ? (
         <View style={styles.containner}>
           {infoUser}
           <Text style={styles.title_Table}>Tổng hợp điểm</Text>
@@ -172,7 +172,7 @@ const Result: React.FC<{}> = ({}) => {
           </ScrollView>
         </View>
       ) : (
-        <NoneData icon title="Chưa được xem điểm"></NoneData>
+        <NoneData icon title="Chưa đến thời gian công bố điểm!"></NoneData>
       )}
     </SafeAreaView>
   );

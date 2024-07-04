@@ -51,24 +51,24 @@ export interface Topic {
 }
 
 export interface Lecturer {
-  id: number;
-  userName: string;
+  id: string;
+  username: string;
   fullName: string;
-  avatarUrl: string;
-  phoneNumber: string;
+  avatar: string;
+  phone: string;
   email: string;
   gender: string;
   degree: string;
   role: string;
-  created_at: string;
-  updated_at: string;
-  major_id: number;
+  isAdmin: boolean;
+  isActive: boolean;
+  majorId: string;
+  majorName: string;
 }
 
 export interface Notify {
-  id: number;
+  id: string;
   message: string;
-  type: string;
   isRead: boolean;
   created_at: string;
   updated_at: string;
@@ -93,7 +93,7 @@ export interface Term {
 
 export interface Transcript {
   advisorScore: number;
-  sessionHostScore: number;
+  reportScore: number;
   reviewerScore: number;
   totalBonusScore: number;
   totalAverageScore: number;

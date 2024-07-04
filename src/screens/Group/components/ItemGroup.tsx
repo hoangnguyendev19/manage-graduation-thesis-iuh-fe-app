@@ -13,15 +13,16 @@ import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { RouteNames } from '../../../utils/contants';
 import NoneData from '../../../components/NoneData';
+import { Images } from '../../../assets/images/Images';
 
 interface Member {
   student_id: number;
   isAdmin: boolean;
   student: {
-    userName: string;
+    username: string;
     fullName: string;
-    avatarUrl: string;
-    phoneNumber: string;
+    avatar: string;
+    phone: string;
     email: string;
     gender: string;
   };
@@ -39,7 +40,7 @@ const ItemGroup = () => {
 
   useEffect(() => {
     const getInfoGroup = async () => {
-      const { data } = await groupService.getMyGroup(termState.id);
+      const { data } = await groupService.getMyGroup(termState?.id);
 
       if (data) {
         setListMember(data.group.members);
@@ -124,13 +125,19 @@ const ItemGroup = () => {
       >
         {mem?.isAdmin ? (
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Avatar.Image size={60} source={{ uri: mem?.student?.avatarUrl }} />
+            <Avatar.Image
+              size={60}
+              source={mem?.student?.avatar ? { uri: mem?.student?.avatar } : Images.avatar}
+            />
             <Text style={{ marginLeft: responsiveWidth(10), fontWeight: 'bold' }}>
               (Trưởng nhóm)
             </Text>
           </View>
         ) : (
-          <Avatar.Image size={60} source={{ uri: mem?.student?.avatarUrl }} />
+          <Avatar.Image
+            size={60}
+            source={mem?.student?.avatar ? { uri: mem?.student?.avatar } : Images.avatar}
+          />
         )}
         <View
           style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(15) }}
@@ -145,7 +152,7 @@ const ItemGroup = () => {
           >
             MSSV:
           </Text>
-          <Text style={{ fontSize: responsiveFont(16) }}>{mem?.student?.userName}</Text>
+          <Text style={{ fontSize: responsiveFont(16) }}>{mem?.student?.username}</Text>
         </View>
         <View
           style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(10) }}
@@ -190,7 +197,7 @@ const ItemGroup = () => {
           >
             Số điện thoại:
           </Text>
-          <Text style={{ fontSize: responsiveFont(16) }}>{mem?.student?.phoneNumber}</Text>
+          <Text style={{ fontSize: responsiveFont(16) }}>{mem?.student?.phone}</Text>
         </View>
         <View
           style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(10) }}

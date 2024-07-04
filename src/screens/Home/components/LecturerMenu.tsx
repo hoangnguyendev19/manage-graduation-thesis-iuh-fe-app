@@ -14,8 +14,9 @@ import Loading from '../../../components/Loading';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import lecturerService from '../../../services/lecturer';
 
-const LectureMenu = () => {
+const LecturerMenu = () => {
   const majorState = useAppSelector((state) => state.major.major);
+  const termState = useAppSelector((state) => state.term.term);
   const [lecturers, setLecturers] = useState<Lecturer[]>();
   const [isLoading, setLoading] = useState(false);
 
@@ -23,7 +24,7 @@ const LectureMenu = () => {
     setLoading(true);
     const getLecturersOfmajor = async () => {
       try {
-        const { data } = await lecturerService.getLecturerByMajor(Number(majorState?.id));
+        const { data } = await lecturerService.getLecturerByMajor(termState?.id, majorState?.id);
         setLecturers(data.lecturers);
         setLoading(false);
       } catch (error) {
@@ -37,16 +38,16 @@ const LectureMenu = () => {
   const renderItem = (item: any) => {
     const LECTURER_DATA = [
       // { name: item.avatarUrl, key: '' },
-      { name: item.fullName, key: 'Tên Giảng viên' },
+      { name: item.fullName, key: 'Tên giảng viên' },
       { name: checkRole(item.role), key: 'Chức vụ' },
       { name: checkGender(item.gender), key: 'Giới tính' },
-      { name: item.phoneNumber, key: 'Số điện thoại' },
+      { name: item.phone, key: 'Số điện thoại' },
       { name: checkDegree(item.degree), key: 'Trình độ' },
       { name: item.email, key: 'Email' },
     ];
 
     return (
-      <View style={styles.contentListItem}>
+      <View key={item.id} style={styles.contentListItem}>
         <View
           style={{
             flexDirection: 'row',
@@ -64,7 +65,7 @@ const LectureMenu = () => {
               Mã giảng viên
             </Text>
             <Text numberOfLines={1} style={[styles.titleGroup]}>
-              {item?.userName}
+              {item?.username}
             </Text>
           </View>
         </View>
@@ -136,7 +137,7 @@ const LectureMenu = () => {
   );
 };
 
-export default LectureMenu;
+export default LecturerMenu;
 
 const styles = StyleSheet.create({
   containner: {
@@ -211,7 +212,7 @@ const styles = StyleSheet.create({
     paddingVertical: responsiveHeight(9),
   },
   titleGroup: {
-    fontSize: responsiveFont(17),
+    fontSize: responsiveFont(14),
     color: Colors.textPrimary,
     fontWeight: '500',
     // paddingHorizontal: responsiveWidth(15),

@@ -62,15 +62,10 @@ const Login: React.FC<{}> = () => {
   );
 
   useEffect(() => {
-    if (userState.isLogin === true) {
-      setLoading(false);
-      navigation.navigate(RouteNames.TabNavigation);
+    if (userState.user.id !== '') {
+      navigation.navigate(RouteNames.HomeTab);
     }
-    if (userState.isLoading === false && userState.isError === true) {
-      setLoading(false);
-      setError('Thông tin đăng nhập không đúng');
-      setVisible(true);
-    }
+    setLoading(false);
   }, [userState]);
 
   const handleCheck = () => {

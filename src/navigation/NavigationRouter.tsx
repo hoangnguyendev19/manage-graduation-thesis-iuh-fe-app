@@ -11,7 +11,7 @@ import EvaluationMenu from '../screens/Home/components/EvaluationMenu';
 import ItemGroup from '../screens/Group/components/ItemGroup';
 import ItemListGroup from '../screens/Group/components/ItemListGroup';
 import ItemTopicMenu from '../screens/Group/components/ItemTopicMenu';
-import LectureMenu from '../screens/Home/components/LectureMenu';
+import LecturerMenu from '../screens/Home/components/LecturerMenu';
 import Notification from '../screens/Home/components/Notification';
 import DisAcceptedUser from '../screens/Login/components/NotificationLogin';
 import ChangePassword from '../screens/Account/components/ChangePassword';
@@ -42,7 +42,7 @@ const NavigationRouter = () => {
         <Stack.Screen name={'TermMenu'} component={TermMenu} />
         <Stack.Screen name={'TopicMenu'} component={TopicMenu} />
         <Stack.Screen name={'EvaluationMenu'} component={EvaluationMenu} />
-        <Stack.Screen name={'LectureMenu'} component={LectureMenu} />
+        <Stack.Screen name={'LecturerMenu'} component={LecturerMenu} />
 
         <Stack.Screen name={'ItemListGroup'} component={ItemListGroup} />
         <Stack.Screen name={'ItemGroup'} component={ItemGroup} />

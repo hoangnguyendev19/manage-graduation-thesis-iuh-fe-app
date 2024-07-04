@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, StatusBar } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 import Lottie from 'lottie-react-native';
 import Header from '../../components/Header';
@@ -46,8 +46,8 @@ const menuBottom = [
   },
   {
     name: 'Giảng Viên',
-    key: 'lecture',
-    navigation: RouteNames.LectureMenu,
+    key: 'lecturer',
+    navigation: RouteNames.LecturerMenu,
     icon: 'school',
     color: '#f08080',
     backgroundColor: Colors.white,

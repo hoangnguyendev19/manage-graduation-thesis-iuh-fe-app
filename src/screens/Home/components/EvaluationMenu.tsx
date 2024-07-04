@@ -15,7 +15,6 @@ import { validateDate } from '../../../utils/handler';
 const EvaluationMenu = () => {
   const layout = useWindowDimensions();
   const termState = useAppSelector((state) => state.term.term);
-  const userState = useAppSelector((state) => state.user.user);
 
   const [transcriptAdvisor, setTranscriptAdvisor] = useState(null);
   const [transcriptReviewer, setTranscriptReviewer] = useState(null);
@@ -24,11 +23,7 @@ const EvaluationMenu = () => {
   useEffect(() => {
     const getTranscriptAdvisor = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByType(
-          termState?.id,
-          'ADVISOR',
-          userState?.id,
-        );
+        const { data } = await transcriptService.getTranscriptByStudent(termState?.id, 'ADVISOR');
 
         console.log('data', data);
 
@@ -40,11 +35,7 @@ const EvaluationMenu = () => {
 
     const getTranscriptReviewer = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByType(
-          termState?.id,
-          'REVIEWER',
-          userState?.id,
-        );
+        const { data } = await transcriptService.getTranscriptByStudent(termState?.id, 'REVIEWER');
         setTranscriptReviewer(data.transcript);
       } catch (error) {
         console.log('error', error);
@@ -53,11 +44,7 @@ const EvaluationMenu = () => {
 
     const getTranscriptReport = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByType(
-          termState.id,
-          'REPORT',
-          userState?.id,
-        );
+        const { data } = await transcriptService.getTranscriptByStudent(termState.id, 'REPORT');
         setTranscriptReport(data.transcript);
       } catch (error) {
         console.log('error', error);
@@ -108,7 +95,7 @@ const EvaluationMenu = () => {
                 </DataTable.Header>
                 {transcriptAdvisor?.transcripts.map((item, index) => (
                   <DataTable.Row key={index}>
-                    <DataTable.Cell>{item?.lecturerTerm?.lecturer?.fullName}</DataTable.Cell>
+                    <DataTable.Cell>{item?.lecturerName}</DataTable.Cell>
                     <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
@@ -150,7 +137,7 @@ const EvaluationMenu = () => {
                 </DataTable.Header>
                 {transcriptReviewer?.transcripts.map((item, index) => (
                   <DataTable.Row key={index}>
-                    <DataTable.Cell>{item?.lecturerTerm?.lecturer?.fullName}</DataTable.Cell>
+                    <DataTable.Cell>{item?.lecturerName}</DataTable.Cell>
                     <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
                   </DataTable.Row>
                 ))}
@@ -192,7 +179,7 @@ const EvaluationMenu = () => {
                 </DataTable.Header>
                 {transcriptReport?.transcripts.map((item, index) => (
                   <DataTable.Row key={index}>
-                    <DataTable.Cell>{item?.lecturerTerm?.lecturer?.fullName}</DataTable.Cell>
+                    <DataTable.Cell>{item?.lecturerName}</DataTable.Cell>
                     <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
                   </DataTable.Row>
                 ))}

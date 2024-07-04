@@ -163,6 +163,7 @@ const TopicMenu = () => {
       </>
     );
   }, [topics]);
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
@@ -175,7 +176,7 @@ const TopicMenu = () => {
         iconRight={true}
       ></Header>
 
-      {validateDate(termState?.startChooseTopicDate, termState?.endChooseTopicDate) ? (
+      {!validateDate(termState?.startChooseTopicDate, termState?.endChooseTopicDate) ? (
         <View style={styles.nonChooseTopic}>
           <View style={styles.contentNoData}>
             <NoneData icon title="Chưa đến thời gian chọn đề tài!"></NoneData>

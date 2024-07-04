@@ -27,7 +27,7 @@ const Notification = () => {
     getNotifyList();
   }, []);
 
-  const handleDeleteNotify = async (id: number) => {
+  const handleDeleteNotify = async (id: string) => {
     const { data } = await notificationService.deleteNotify(id);
     if (data) {
       const newNotify = notify.filter((item) => item.id !== id);

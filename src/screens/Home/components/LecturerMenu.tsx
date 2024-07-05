@@ -47,7 +47,7 @@ const LecturerMenu = () => {
     ];
 
     return (
-      <View key={item.id} style={styles.contentListItem}>
+      <View style={styles.contentListItem}>
         <View
           style={{
             flexDirection: 'row',
@@ -103,7 +103,7 @@ const LecturerMenu = () => {
         </View>
         <FlatList
           data={lecturers}
-          renderItem={({ item }) => <View key={item.id}>{renderItem(item)}</View>}
+          renderItem={({ item }) => <View key={item.id.toString()}>{renderItem(item)}</View>}
           keyExtractor={(item) => item.id.toString()}
         />
       </>

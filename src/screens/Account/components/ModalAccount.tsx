@@ -238,7 +238,7 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
                             fontSize: responsiveFont(14),
                             color: Colors.black,
                           }}
-                          placeholder={item.placeholder.toString()}
+                          placeholder={item?.placeholder}
                           onChangeText={(text) => setBasicInfo({ ...basicInfo, [item.key]: text })}
                           style={{ marginBottom: responsiveHeight(20) }}
                           messageError={item.key === 'email' && isError}

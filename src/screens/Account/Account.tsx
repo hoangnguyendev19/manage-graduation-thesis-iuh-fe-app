@@ -39,11 +39,11 @@ const Account: React.FC<{}> = ({}) => {
   };
 
   const handleChangePass = () => {
-    if (isEmpty(userState.email)) {
-      // showMessageWarning('Vui lòng cập nhật email');
-    } else {
-      navigation.navigate(RouteNames.ChangePassword);
-    }
+    // if (isEmpty(userState.email)) {
+    //   // showMessageWarning('Vui lòng cập nhật email');
+    // } else {
+    navigation.navigate(RouteNames.ChangePassword);
+    // }
   };
 
   const renderMain = useMemo(

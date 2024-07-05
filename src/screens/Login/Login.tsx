@@ -63,7 +63,7 @@ const Login: React.FC<{}> = () => {
 
   useEffect(() => {
     if (userState.user.id !== '') {
-      navigation.navigate(RouteNames.HomeTab);
+      navigation.navigate(RouteNames.TabNavigation);
     }
     setLoading(false);
   }, [userState]);

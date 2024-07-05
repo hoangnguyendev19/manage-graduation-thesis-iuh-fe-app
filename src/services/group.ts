@@ -8,9 +8,9 @@ class GroupService {
     });
   }
 
-  async getListGroup(termId: string, majorId: string) {
+  async getListGroup(termId: string) {
     return await axiosAuth({
-      url: `api/v1/group-students/major?termId=${termId}&majorId=${majorId}`,
+      url: `api/v1/group-students/term?termId=${termId}`,
       method: 'get',
     });
   }

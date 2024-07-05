@@ -22,6 +22,7 @@ interface Props {
 
 const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState }: Props) => {
   const [expanded, setExpanded] = useState(true);
+  console.log(groupState);
 
   const handlePress = () => setExpanded(!expanded);
   const [visible, setVisible] = useState(false);

@@ -1,7 +1,7 @@
 import axios, { AxiosRequestHeaders } from 'axios';
 import tokenService from '../services/token';
 
-const API_URL = 'http://192.168.1.5:3000';
+const API_URL = 'http://192.168.1.6:3000';
 
 const axiosAuth = axios.create({
   baseURL: API_URL,

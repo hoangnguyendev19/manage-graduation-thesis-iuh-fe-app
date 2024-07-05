@@ -9,21 +9,23 @@ import { useEffect, useState } from 'react';
 import groupService from '../../../services/group';
 import { useAppSelector } from '../../../redux/hooks';
 import { Divider, Modal, Snackbar, TextInput } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import { RouteNames } from '../../../utils/contants';
 
 const ItemListGroup = () => {
+  const navigation = useNavigation();
   const [listGroup, setListGroup] = useState<any[]>([]);
   const termState = useAppSelector((state) => state.term.term);
-  const majorState = useAppSelector((state) => state.major.major);
-  const [nameGroup, setNameGroup] = useState('');
+  // const [nameGroup, setNameGroup] = useState('');
 
-  const [showModal, setShowModal] = useState(false);
+  // const [showModal, setShowModal] = useState(false);
   const [error, setError] = useState('');
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const getListGroup = async () => {
       try {
-        const { data } = await groupService.getListGroup(termState?.id, majorState?.id);
+        const { data } = await groupService.getListGroup(termState?.id);
 
         if (data) setListGroup(data.groupStudents);
       } catch (error) {
@@ -32,7 +34,7 @@ const ItemListGroup = () => {
     };
 
     getListGroup();
-  }, [termState, majorState]);
+  }, [termState]);
 
   const handleJoinGroup = async (groupId: string) => {
     try {
@@ -47,6 +49,7 @@ const ItemListGroup = () => {
         });
 
         setListGroup(newGroup);
+        navigation.navigate(RouteNames.ItemGroup);
       }
     } catch (error) {
       console.log('error', error);

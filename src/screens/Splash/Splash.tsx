@@ -30,10 +30,10 @@ const SplashScreen = () => {
       if (token !== null) {
         try {
           await dispatch(authAPI.getInfo()());
+          navigation.navigate(RouteNames.TabNavigation);
         } catch (error) {
           console.log('error', error);
         }
-        navigation.navigate(RouteNames.TabNavigation);
       } else {
         navigation.navigate(RouteNames.LoginNavigation);
       }

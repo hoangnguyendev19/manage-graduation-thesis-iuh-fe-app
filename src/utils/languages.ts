@@ -36,5 +36,6 @@ export default {
     target: 'Mục tiêu',
     evaluation: 'Đánh giá',
     total: 'Kết quả',
+    dob: 'Ngày sinh',
   },
 };

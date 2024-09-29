@@ -1,18 +1,16 @@
-import { useEffect, useMemo, useState } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, FlatList, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { Dimensions, FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Header from '../../components/Header';
 import IconView from '../../components/IconView';
 
-import GlobalStyles from '../../themes/GlobalStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import NoneData from '../../components/NoneData';
 import { useAppSelector } from '../../redux/hooks';
 import Colors from '../../themes/Colors';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
-import NoneData from '../../components/NoneData';
-import { Topic } from '../../utils/types';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import GlobalStyles from '../../themes/GlobalStyles';
 import { RouteNames } from '../../utils/contants';
 import { validateDate } from '../../utils/handler';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 
 const MENU = [
   {
@@ -37,13 +35,7 @@ const MENU = [
 
 const Group: React.FC<{}> = () => {
   const termState = useAppSelector((state) => state.term.term);
-
-  const [topic, setTopic] = useState<Topic>();
-
   const navigation = useNavigation();
-
-  // const [showModal, setShowModal] = useState(false);
-  // const [showModalCreateGroup, setShowModalCreateGroup] = useState(false);
 
   const renderMenuItem = (item: any, index: any) => {
     return (

@@ -3,12 +3,11 @@ import termService from '../services/term';
 
 class TermAPI {
   getTermNow() {
-    return createAsyncThunk('term/get-term-last', async () => {
+    return createAsyncThunk('term/get-term-last', async (majorId: String) => {
       try {
-        const result = await termService.getTermNow();
+        const result = await termService.getTermNow(majorId);
 
         if (result.status === 200) {
-          // thunkAPI.dispatch(setAllow(result.data.allow));
           return result.data.term;
         }
       } catch (error) {

@@ -151,7 +151,6 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     height: responsiveHeight(40),
-    // minHeight: responsiveHeight(50),
     paddingHorizontal: responsiveWidth(12),
     flexDirection: 'row',
     alignItems: 'center',

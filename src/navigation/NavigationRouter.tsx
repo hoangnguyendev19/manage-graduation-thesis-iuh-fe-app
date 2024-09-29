@@ -6,12 +6,11 @@ import TabNavigation from './TabNavigation';
 import SplashScreen from '../screens/Splash/Splash';
 import TermMenu from '../screens/Home/components/TermMenu';
 import TopicMenu from '../screens/Home/components/TopicMenu';
+import TopicDetail from '../components/TopicDetail';
 import EvaluationMenu from '../screens/Home/components/EvaluationMenu';
 
 import ItemGroup from '../screens/Group/components/ItemGroup';
 import ItemListGroup from '../screens/Group/components/ItemListGroup';
-import ItemTopicMenu from '../screens/Group/components/ItemTopicMenu';
-import LecturerMenu from '../screens/Home/components/LecturerMenu';
 import Notification from '../screens/Home/components/Notification';
 import DisAcceptedUser from '../screens/Login/components/NotificationLogin';
 import ChangePassword from '../screens/Account/components/ChangePassword';
@@ -32,21 +31,16 @@ const NavigationRouter = () => {
           component={SplashScreen}
           options={{ title: 'SplashScreen' }}
         />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          // options={{title: 'Login'}}
-        />
+        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name={'TabNavigation'} component={TabNavigation} />
 
         <Stack.Screen name={'TermMenu'} component={TermMenu} />
         <Stack.Screen name={'TopicMenu'} component={TopicMenu} />
         <Stack.Screen name={'EvaluationMenu'} component={EvaluationMenu} />
-        <Stack.Screen name={'LecturerMenu'} component={LecturerMenu} />
 
         <Stack.Screen name={'ItemListGroup'} component={ItemListGroup} />
         <Stack.Screen name={'ItemGroup'} component={ItemGroup} />
-        <Stack.Screen name={'ItemTopicMenu'} component={ItemTopicMenu} />
+        <Stack.Screen name={'TopicDetail'} component={TopicDetail} />
         <Stack.Screen name={'Notification'} component={Notification} />
         <Stack.Screen name={'DisAcceptedUser'} component={DisAcceptedUser} />
         <Stack.Screen name={'ChangePassword'} component={ChangePassword} />

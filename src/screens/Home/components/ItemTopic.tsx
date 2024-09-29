@@ -1,17 +1,17 @@
-import { useEffect, useMemo, useState } from 'react';
-import { StyleSheet, View, Text, ScrollView, TouchableOpacity, Pressable } from 'react-native';
-import { Avatar, DataTable, Divider, List, Modal } from 'react-native-paper';
-import Lottie from 'lottie-react-native';
-import IconView from '../../../components/IconView';
-import Colors from '../../../themes/Colors';
-import { Topic } from '../../../utils/types';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-import GlobalStyles from '../../../themes/GlobalStyles';
-import { Images } from '../../../assets/images/Images';
-import { checkDegree, checkGender, isEmpty } from '../../../utils/handler';
-import { getLevelColorTopic, getLevelTopic, getNameStatus } from '../../../utils/handler';
+import { useNavigation } from '@react-navigation/native';
+import { useMemo, useState } from 'react';
+import { Pressable, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { DataTable, Divider, Modal } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ButtonHandle from '../../../components/ButtonHandle';
+import IconView from '../../../components/IconView';
+import { useAppSelector } from '../../../redux/hooks';
+import Colors from '../../../themes/Colors';
+import GlobalStyles from '../../../themes/GlobalStyles';
+import { RouteNames } from '../../../utils/contants';
+import { validateDate } from '../../../utils/handler';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
+import { Topic } from '../../../utils/types';
 
 interface Props {
   topicInfo?: Topic;
@@ -21,45 +21,23 @@ interface Props {
 }
 
 const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState }: Props) => {
-  const [expanded, setExpanded] = useState(true);
-  console.log(groupState);
-
-  const handlePress = () => setExpanded(!expanded);
+  const termState = useAppSelector((state) => state.term.term);
   const [visible, setVisible] = useState(false);
   const [content, setContent] = useState('');
-
-  const TOPIC_DATA = [
-    { name: topicInfo?.quantityGroupMax, key: 'Số lượng nhóm tối đa' },
-    {
-      name: topicInfo?.quantityGroup ? topicInfo?.quantityGroup : '0',
-      key: 'Số lượng nhóm đã chọn',
-    },
-    { name: topicInfo?.description, key: 'Mô tả' },
-    { name: topicInfo?.note, key: 'Ghi chú' },
-    { name: topicInfo?.target, key: 'Mục tiêu' },
-    { name: topicInfo?.standardOutput, key: 'Mục đích' },
-    { name: topicInfo?.requireInput, key: 'Yêu cầu đầu vào' },
-    { name: getNameStatus(String(topicInfo?.status)), key: 'Tình trạng' },
-  ];
-  const LECTURER_DATA = [
-    { name: topicInfo?.lecturerTerm?.lecturer?.avatar, key: '' },
-    { name: topicInfo?.lecturerTerm?.lecturer?.fullName, key: 'Tên Giảng viên' },
-    { name: checkGender(topicInfo?.lecturerTerm?.lecturer?.gender), key: 'Giới tính' },
-    { name: topicInfo?.lecturerTerm?.lecturer?.phone, key: 'Số điện thoại' },
-    { name: checkDegree(topicInfo?.lecturerTerm?.lecturer?.degree), key: 'Trình độ' },
-    { name: topicInfo?.lecturerTerm?.lecturer?.email, key: 'Email' },
-  ];
+  const navigation = useNavigation();
 
   const renderButton = useMemo(() => {
     return (
       <>
         {groupState?.info?.id ? (
-          <View style={GlobalStyles.centerView}>
+          <View>
             {groupState?.info?.topic_id ? (
               <>
                 {topicInfo?.id === groupState?.info?.topic_id && (
                   <ButtonHandle
-                    style={styles.btnCancel}
+                    style={{
+                      backgroundColor: '#f08080',
+                    }}
                     onPress={handleCancelTopic}
                     colorIcon={Colors.white}
                     iconName="close-outline"
@@ -68,17 +46,12 @@ const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState
                 )}
               </>
             ) : (
-              <View>
-                <ButtonHandle
-                  style={styles.btn}
-                  onPress={handleChooseTopic}
-                  colorIcon={Colors.white}
-                  iconName="arrow-redo-outline"
-                  title="Chọn đề tài"
-                />
-                {/* <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: {membermaxOfGroup}</Text> */}
-                <Text style={styles.viewButton_text}>Nhóm đã chọn đề tài: 0</Text>
-              </View>
+              <ButtonHandle
+                onPress={handleChooseTopic}
+                colorIcon={Colors.white}
+                iconName="arrow-redo-outline"
+                title="Chọn đề tài"
+              />
             )}
           </View>
         ) : (
@@ -94,6 +67,12 @@ const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState
     );
   }, [groupState, topicInfo]);
 
+  const handleViewDetail = () => {
+    navigation.navigate(RouteNames.TopicDetail, {
+      topicId: topicInfo?.id,
+    });
+  };
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <View style={styles.mainTopic}>
@@ -108,136 +87,60 @@ const ItemTopic = ({ topicInfo, handleChooseTopic, handleCancelTopic, groupState
                   textTransform: 'uppercase',
                 }}
               >
-                Tên đề tài
+                Mã đề tài: {topicInfo?.key}
               </DataTable.Title>
             </DataTable.Header>
-
-            <View style={styles.contentTop}>
-              <Text style={styles.textValue} numberOfLines={1}>
-                {topicInfo?.name}
-              </Text>
-              <TouchableOpacity
-                onPress={() => {
-                  setContent(topicInfo?.name as string);
-                  setVisible(true);
-                }}
-              >
-                <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
-              </TouchableOpacity>
-            </View>
+            <DataTable.Row>
+              <DataTable.Cell>
+                <View style={styles.contentTop}>
+                  <Text style={styles.textValue} numberOfLines={1}>
+                    Tên: {topicInfo?.name}
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setContent(topicInfo?.name as string);
+                      setVisible(true);
+                    }}
+                  >
+                    <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
+                  </TouchableOpacity>
+                </View>
+              </DataTable.Cell>
+            </DataTable.Row>
+            <DataTable.Row>
+              <DataTable.Cell>
+                <Text style={styles.textValue} numberOfLines={1}>
+                  GVHD: {topicInfo?.fullName}
+                </Text>
+              </DataTable.Cell>
+            </DataTable.Row>
+            <DataTable.Row>
+              <DataTable.Cell>
+                <Text style={styles.textValue} numberOfLines={1}>
+                  Số lượng nhóm đã đăng ký: {topicInfo?.quantityGroup} /{' '}
+                  {topicInfo?.quantityGroupMax}
+                </Text>
+              </DataTable.Cell>
+            </DataTable.Row>
+            <DataTable.Row>
+              <DataTable.Cell>
+                <ButtonHandle
+                  disabled={false}
+                  style={styles.btnInfo}
+                  colorIcon={Colors.white}
+                  iconName="information-circle-outline"
+                  title="Xem chi tiết"
+                  onPress={handleViewDetail}
+                />
+              </DataTable.Cell>
+            </DataTable.Row>
+            {validateDate(termState?.startChooseTopicDate, termState?.endChooseTopicDate) && (
+              <DataTable.Row>
+                <DataTable.Cell>{renderButton}</DataTable.Cell>
+              </DataTable.Row>
+            )}
           </DataTable>
         </View>
-        {renderButton}
-        <List.Section style={styles.content}>
-          <List.Accordion
-            title={<Text>Thông tin</Text>}
-            right={(props) => null}
-            left={(props) => (
-              <Lottie
-                {...props}
-                source={require('../../../assets/jsonAmination/more-icon.json')}
-                autoPlay
-                loop
-                style={styles.iconMenu}
-              />
-            )}
-          >
-            <ScrollView>
-              {TOPIC_DATA.map((item, index) => {
-                return (
-                  <List.Item
-                    key={index}
-                    title={<Text style={styles.titleMain}>{item?.key}</Text>}
-                    description={
-                      <>
-                        <Text style={styles.subTitle}>{item?.name}</Text>
-                      </>
-                    }
-                    right={(props) => (
-                      <TouchableOpacity
-                        style={{ justifyContent: 'center' }}
-                        onPress={() => {
-                          setContent(item?.name as string);
-                          setVisible(true);
-                        }}
-                      >
-                        <IconView
-                          {...props}
-                          name="ellipsis-vertical"
-                          color={Colors.grayLight}
-                          size={24}
-                        />
-                      </TouchableOpacity>
-                    )}
-                  />
-                );
-              })}
-            </ScrollView>
-          </List.Accordion>
-
-          <List.Accordion
-            title={<Text>Giảng viên</Text>}
-            left={(props) => (
-              <Lottie
-                {...props}
-                source={require('../../../assets/jsonAmination/more-icon.json')}
-                autoPlay
-                loop
-                style={styles.iconMenu}
-              />
-            )}
-            right={(props) => null}
-            expanded={expanded}
-            onPress={handlePress}
-          >
-            <ScrollView>
-              {LECTURER_DATA.map((item, index) => {
-                if (item?.key === '') {
-                  return (
-                    <View key={index} style={styles.contentAvatar}>
-                      <Avatar.Image
-                        source={item?.name ? { uri: item?.name } : Images.avatar}
-                        size={60}
-                      />
-
-                      <Text style={styles.title}>
-                        Mã GV: {topicInfo?.lecturerTerm?.lecturer?.userName}
-                      </Text>
-                    </View>
-                  );
-                }
-
-                return (
-                  <List.Item
-                    key={index}
-                    title={<Text style={styles.titleMain}>{item?.key}</Text>}
-                    description={
-                      <>
-                        <Text style={styles.subTitle}>{item?.name}</Text>
-                      </>
-                    }
-                    right={(props) => (
-                      <TouchableOpacity
-                        onPress={() => {
-                          setContent(item?.name as string);
-                          setVisible(true);
-                        }}
-                        style={{ justifyContent: 'center' }}
-                      >
-                        <IconView
-                          {...props}
-                          name="ellipsis-vertical"
-                          color={Colors.grayLight}
-                          size={24}
-                        />
-                      </TouchableOpacity>
-                    )}
-                  />
-                );
-              })}
-            </ScrollView>
-          </List.Accordion>
-        </List.Section>
       </View>
 
       <Modal
@@ -294,9 +197,6 @@ const styles = StyleSheet.create({
   contentTop: {
     display: 'flex',
     flexDirection: 'row',
-    marginTop: responsiveHeight(10),
-    paddingLeft: responsiveWidth(5),
-    marginBottom: responsiveHeight(10),
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
@@ -307,7 +207,6 @@ const styles = StyleSheet.create({
   },
   content_Top: {
     width: '100%',
-
     backgroundColor: Colors.white,
   },
   iconMenu: {
@@ -329,20 +228,11 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     fontWeight: '600',
   },
-  imgaAvatar: {
-    width: 60,
-    height: 60,
-    resizeMode: 'contain',
-  },
-  btn: {
-    width: '40%',
-  },
-  btnCancel: {
-    width: '50%',
-    backgroundColor: '#f08080',
+  btnInfo: {
+    width: '100%',
+    backgroundColor: 'blue',
   },
   btn_dis: {
-    width: '40%',
     backgroundColor: '#5e6e52',
     color: '#000',
   },
@@ -350,6 +240,7 @@ const styles = StyleSheet.create({
     fontSize: responsiveFont(14),
     fontWeight: '500',
     textTransform: 'uppercase',
+    width: '90%',
   },
   viewButton_text: {
     fontSize: responsiveFont(14),

@@ -1,55 +1,41 @@
-import React, { useEffect, useMemo, useState } from 'react';
 import Lottie from 'lottie-react-native';
 import 'moment/locale/vi';
-import { StatusBar, StyleSheet, View, Text, FlatList } from 'react-native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { FlatList, StatusBar, StyleSheet, Text, View } from 'react-native';
 
 import Header from '../../../components/Header';
+import { useAppSelector } from '../../../redux/hooks';
 import GlobalStyles from '../../../themes/GlobalStyles';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
 
-import Colors from '../../../themes/Colors';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import NoneData from '../../../components/NoneData';
 import topicService from '../../../services/topic';
+import Colors from '../../../themes/Colors';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import { Topic } from '../../../utils/types';
 import ItemTopic from './ItemTopic';
 
-import Loading from '../../../components/Loading';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import groupService from '../../../services/group';
-import { Snackbar } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
+import { debounce } from 'lodash';
+import { Snackbar, TextInput } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Loading from '../../../components/Loading';
+import groupService from '../../../services/group';
 import { RouteNames } from '../../../utils/contants';
 import { validateDate } from '../../../utils/handler';
 
 const TopicMenu = () => {
   const termState = useAppSelector((state) => state.term.term);
-  const majorState = useAppSelector((state) => state.major.major);
   const userState = useAppSelector((state) => state.user.user);
   const [groupState, setGroupState] = useState<any>(null);
   const navigation = useNavigation();
 
   const [isLoading, setLoading] = useState(false);
   const [isLoadingTopic, setLoadingTopic] = useState(false);
-
   const [topics, setTopics] = useState<Topic[]>();
   const [error, setError] = useState('');
   const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    setLoadingTopic(true);
-    if (termState?.id && majorState?.id) {
-      topicService.getTopicList(termState?.id, majorState?.id).then((result) => {
-        setLoadingTopic(false);
-
-        const _data = result?.data?.topics?.filter(
-          (i: { status: string }) => i.status === 'APPROVED',
-        );
-
-        setTopics(_data);
-      });
-    }
-  }, [termState]);
+  const [keywords, setKeywords] = useState('');
 
   useEffect(() => {
     const getMyGroup = async () => {
@@ -82,9 +68,11 @@ const TopicMenu = () => {
           setLoading(false);
           navigation.navigate(RouteNames.HomeStack);
         }
-      } catch (error) {
+      } catch (error: any) {
         setLoading(false);
-        setError('Vui lòng thử lại');
+        if (error.response) {
+          setError(error.response.data.message);
+        }
         setVisible(true);
         console.log('error', error);
       }
@@ -108,9 +96,11 @@ const TopicMenu = () => {
           setLoading(false);
           navigation.navigate(RouteNames.HomeStack);
         }
-      } catch (error) {
+      } catch (error: any) {
         setLoading(false);
-        setError('Vui lòng thử lại');
+        if (error.response) {
+          setError(error.response.data.message);
+        }
         setVisible(true);
         console.log('error', error);
       }
@@ -134,7 +124,7 @@ const TopicMenu = () => {
               />
               <View style={styles.viewTitle}>
                 <Text style={styles.topTitle}>DANH SÁCH ĐỀ TÀI</Text>
-                <Text style={styles.topTitle}>Số lượng: {topics?.length}</Text>
+                <Text style={styles.topTitle}>Kết quả tìm kiếm: {topics?.length}</Text>
               </View>
               <Lottie
                 source={require('../../../assets/jsonAmination/right-arrow-seemore.json')}
@@ -145,7 +135,9 @@ const TopicMenu = () => {
             </View>
             <FlatList
               data={topics}
-              initialNumToRender={20}
+              initialNumToRender={5}
+              maxToRenderPerBatch={10}
+              keyExtractor={(item) => item?.id}
               renderItem={(item: any) => (
                 <ItemTopic
                   key={item?.item?.id}
@@ -164,6 +156,45 @@ const TopicMenu = () => {
     );
   }, [topics]);
 
+  const handleSearch = (text: string) => {
+    setKeywords(text);
+  };
+
+  useEffect(() => {
+    const fetchData = debounce(async (id) => {
+      setLoadingTopic(true);
+      try {
+        const { data } = await topicService.getTopicList(
+          id,
+          keywords,
+          'lecturerName',
+          1,
+          200,
+          'ASC',
+        );
+
+        if (data) {
+          setTopics(data.topics);
+          setLoadingTopic(false);
+        }
+      } catch (error) {
+        setLoadingTopic(false);
+        setError('Vui lòng thử lại');
+        setVisible(true);
+        console.log('error', error);
+      }
+    }, 500);
+
+    if (termState?.id) {
+      fetchData(termState?.id);
+    }
+
+    return () => {
+      setTopics([]);
+      fetchData.cancel();
+    };
+  }, [termState, keywords]);
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
@@ -176,14 +207,21 @@ const TopicMenu = () => {
         iconRight={true}
       ></Header>
 
-      {!validateDate(termState?.startChooseTopicDate, termState?.endChooseTopicDate) ? (
+      {!validateDate(termState?.startPublicTopicDate, termState?.endPublicTopicDate) ? (
         <View style={styles.nonChooseTopic}>
           <View style={styles.contentNoData}>
-            <NoneData icon title="Chưa đến thời gian chọn đề tài!"></NoneData>
+            <NoneData icon title="Chưa đến thời gian công bố đề tài!"></NoneData>
           </View>
         </View>
       ) : (
         <>
+          <TextInput
+            label="Tìm kiếm đề tài theo tên giảng viên"
+            textColor="black"
+            value={keywords}
+            onChangeText={(text) => handleSearch(text)}
+          />
+
           {renderTopicList}
           <Snackbar
             visible={visible}

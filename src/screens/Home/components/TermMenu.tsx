@@ -1,10 +1,10 @@
 import React from 'react';
-import { StatusBar, StyleSheet, View, Text, ScrollView } from 'react-native';
+import { ScrollView, StatusBar, StyleSheet, Text, View } from 'react-native';
 import Header from '../../../components/Header';
-import GlobalStyles from '../../../themes/GlobalStyles';
-import Colors from '../../../themes/Colors';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import { useAppSelector } from '../../../redux/hooks';
+import Colors from '../../../themes/Colors';
+import GlobalStyles from '../../../themes/GlobalStyles';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 
 import { DataTable } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,6 +36,14 @@ const TermMenu = () => {
     {
       title: 'Ngày kết thúc chọn nhóm',
       value: termState?.endChooseGroupDate,
+    },
+    {
+      title: 'Ngày bắt đầu công bố đề tài',
+      value: termState?.startPublicTopicDate,
+    },
+    {
+      title: 'Ngày kết thúc công bố đề tài',
+      value: termState?.endPublicTopicDate,
     },
     {
       title: 'Ngày bắt đầu chọn đề tài',

@@ -8,9 +8,16 @@ class TopicService {
     });
   }
 
-  async getTopicList(termId: string, majorId: string) {
+  async getTopicList(
+    termId: string,
+    keywords: string,
+    searchField: string,
+    page: number,
+    limit: number,
+    sort: string,
+  ) {
     return await axiosAuth({
-      url: `api/v1/topics?termId=${termId}&majorId=${majorId}`,
+      url: `api/v1/topics?termId=${termId}&keywords=${keywords}&searchField=${searchField}&page=${page}&limit=${limit}&sort=${sort}`,
       method: 'get',
     });
   }

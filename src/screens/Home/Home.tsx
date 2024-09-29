@@ -1,28 +1,28 @@
 import { useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Lottie from 'lottie-react-native';
 import Header from '../../components/Header';
-import GlobalStyles from '../../themes/GlobalStyles';
 import TouchViewMenu from '../../components/TouchViewMenu';
 import Colors from '../../themes/Colors';
+import GlobalStyles from '../../themes/GlobalStyles';
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 import { RouteNames } from '../../utils/contants';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 
 import { useNavigation } from '@react-navigation/native';
-import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import majorAPI from '../../api/major';
 import termAPI from '../../api/term';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 
 const menu = [
   {
     name: 'Học kỳ',
     key: 'term',
     navigation: RouteNames.TermMenu,
-    icon: 'book-sharp',
+    icon: 'calendar-sharp',
     color: '#bc6c25',
     backgroundColor: Colors.white,
   },
@@ -30,25 +30,26 @@ const menu = [
     name: 'Đề tài',
     key: 'topic',
     navigation: RouteNames.TopicMenu,
-    icon: 'file-tray-full',
+    icon: 'bookmarks-sharp',
     color: '#0077b6',
     backgroundColor: Colors.white,
   },
 ];
+
 const menuBottom = [
   {
     name: 'Đánh giá',
     key: 'check',
     navigation: RouteNames.EvaluationMenu,
-    icon: 'people-circle',
+    icon: 'checkmark-done-circle',
     color: '#a7c957',
     backgroundColor: Colors.white,
   },
   {
-    name: 'Giảng Viên',
-    key: 'lecturer',
-    navigation: RouteNames.LecturerMenu,
-    icon: 'school',
+    name: 'Nhóm',
+    key: 'group',
+    navigation: RouteNames.ItemListGroup,
+    icon: 'people-sharp',
     color: '#f08080',
     backgroundColor: Colors.white,
   },
@@ -63,7 +64,7 @@ const HomeScreen: React.FC<{}> = () => {
   useEffect(() => {
     if (userState?.user?.majorId) {
       dispatch(majorAPI.getMajorById()(userState?.user?.majorId));
-      dispatch(termAPI.getTermNow()());
+      dispatch(termAPI.getTermNow()(userState?.user?.majorId));
     }
   }, [userState]);
 

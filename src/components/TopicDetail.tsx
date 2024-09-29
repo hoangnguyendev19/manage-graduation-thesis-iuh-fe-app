@@ -1,30 +1,22 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Pressable } from 'react-native';
-import Lottie from 'lottie-react-native';
-import GlobalStyles from '../../../themes/GlobalStyles';
-import Header from '../../../components/Header';
-import Colors from '../../../themes/Colors';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-import NoneData from '../../../components/NoneData';
-import {
-  checkDegree,
-  checkGender,
-  getLevelColorTopic,
-  getLevelTopic,
-  getNameStatus,
-} from '../../../utils/handler';
 import { useNavigation } from '@react-navigation/native';
-import { RouteNames } from '../../../utils/contants';
-import { Topic } from '../../../utils/types';
+import Lottie from 'lottie-react-native';
+import React, { useEffect, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { DataTable, Divider, List, Modal } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Loading from '../../../components/Loading';
-import topicService from '../../../services/topic';
-import { Avatar, DataTable, Divider, List, Modal } from 'react-native-paper';
-import IconView from '../../../components/IconView';
-import { Images } from '../../../assets/images/Images';
+import topicService from '../services/topic';
+import Colors from '../themes/Colors';
+import GlobalStyles from '../themes/GlobalStyles';
+import { RouteNames } from '../utils/contants';
+import { checkDegree, checkGender } from '../utils/handler';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../utils/sizeScreen';
+import Header from './Header';
+import IconView from './IconView';
+import Loading from './Loading';
+import NoneData from './NoneData';
 
 const ItemTopicMenu = ({ route }) => {
-  const [topicInfo, setTopicInfo] = useState<Topic>();
+  const [topicInfo, setTopicInfo] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const navigation = useNavigation();
   const { topicId } = route.params;
@@ -37,14 +29,13 @@ const ItemTopicMenu = ({ route }) => {
 
   const TOPIC_DATA = [
     { name: topicInfo?.description, key: 'Mô tả' },
-    { name: topicInfo?.note, key: 'Ghi chú' },
     { name: topicInfo?.target, key: 'Mục tiêu' },
+    { name: topicInfo?.note, key: 'Ghi chú' },
     { name: topicInfo?.standardOutput, key: 'Mục đích' },
     { name: topicInfo?.requireInput, key: 'Yêu cầu đầu vào' },
-    { name: getNameStatus(String(topicInfo?.status)), key: 'Tình trạng' },
   ];
+
   const LECTURER_DATA = [
-    { name: topicInfo?.lecturerTerm?.lecturer?.avatar, key: '' },
     { name: topicInfo?.lecturerTerm?.lecturer?.fullName, key: 'Tên Giảng viên' },
     { name: checkGender(topicInfo?.lecturerTerm?.lecturer?.gender), key: 'Giới tính' },
     { name: topicInfo?.lecturerTerm?.lecturer?.phone, key: 'Số điện thoại' },
@@ -68,7 +59,7 @@ const ItemTopicMenu = ({ route }) => {
   return (
     <SafeAreaView style={[GlobalStyles.container]}>
       <Header
-        title="Đề tài của nhóm"
+        title="Thông tin đề tài"
         iconLeft={true}
         home={false}
         style={styles.header}
@@ -86,23 +77,26 @@ const ItemTopicMenu = ({ route }) => {
                     <DataTable.Title
                       textStyle={[styles.textValue, { color: 'red', fontWeight: '700' }]}
                     >
-                      Tên đề tài
+                      Mã đề tài: {topicInfo?.key}
                     </DataTable.Title>
                   </DataTable.Header>
-
-                  <View style={styles.contentTop}>
-                    <Text style={styles.textValue} numberOfLines={1}>
-                      {topicInfo?.name}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        setContent(topicInfo?.name as string);
-                        setVisible(true);
-                      }}
-                    >
-                      <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
-                    </TouchableOpacity>
-                  </View>
+                  <DataTable.Row>
+                    <DataTable.Cell>
+                      <View style={styles.contentTop}>
+                        <Text style={styles.textValue} numberOfLines={1}>
+                          Tên: {topicInfo?.name}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            setContent(topicInfo?.name as string);
+                            setVisible(true);
+                          }}
+                        >
+                          <IconView name="ellipsis-vertical" color={Colors.grayLight} size={24} />
+                        </TouchableOpacity>
+                      </View>
+                    </DataTable.Cell>
+                  </DataTable.Row>
                 </DataTable>
               </View>
               <List.Section style={styles.content}>
@@ -112,7 +106,7 @@ const ItemTopicMenu = ({ route }) => {
                   left={(props) => (
                     <Lottie
                       {...props}
-                      source={require('../../../assets/jsonAmination/more-icon.json')}
+                      source={require('../assets/jsonAmination/more-icon.json')}
                       autoPlay
                       loop
                       style={styles.iconMenu}
@@ -157,7 +151,7 @@ const ItemTopicMenu = ({ route }) => {
                   left={(props) => (
                     <Lottie
                       {...props}
-                      source={require('../../../assets/jsonAmination/more-icon.json')}
+                      source={require('../assets/jsonAmination/more-icon.json')}
                       autoPlay
                       loop
                       style={styles.iconMenu}
@@ -169,21 +163,6 @@ const ItemTopicMenu = ({ route }) => {
                 >
                   <ScrollView>
                     {LECTURER_DATA.map((item, index) => {
-                      if (item?.key === '') {
-                        return (
-                          <View key={index} style={styles.contentAvatar}>
-                            <Avatar.Image
-                              source={item?.name ? { uri: item?.name } : Images.avatar}
-                              size={60}
-                            />
-
-                            <Text style={styles.title}>
-                              Mã GV: {topicInfo?.lecturerTerm?.lecturer?.username}
-                            </Text>
-                          </View>
-                        );
-                      }
-
                       return (
                         <List.Item
                           key={index}
@@ -258,7 +237,7 @@ const ItemTopicMenu = ({ route }) => {
           <NoneData icon title="Nhóm chưa có đề tài"></NoneData>
           <View style={styles.contentTopic}>
             <Lottie
-              source={require('../../../assets/jsonAmination/right-arrow-seemore.json')}
+              source={require('../assets/jsonAmination/right-arrow-seemore.json')}
               autoPlay
               loop
               style={{ width: 50, height: 50 }}
@@ -321,7 +300,6 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     marginTop: responsiveHeight(10),
-    paddingLeft: responsiveWidth(5),
     marginBottom: responsiveHeight(10),
     justifyContent: 'space-between',
     alignItems: 'center',

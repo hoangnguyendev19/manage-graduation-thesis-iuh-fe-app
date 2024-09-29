@@ -21,7 +21,7 @@ const MyTabBar = ({ state, descriptors, navigation }: any) => {
         if (route.name === languages['vi'].home) {
           iconName = isFocused ? 'home' : 'home-outline';
         } else if (route.name === languages['vi'].group) {
-          iconName = isFocused ? 'bookmarks' : 'bookmarks-outline';
+          iconName = isFocused ? 'people-sharp' : 'people-outline';
         } else if (route.name === languages['vi'].total) {
           iconName = isFocused ? 'book' : 'book-outline';
         } else if (route.name === languages['vi'].account) {

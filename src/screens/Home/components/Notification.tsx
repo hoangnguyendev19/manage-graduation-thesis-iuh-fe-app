@@ -1,15 +1,15 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { useEffect, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, View } from 'react-native';
+import { Card, Divider, Modal, Text } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
-import { MaterialIcons } from '@expo/vector-icons';
+import IconView from '../../../components/IconView';
+import notificationService from '../../../services/notification';
+import Colors from '../../../themes/Colors';
+import { formatTime } from '../../../utils/handler';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 import { Notify } from '../../../utils/types';
-import { Card, Divider, Modal, Text } from 'react-native-paper';
-import IconView from '../../../components/IconView';
-import Colors from '../../../themes/Colors';
-import notificationService from '../../../services/notification';
-import { formatTime } from '../../../utils/handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Notification = () => {
   const [notify, setNotify] = useState<Array<Notify>>([]);

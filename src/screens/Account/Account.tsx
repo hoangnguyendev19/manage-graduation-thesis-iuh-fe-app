@@ -1,25 +1,24 @@
-import { useMemo, useState } from 'react';
-import { TouchableOpacity, View, Text, StyleSheet, Dimensions, ScrollView } from 'react-native';
-import Lottie from 'lottie-react-native';
-import Header from '../../components/Header';
-import GlobalStyles from '../../themes/GlobalStyles';
-import { Images } from '../../assets/images/Images';
-import Line from '../../components/Line';
-import TextItemAccount from './components/TextItemAccount';
-import languages from '../../utils/languages';
-import Colors from '../../themes/Colors';
-import IconView from '../../components/IconView';
 import { useNavigation } from '@react-navigation/native';
+import Lottie from 'lottie-react-native';
+import { useMemo, useState } from 'react';
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Images } from '../../assets/images/Images';
+import Header from '../../components/Header';
+import IconView from '../../components/IconView';
+import Line from '../../components/Line';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import Colors from '../../themes/Colors';
+import GlobalStyles from '../../themes/GlobalStyles';
 import { RouteNames } from '../../utils/contants';
-import ModalAccount from './components/ModalAccount';
+import languages from '../../utils/languages';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
+import ModalAccount from './components/ModalAccount';
+import TextItemAccount from './components/TextItemAccount';
 
-import { checkGender, checkTypeTraining } from '../../utils/handler';
 import { Avatar, DataTable } from 'react-native-paper';
-import { isEmpty } from '../../utils/handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import authAPI from '../../api/auth';
+import { checkGender, checkTypeTraining, formatDob } from '../../utils/handler';
 
 const Account: React.FC<{}> = ({}) => {
   const navigation = useNavigation();
@@ -39,11 +38,7 @@ const Account: React.FC<{}> = ({}) => {
   };
 
   const handleChangePass = () => {
-    // if (isEmpty(userState.email)) {
-    //   // showMessageWarning('Vui lòng cập nhật email');
-    // } else {
     navigation.navigate(RouteNames.ChangePassword);
-    // }
   };
 
   const renderMain = useMemo(
@@ -64,6 +59,12 @@ const Account: React.FC<{}> = ({}) => {
         <TextItemAccount
           textLeft={languages['vi'].gender}
           textRight={checkGender(userState?.gender)}
+          line={true}
+        ></TextItemAccount>
+
+        <TextItemAccount
+          textLeft={languages['vi'].dob}
+          textRight={formatDob(userState?.dateOfBirth)}
           line={true}
         ></TextItemAccount>
 
@@ -107,11 +108,7 @@ const Account: React.FC<{}> = ({}) => {
 
       <View style={styles.content}>
         <View style={[styles.update]}>
-          <Avatar.Image
-            source={userState?.avatar ? { uri: userState?.avatar } : Images.avatar}
-            size={80}
-            style={styles.imgAvatar}
-          />
+          <Avatar.Image source={Images.avatar} size={80} style={styles.imgAvatar} />
           <TouchableOpacity
             style={styles.btnView}
             onPress={() => {

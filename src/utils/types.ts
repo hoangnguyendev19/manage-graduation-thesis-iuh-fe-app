@@ -20,50 +20,12 @@ export interface Group {
 
 export interface Topic {
   id: string;
+  key: string;
   name: string;
-  description: string;
-  quantityGroupMax: number;
-  note: string;
-  target: string;
-  standardOutput: string;
-  requireInput: string;
   status: string;
-  created_at: string;
-  updated_at: string;
-  lecturerTerm: {
-    id: string;
-    lecturer: {
-      id: string;
-      username: string;
-      fullName: string;
-      avatar: string;
-      email: string;
-      phone: string;
-      gender: string;
-      degree: string;
-      major: {
-        id: string;
-        name: string;
-      };
-    };
-  };
-  quantityGroup: number;
-}
-
-export interface Lecturer {
-  id: string;
-  username: string;
+  quantityGroupMax: number;
   fullName: string;
-  avatar: string;
-  phone: string;
-  email: string;
-  gender: string;
-  degree: string;
-  role: string;
-  isAdmin: boolean;
-  isActive: boolean;
-  majorId: string;
-  majorName: string;
+  quantityGroup: number;
 }
 
 export interface Notify {
@@ -81,6 +43,8 @@ export interface Term {
   endDate: string;
   startChooseGroupDate: string;
   endChooseGroupDate: string;
+  startPublicTopicDate: string;
+  endPublicTopicDate: string;
   startChooseTopicDate: string;
   endChooseTopicDate: string;
   startDiscussionDate: string;
@@ -103,7 +67,6 @@ export interface Student {
   id: string;
   username: string;
   fullName: string;
-  avatar: string;
   phone: string;
   email: string;
   gender: string;

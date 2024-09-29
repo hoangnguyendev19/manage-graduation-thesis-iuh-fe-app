@@ -1,7 +1,7 @@
 import axios, { AxiosRequestHeaders } from 'axios';
 import tokenService from '../services/token';
 
-const API_URL = 'http://192.168.1.6:3000';
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const axiosAuth = axios.create({
   baseURL: API_URL,
@@ -71,24 +71,4 @@ axiosNotAuth.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-const axiosFormData = axios.create({
-  baseURL: API_URL,
-  headers: {
-    'Content-type': 'multipart/form-data',
-  },
-});
-
-axiosFormData.interceptors.response.use((response) => {
-  return response;
-});
-
-axiosFormData.interceptors.request.use(
-  async (config) => {
-    const access_token = await tokenService.getAccessToken();
-    (config.headers as AxiosRequestHeaders).Authorization = 'Bearer ' + access_token;
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
-
-export { axiosAuth, axiosNotAuth, axiosFormData };
+export { axiosAuth, axiosNotAuth };

@@ -71,12 +71,6 @@ export const getLevelColorTopic = (text: string) => {
   }
 };
 
-export const getNameStatus = (value: string) => {
-  if (value === 'REJECTED') return 'Không được duyệt';
-  if (value === 'PENDING') return 'Đang chờ';
-  if (value === 'APPROVED') return 'Đã duyệt';
-};
-
 export const getNameColorStatus = (value: string) => {
   switch (value) {
     case 'REFUSE':
@@ -130,6 +124,10 @@ export const removeAccents = (str: string) => {
     str = str.replace(re, char);
   }
   return str;
+};
+
+export const formatDob = (date: string) => {
+  return moment(date).locale('vi').format('DD/MM/YYYY');
 };
 
 export const formatDate = (date: string) => {

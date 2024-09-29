@@ -1,30 +1,17 @@
-import React, { useMemo, useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  KeyboardAvoidingView,
-} from 'react-native';
-import CloseButton from '../../../components/CloseButton';
-import Colors from '../../../themes/Colors';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
-import { Avatar, Modal, Portal, Snackbar } from 'react-native-paper';
-import languages from '../../../utils/languages';
-import * as ImagePicker from 'expo-image-picker';
-import GlobalStyles from '../../../themes/GlobalStyles';
-import TextInputView from '../../../components/TextInputView';
-import IconView from '../../../components/IconView';
-import { validateEmail } from '../../../utils/handler';
-import GenderButton from '../../../components/GenderButton';
-import { Images } from '../../../assets/images/Images';
-import ButtonHandle from '../../../components/ButtonHandle';
-import LoadingScreen from '../../../components/Loading';
-import uploadService from '../../../services/upload';
+import React, { useState } from 'react';
+import { KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Modal, Portal, Snackbar } from 'react-native-paper';
 import authAPI from '../../../api/auth';
-// import { AlertNotificationRoot } from 'react-native-alert-notification';
+import ButtonHandle from '../../../components/ButtonHandle';
+import CloseButton from '../../../components/CloseButton';
+import GenderButton from '../../../components/GenderButton';
+import LoadingScreen from '../../../components/Loading';
+import TextInputView from '../../../components/TextInputView';
+import { useAppDispatch, useAppSelector } from '../../../redux/hooks';
+import Colors from '../../../themes/Colors';
+import { formatDob, validateEmail } from '../../../utils/handler';
+import languages from '../../../utils/languages';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 
 interface Props {
   title: string;
@@ -38,7 +25,6 @@ interface ImagePicker {
 }
 const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
   const userState = useAppSelector((state) => state.user.user);
-  const [selectedAvatar, setSelectedAvatar] = useState<ImagePicker | any>();
   const dispatch = useAppDispatch();
 
   const [show, setShow] = useState(false);
@@ -62,6 +48,11 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
       title: `${languages['vi'].gender}`,
     },
     {
+      key: 'dob',
+      placeholder: userState?.dateOfBirth,
+      title: `${languages['vi'].dob}`,
+    },
+    {
       key: 'clazzName',
       placeholder: userState?.clazzName,
       title: `${languages['vi'].clazzName}`,
@@ -79,10 +70,10 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
   ];
 
   const [basicInfo, setBasicInfo] = useState({
-    avatar: userState?.avatar,
     username: userState?.username || '',
     fullName: userState?.fullName || '',
     gender: userState?.gender || '',
+    dob: userState?.dateOfBirth || '',
     clazzName: userState?.clazzName || '',
     typeTraining: userState?.typeTraining,
     phone: userState?.phone,
@@ -92,34 +83,19 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
   const handleSubmitForm = async () => {
     setLoading(true);
 
-    const formData = new FormData();
-    formData.append('image', {
-      uri: basicInfo.avatar,
-      name: 'image',
-      type: 'image/jpeg',
-    });
+    const newUser = {
+      fullName: basicInfo.fullName,
+      gender: basicInfo.gender,
+      dateOfBirth: basicInfo.dob,
+      phone: basicInfo.phone,
+      email: basicInfo.email,
+    };
 
-    const data = await uploadService.uploadAvatar(formData);
-
-    if (data) {
-      const newUser = {
-        avatar: data.path,
-        fullName: basicInfo.fullName,
-        gender: basicInfo.gender,
-        phone: basicInfo.phone,
-        email: basicInfo.email,
-      };
-
-      try {
-        await dispatch(authAPI.updateInfo()(newUser));
-        setLoading(false);
-        onPressClose(false);
-      } catch (error) {
-        setLoading(false);
-        setShow(true);
-        setError('Cập nhật không thành công!');
-      }
-    } else {
+    try {
+      await dispatch(authAPI.updateInfo()(newUser));
+      setLoading(false);
+      onPressClose(false);
+    } catch (error) {
       setLoading(false);
       setShow(true);
       setError('Cập nhật không thành công!');
@@ -157,43 +133,39 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
     );
   };
 
-  const handlePickerAvatar = async () => {
-    try {
-      let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.All,
-        allowsEditing: true,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (!result.canceled) {
-        setBasicInfo({ ...basicInfo, avatar: result.assets[0].uri });
-      }
-    } catch (e: any) {
-      console.log('error', e);
-    }
-  };
-
-  const renderImage = useMemo(() => {
+  const dobBlock = (index: any) => {
     return (
-      <>
-        <View style={[styles.contentImage, GlobalStyles.flexDirectionRow]}>
-          <Avatar.Image
-            size={100}
-            source={basicInfo.avatar ? { uri: basicInfo.avatar } : Images.avatar}
-            style={{ alignSelf: 'center', marginBottom: 20 }}
+      <View key={index}>
+        <Text style={styles.label}>{languages['vi'].dob}</Text>
+        <View
+          style={{
+            height: responsiveHeight(40),
+            paddingHorizontal: responsiveWidth(12),
+            backgroundColor: Colors.white,
+            borderColor: Colors.primary,
+            borderRadius: 10,
+            borderWidth: 2,
+          }}
+        >
+          <TextInput
+            textContentType="birthdate"
+            placeholder="dd/mm/yyyy"
+            value={formatDob(basicInfo.dob)}
+            style={{
+              flex: 1,
+              color: Colors.black,
+              fontSize: responsiveFont(17),
+              paddingVertical: responsiveHeight(5),
+            }}
+            editable={false}
           />
-          <TouchableOpacity style={styles.contentIcon} onPress={handlePickerAvatar}>
-            <IconView name={'camera'} size={24} color={'#2c312c'} />
-          </TouchableOpacity>
         </View>
-      </>
+      </View>
     );
-  }, [basicInfo.avatar]);
+  };
 
   return (
     <>
-      {/* <AlertNotificationRoot > */}
       <Portal>
         <Modal visible={visible} style={{ marginHorizontal: responsiveWidth(10) }}>
           <View
@@ -212,11 +184,14 @@ const ModalAccount: React.FC<Props> = ({ title, onPressClose, visible }) => {
               behavior={'position'}
             >
               <View style={styles.contentForm}>
-                {renderImage}
                 <View style={styles.content}>
                   {BASIC_INFO.map((item, index) => {
                     if (item?.key === 'gender') {
                       return genderBlock(index);
+                    }
+
+                    if (item?.key === 'dob') {
+                      return dobBlock(index);
                     }
 
                     const isUsername = () => item?.key === 'username';

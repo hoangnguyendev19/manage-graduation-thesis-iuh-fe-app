@@ -1,19 +1,18 @@
-import { useEffect, useState } from 'react';
-import { View, Text, FlatList, ScrollView, Pressable } from 'react-native';
-import Header from '../../../components/Header';
-import GlobalStyles from '../../../themes/GlobalStyles';
-import Colors from '../../../themes/Colors';
-import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
-import { useAppSelector } from '../../../redux/hooks';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import groupService from '../../../services/group';
-import { Avatar, Snackbar } from 'react-native-paper';
-import { checkGender } from '../../../utils/handler';
-import { Ionicons, MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { RouteNames } from '../../../utils/contants';
+import { useEffect, useState } from 'react';
+import { FlatList, Pressable, Text, View } from 'react-native';
+import { Snackbar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Header from '../../../components/Header';
 import NoneData from '../../../components/NoneData';
-import { Images } from '../../../assets/images/Images';
+import { useAppSelector } from '../../../redux/hooks';
+import groupService from '../../../services/group';
+import Colors from '../../../themes/Colors';
+import GlobalStyles from '../../../themes/GlobalStyles';
+import { RouteNames } from '../../../utils/contants';
+import { checkGender } from '../../../utils/handler';
+import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
 
 interface Member {
   student_id: number;
@@ -104,7 +103,7 @@ const ItemGroup = () => {
   };
 
   const handleViewTopic = () => {
-    navigation.navigate(RouteNames.ItemTopicMenu, {
+    navigation.navigate(RouteNames.TopicDetail, {
       topicId: infoGroup?.topic_id,
     });
   };
@@ -123,22 +122,7 @@ const ItemGroup = () => {
           borderRadius: 10,
         }}
       >
-        {mem?.isAdmin ? (
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Avatar.Image
-              size={60}
-              source={mem?.student?.avatar ? { uri: mem?.student?.avatar } : Images.avatar}
-            />
-            <Text style={{ marginLeft: responsiveWidth(10), fontWeight: 'bold' }}>
-              (Trưởng nhóm)
-            </Text>
-          </View>
-        ) : (
-          <Avatar.Image
-            size={60}
-            source={mem?.student?.avatar ? { uri: mem?.student?.avatar } : Images.avatar}
-          />
-        )}
+        {mem?.isAdmin && <Text style={{ fontWeight: 'bold' }}>(Trưởng nhóm)</Text>}
         <View
           style={{ flexDirection: 'row', alignItems: 'center', marginTop: responsiveHeight(15) }}
         >
@@ -305,7 +289,7 @@ const ItemGroup = () => {
                 color: Colors.textPrimary,
               }}
             >
-              Tên nhóm
+              Mã nhóm
             </Text>
             <Text style={{ fontSize: responsiveFont(14) }}>{infoGroup?.name}</Text>
           </View>

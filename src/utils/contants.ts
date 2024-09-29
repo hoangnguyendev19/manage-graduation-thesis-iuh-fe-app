@@ -45,12 +45,11 @@ export const RouteNames = {
 
   TermMenu: 'TermMenu',
   TopicMenu: 'TopicMenu',
+  TopicDetail: 'TopicDetail',
   EvaluationMenu: 'EvaluationMenu',
-  LecturerMenu: 'LecturerMenu',
 
   ItemGroup: 'ItemGroup',
   ItemListGroup: 'ItemListGroup',
-  ItemTopicMenu: 'ItemTopicMenu',
 
   Notification: 'Notification',
   DisAcceptedUser: 'DisAcceptedUser',

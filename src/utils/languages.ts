@@ -35,7 +35,7 @@ export default {
     description: 'Mô tả',
     target: 'Mục tiêu',
     evaluation: 'Đánh giá',
-    total: 'Kết quả',
+    total: 'Bảng điểm',
     dob: 'Ngày sinh',
   },
 };

@@ -1,6 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { StatusBar, StyleSheet, View, useWindowDimensions } from 'react-native';
-import { DataTable, Text } from 'react-native-paper';
+import {
+  StatusBar,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+  Pressable,
+  TouchableOpacity,
+} from 'react-native';
+import { DataTable, Divider, Modal, Text } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SceneMap, TabView } from 'react-native-tab-view';
 import Header from '../../../components/Header';
@@ -11,57 +18,172 @@ import Colors from '../../../themes/Colors';
 import GlobalStyles from '../../../themes/GlobalStyles';
 import { validateDate } from '../../../utils/handler';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
+import evaluationService from '../../../services/evaluation';
+import IconView from '../../../components/IconView';
 
 const EvaluationMenu = () => {
   const layout = useWindowDimensions();
   const termState = useAppSelector((state) => state.term.term);
 
-  const [transcriptAdvisor, setTranscriptAdvisor] = useState(null);
-  const [transcriptReviewer, setTranscriptReviewer] = useState(null);
-  const [transcriptReport, setTranscriptReport] = useState(null);
+  const [evaluationAdvisor, setEvaluationAdvisor] = useState<any>(null);
+  const [evaluationReviewer, setEvaluationReviewer] = useState<any>(null);
+  const [evaluationReport, setEvaluationReport] = useState<any>(null);
+
+  const [visible, setVisible] = useState(false);
+  const [content, setContent] = useState('');
 
   useEffect(() => {
-    const getTranscriptAdvisor = async () => {
+    const getEvaluationsByAdvisor = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByStudent(termState?.id, 'ADVISOR');
+        const { data } = await evaluationService.getEvaluationsByType(termState?.id, 'ADVISOR');
 
-        console.log('data', data);
-
-        setTranscriptAdvisor(data.transcript);
+        setEvaluationAdvisor(data.evaluations);
       } catch (error) {
         console.log('error', error);
       }
     };
 
-    const getTranscriptReviewer = async () => {
+    const getEvaluationsByReviewer = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByStudent(termState?.id, 'REVIEWER');
-        setTranscriptReviewer(data.transcript);
+        const { data } = await evaluationService.getEvaluationsByType(termState?.id, 'REVIEWER');
+
+        setEvaluationReviewer(data.evaluations);
       } catch (error) {
         console.log('error', error);
       }
     };
 
-    const getTranscriptReport = async () => {
+    const getEvaluationsByReport = async () => {
       try {
-        const { data } = await transcriptService.getTranscriptByStudent(termState.id, 'REPORT');
-        setTranscriptReport(data.transcript);
+        const { data } = await evaluationService.getEvaluationsByType(termState?.id, 'REPORT');
+
+        setEvaluationReport(data.evaluations);
       } catch (error) {
         console.log('error', error);
       }
     };
 
-    getTranscriptAdvisor();
-    getTranscriptReviewer();
-    getTranscriptReport();
+    getEvaluationsByAdvisor();
+    getEvaluationsByReviewer();
+    getEvaluationsByReport();
+
+    return () => {};
   }, [termState]);
 
   const [index, setIndex] = useState(0);
   const [routes] = useState([
-    { key: 'ADVISOR', title: 'Điểm hướng dẫn' },
-    { key: 'REVIEWER', title: 'Điểm phản biện' },
-    { key: 'REPORT', title: 'Điểm báo cáo' },
+    { key: 'ADVISOR', title: 'Hướng dẫn' },
+    { key: 'REVIEWER', title: 'Phản biện' },
+    { key: 'REPORT', title: 'Báo cáo' },
   ]);
+
+  const advisorRender = useMemo(() => {
+    return (
+      <>
+        <View style={[styles.bottomContent]}>
+          <Text style={styles.title} variant="titleLarge">
+            Danh sách các tiêu chí
+          </Text>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title textStyle={styles._titleColLeft}>Tên tiêu chí</DataTable.Title>
+              <DataTable.Title textStyle={styles._titleColRight}>Điểm tối đa</DataTable.Title>
+            </DataTable.Header>
+            {evaluationAdvisor ? (
+              evaluationAdvisor.map((item: any, index: any) => (
+                <DataTable.Row key={index}>
+                  <DataTable.Cell
+                    textStyle={{ width: '100%' }}
+                    onPress={() => {
+                      setContent(item?.name as string);
+                      setVisible(true);
+                    }}
+                  >
+                    {item?.name}
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>{item?.scoreMax}</DataTable.Cell>
+                </DataTable.Row>
+              ))
+            ) : (
+              <Text style={styles.title_Point}>Hiện chưa có tiêu chí nào.</Text>
+            )}
+          </DataTable>
+        </View>
+      </>
+    );
+  }, [evaluationAdvisor]);
+
+  const reviewerRender = useMemo(() => {
+    return (
+      <>
+        <View style={[styles.bottomContent]}>
+          <Text style={styles.title} variant="titleLarge">
+            Danh sách các tiêu chí
+          </Text>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title textStyle={styles._titleColLeft}>Tên tiêu chí</DataTable.Title>
+              <DataTable.Title textStyle={styles._titleColRight}>Điểm tối đa</DataTable.Title>
+            </DataTable.Header>
+            {evaluationReviewer ? (
+              evaluationReviewer.map((item: any, index: any) => (
+                <DataTable.Row key={index}>
+                  <DataTable.Cell
+                    textStyle={{ width: '100%' }}
+                    onPress={() => {
+                      setContent(item?.name as string);
+                      setVisible(true);
+                    }}
+                  >
+                    {item?.name}
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>{item?.scoreMax}</DataTable.Cell>
+                </DataTable.Row>
+              ))
+            ) : (
+              <Text style={styles.title_Point}>Hiện chưa có tiêu chí đánh giá.</Text>
+            )}
+          </DataTable>
+        </View>
+      </>
+    );
+  }, [evaluationReviewer]);
+
+  const reportRender = useMemo(() => {
+    return (
+      <>
+        <View style={[styles.bottomContent]}>
+          <Text style={styles.title} variant="titleLarge">
+            Danh sách các tiêu chí
+          </Text>
+          <DataTable>
+            <DataTable.Header>
+              <DataTable.Title textStyle={styles._titleColLeft}>Tên tiêu chí</DataTable.Title>
+              <DataTable.Title textStyle={styles._titleColRight}>Điểm tối đa</DataTable.Title>
+            </DataTable.Header>
+            {evaluationReport ? (
+              evaluationReport.map((item: any, index: any) => (
+                <DataTable.Row key={index}>
+                  <DataTable.Cell
+                    textStyle={{ width: '100%' }}
+                    onPress={() => {
+                      setContent(item?.name as string);
+                      setVisible(true);
+                    }}
+                  >
+                    {item?.name}
+                  </DataTable.Cell>
+                  <DataTable.Cell numeric>{item?.scoreMax}</DataTable.Cell>
+                </DataTable.Row>
+              ))
+            ) : (
+              <Text style={styles.title_Point}>Hiện chưa có tiêu chí đánh giá.</Text>
+            )}
+          </DataTable>
+        </View>
+      </>
+    );
+  }, [evaluationReport]);
 
   const TABADVISOR = () => {
     return <>{advisorRender}</>;
@@ -79,152 +201,59 @@ const EvaluationMenu = () => {
     REPORT: TABREPORT,
   });
 
-  const advisorRender = useMemo(() => {
-    return (
-      <>
-        <View style={[styles.bottomContent]}>
-          <Text style={styles.title} variant="titleLarge">
-            Kết Quả GĐ Hướng Dẫn
-          </Text>
-          <DataTable>
-            {transcriptAdvisor ? (
-              <>
-                <DataTable.Header>
-                  <DataTable.Title textStyle={styles._titleColLeft}>Tên giảng viên</DataTable.Title>
-                  <DataTable.Title textStyle={styles._titleColRight}>Điểm</DataTable.Title>
-                </DataTable.Header>
-                {transcriptAdvisor?.transcripts.map((item, index) => (
-                  <DataTable.Row key={index}>
-                    <DataTable.Cell>{item?.lecturerName}</DataTable.Cell>
-                    <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-                <DataTable.Row>
-                  <DataTable.Cell>
-                    <Text variant="labelLarge" style={{ color: 'red' }}>
-                      Điểm Trung Bình
-                    </Text>
-                  </DataTable.Cell>
-                  <DataTable.Cell numeric>
-                    <Text variant="labelLarge" style={{ color: 'red' }}>
-                      {transcriptAdvisor?.avgScore}
-                    </Text>
-                  </DataTable.Cell>
-                </DataTable.Row>
-              </>
-            ) : (
-              <Text style={styles.title_Point}>Chưa có điểm</Text>
-            )}
-          </DataTable>
-        </View>
-      </>
-    );
-  }, [transcriptAdvisor]);
-
-  const reviewerRender = useMemo(() => {
-    return (
-      <>
-        <View style={[styles.bottomContent]}>
-          <Text style={styles.title} variant="titleLarge">
-            Kết Quả GĐ Phản biện
-          </Text>
-          <DataTable>
-            {transcriptReviewer ? (
-              <>
-                <DataTable.Header>
-                  <DataTable.Title textStyle={styles._titleColLeft}>Tên giảng viên</DataTable.Title>
-                  <DataTable.Title textStyle={styles._titleColRight}>Điểm</DataTable.Title>
-                </DataTable.Header>
-                {transcriptReviewer?.transcripts.map((item, index) => (
-                  <DataTable.Row key={index}>
-                    <DataTable.Cell>{item?.lecturerName}</DataTable.Cell>
-                    <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-                <DataTable.Row>
-                  <DataTable.Cell>
-                    <Text variant="labelLarge" style={{ color: 'red' }}>
-                      Điểm Trung Bình
-                    </Text>
-                  </DataTable.Cell>
-                  <DataTable.Cell numeric>
-                    <Text variant="labelLarge" style={{ color: 'red' }}>
-                      {transcriptReviewer?.avgScore}
-                    </Text>
-                  </DataTable.Cell>
-                </DataTable.Row>
-              </>
-            ) : (
-              <Text style={styles.title_Point}>Chưa có điểm</Text>
-            )}
-          </DataTable>
-        </View>
-      </>
-    );
-  }, [transcriptReviewer]);
-
-  const reportRender = useMemo(() => {
-    return (
-      <>
-        <View style={[styles.bottomContent]}>
-          <Text style={styles.title} variant="titleLarge">
-            Kết Quả GĐ Báo Cáo
-          </Text>
-          <DataTable>
-            {transcriptReport ? (
-              <>
-                <DataTable.Header>
-                  <DataTable.Title textStyle={styles._titleColLeft}>Tên giảng viên</DataTable.Title>
-                  <DataTable.Title textStyle={styles._titleColRight}>Điểm</DataTable.Title>
-                </DataTable.Header>
-                {transcriptReport?.transcripts.map((item, index) => (
-                  <DataTable.Row key={index}>
-                    <DataTable.Cell>{item?.lecturerName}</DataTable.Cell>
-                    <DataTable.Cell numeric>{item?.score}</DataTable.Cell>
-                  </DataTable.Row>
-                ))}
-                <DataTable.Row>
-                  <DataTable.Cell>
-                    <Text variant="labelLarge" style={{ color: 'red' }}>
-                      Điểm Trung Bình
-                    </Text>
-                  </DataTable.Cell>
-                  <DataTable.Cell numeric>
-                    <Text variant="labelLarge" style={{ color: 'red' }}>
-                      {transcriptReport?.avgScore}
-                    </Text>
-                  </DataTable.Cell>
-                </DataTable.Row>
-              </>
-            ) : (
-              <Text style={styles.title_Point}>Chưa có điểm</Text>
-            )}
-          </DataTable>
-        </View>
-      </>
-    );
-  }, [transcriptReport]);
-
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
       <Header
-        title="Đánh giá"
+        title="Tiêu chí đánh giá"
         iconLeft={true}
         home={false}
         style={styles.header}
         back={true}
       ></Header>
-      {validateDate(termState?.startPublicResultDate, termState?.endPublicResultDate) ? (
-        <TabView
-          navigationState={{ index, routes }}
-          renderScene={renderScene}
-          onIndexChange={setIndex}
-          initialLayout={{ width: layout.width }}
-        />
-      ) : (
-        <NoneData icon title="Bạn chưa thể xem được!"></NoneData>
-      )}
+
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        initialLayout={{ width: layout.width }}
+      />
+
+      <Modal
+        visible={visible}
+        onDismiss={() => setVisible(false)}
+        contentContainerStyle={{
+          backgroundColor: '#fff',
+          padding: 20,
+          margin: 20,
+          borderRadius: 20,
+        }}
+      >
+        <Text style={{ fontWeight: 'bold', fontSize: responsiveFont(18), textAlign: 'center' }}>
+          Thông tin chi tiết
+        </Text>
+        <Divider />
+        <Text
+          style={{
+            fontSize: responsiveFont(16),
+            textAlign: 'center',
+            marginVertical: responsiveHeight(20),
+          }}
+        >
+          {content}
+        </Text>
+        <Pressable
+          style={{
+            backgroundColor: 'black',
+            paddingVertical: 10,
+            borderRadius: 10,
+            alignItems: 'center',
+          }}
+          onPress={() => setVisible(false)}
+        >
+          <Text style={{ color: '#fff', fontSize: responsiveFont(15) }}>Đóng</Text>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 };

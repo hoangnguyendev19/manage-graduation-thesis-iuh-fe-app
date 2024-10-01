@@ -4,12 +4,10 @@ import Header from '../../components/Header';
 import IconView from '../../components/IconView';
 
 import { SafeAreaView } from 'react-native-safe-area-context';
-import NoneData from '../../components/NoneData';
 import { useAppSelector } from '../../redux/hooks';
 import Colors from '../../themes/Colors';
 import GlobalStyles from '../../themes/GlobalStyles';
 import { RouteNames } from '../../utils/contants';
-import { validateDate } from '../../utils/handler';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 
 const MENU = [
@@ -68,13 +66,9 @@ const Group: React.FC<{}> = () => {
     <SafeAreaView style={GlobalStyles.container}>
       <Header title="Nhóm" logo iconRight={true}></Header>
       <View style={[GlobalStyles.container, styles.container]}>
-        {validateDate(termState?.startChooseGroupDate, termState?.endChooseGroupDate) ? (
-          <View style={styles.menu}>
-            <FlatList data={MENU} renderItem={({ item, index }) => renderMenuItem(item, index)} />
-          </View>
-        ) : (
-          <NoneData icon title="Chưa đến thời gian chọn nhóm"></NoneData>
-        )}
+        <View style={styles.menu}>
+          <FlatList data={MENU} renderItem={({ item, index }) => renderMenuItem(item, index)} />
+        </View>
       </View>
     </SafeAreaView>
   );

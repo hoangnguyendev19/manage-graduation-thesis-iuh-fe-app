@@ -1,7 +1,7 @@
 import { Entypo } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import { FlatList, Pressable, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Header from '../../../components/Header';
@@ -11,6 +11,8 @@ import Colors from '../../../themes/Colors';
 import GlobalStyles from '../../../themes/GlobalStyles';
 import { RouteNames } from '../../../utils/contants';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../../utils/sizeScreen';
+import { validateDate } from '../../../utils/handler';
+import NoneData from '../../../components/NoneData';
 
 const ItemListGroup = () => {
   const navigation = useNavigation();
@@ -151,26 +153,52 @@ const ItemListGroup = () => {
         back={true}
         iconRight={false}
       ></Header>
-      <FlatList
-        style={{ paddingVertical: responsiveHeight(10), paddingHorizontal: responsiveHeight(15) }}
-        data={listGroup}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ItemGroup {...item} />}
-      />
-      <Snackbar
-        visible={visible}
-        onDismiss={() => setVisible(false)}
-        action={{
-          label: 'OK',
-          onPress: () => {
-            setVisible(false);
-          },
-        }}
-      >
-        {error}
-      </Snackbar>
+      {!validateDate(termState?.startChooseGroupDate, termState?.endChooseGroupDate) ? (
+        <View style={styles.nonChooseTopic}>
+          <View style={styles.contentNoData}>
+            <NoneData icon title="Chưa đến thời gian chọn nhóm"></NoneData>
+          </View>
+        </View>
+      ) : (
+        <>
+          <FlatList
+            style={{
+              paddingVertical: responsiveHeight(10),
+              paddingHorizontal: responsiveHeight(15),
+            }}
+            data={listGroup}
+            keyExtractor={(item) => item.id}
+            renderItem={({ item }) => <ItemGroup {...item} />}
+          />
+          <Snackbar
+            visible={visible}
+            onDismiss={() => setVisible(false)}
+            action={{
+              label: 'OK',
+              onPress: () => {
+                setVisible(false);
+              },
+            }}
+          >
+            {error}
+          </Snackbar>
+        </>
+      )}
     </SafeAreaView>
   );
 };
 
 export default ItemListGroup;
+
+const styles = StyleSheet.create({
+  nonChooseTopic: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.white,
+  },
+  contentNoData: {
+    height: responsiveHeight(50),
+  },
+});

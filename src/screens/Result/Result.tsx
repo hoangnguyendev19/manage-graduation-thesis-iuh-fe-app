@@ -10,21 +10,22 @@ import { checkGender, validateDate } from '../../utils/handler';
 import NoneData from '../../components/NoneData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import transcriptService from '../../services/transcript';
-import { Transcript } from '../../utils/types';
 
 const Result: React.FC<{}> = ({}) => {
   const userState = useAppSelector((state) => state.user.user);
   const termState = useAppSelector((state) => state.term.term);
-  const [transcript, setTranscript] = useState<Transcript>();
+  const [transcript, setTranscript] = useState<any>({});
 
   useEffect(() => {
     const getTranscript = async () => {
       try {
         const { data } = await transcriptService.getTranscripts(termState?.id);
 
+        console.log('data', data);
+
         if (data) setTranscript(data.transcript);
-      } catch (error) {
-        console.log('error', error);
+      } catch (error: any) {
+        console.log('error', error.response.data.msg);
       }
     };
 
@@ -95,7 +96,7 @@ const Result: React.FC<{}> = ({}) => {
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
-      <Header title="Kết quả" logo iconLeft={true} home={false} iconRight={true}></Header>
+      <Header title="Bảng điểm" logo iconLeft={true} home={false} iconRight={true}></Header>
 
       {validateDate(termState?.startPublicResultDate, termState?.endPublicResultDate) ? (
         <View style={styles.containner}>

@@ -287,7 +287,6 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   viewIcon: {
-    // backgroundColor: '#f2cc8f',
     borderRadius: 10,
     borderColor: '#a3cecf',
     borderWidth: 1,
@@ -318,7 +317,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     height: '10%',
     marginTop: responsiveHeight(10),
-    // backgroundColor: '#bfd7ff',
     borderWidth: 2,
     borderColor: '#f08080',
     borderRadius: 5,
@@ -329,7 +327,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginRight: responsiveWidth(20),
     fontSize: responsiveFont(17),
-    // color: Colors.textPrimary,
     fontWeight: '600',
     paddingHorizontal: responsiveWidth(10),
   },

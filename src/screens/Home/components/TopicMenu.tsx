@@ -156,25 +156,18 @@ const TopicMenu = () => {
     );
   }, [topics]);
 
-  const handleSearch = (text: string) => {
-    setKeywords(text);
-  };
-
   useEffect(() => {
     const fetchData = debounce(async (id) => {
       setLoadingTopic(true);
       try {
-        const { data } = await topicService.getTopicList(
-          id,
-          keywords,
-          'lecturerName',
-          1,
-          200,
-          'ASC',
-        );
+        const { data } = await topicService.getTopicList(id);
 
         if (data) {
-          setTopics(data.topics);
+          const filterData = data.topics.filter((item: any) =>
+            item?.fullName.toLowerCase().includes(keywords.toLowerCase()),
+          );
+
+          setTopics(filterData);
           setLoadingTopic(false);
         }
       } catch (error) {
@@ -183,7 +176,7 @@ const TopicMenu = () => {
         setVisible(true);
         console.log('error', error);
       }
-    }, 500);
+    }, 1000);
 
     if (termState?.id) {
       fetchData(termState?.id);
@@ -219,7 +212,7 @@ const TopicMenu = () => {
             label="Tìm kiếm đề tài theo tên giảng viên"
             textColor="black"
             value={keywords}
-            onChangeText={(text) => handleSearch(text)}
+            onChangeText={(text) => setKeywords(text)}
           />
 
           {renderTopicList}

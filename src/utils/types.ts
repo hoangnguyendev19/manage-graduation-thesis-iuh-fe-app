@@ -56,11 +56,10 @@ export interface Term {
 }
 
 export interface Transcript {
-  advisorScore: number;
-  reportScore: number;
-  reviewerScore: number;
-  totalBonusScore: number;
-  totalAverageScore: number;
+  advisorScore: string;
+  reportScore: string;
+  reviewerScore: string;
+  totalAverageScore: string;
 }
 
 export interface Student {

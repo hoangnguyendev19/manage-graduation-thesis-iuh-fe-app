@@ -3,25 +3,30 @@ import GlobalStyles from '../../themes/GlobalStyles';
 import Colors from '../../themes/Colors';
 import Header from '../../components/Header';
 import { useAppSelector } from '../../redux/hooks';
-import { DataTable, Text } from 'react-native-paper';
+import { Button, DataTable, Modal, PaperProvider, Portal, Text } from 'react-native-paper';
 import { responsiveFont, responsiveHeight, responsiveWidth } from '../../utils/sizeScreen';
 import { useEffect, useMemo, useState } from 'react';
 import { checkGender, validateDate } from '../../utils/handler';
 import NoneData from '../../components/NoneData';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import transcriptService from '../../services/transcript';
+import { Transcript } from '../../utils/types';
 
 const Result: React.FC<{}> = ({}) => {
   const userState = useAppSelector((state) => state.user.user);
   const termState = useAppSelector((state) => state.term.term);
-  const [transcript, setTranscript] = useState<any>({});
+  const [transcript, setTranscript] = useState<Transcript>();
+  const [transcriptDetail, setTranscriptDetail] = useState<any>();
+
+  const [visible, setVisible] = useState(false);
+
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
 
   useEffect(() => {
     const getTranscript = async () => {
       try {
         const { data } = await transcriptService.getTranscripts(termState?.id);
-
-        console.log('data', data);
 
         if (data) setTranscript(data.transcript);
       } catch (error: any) {
@@ -50,11 +55,6 @@ const Result: React.FC<{}> = ({}) => {
     },
     {
       key: 4,
-      label: 'Điểm Cộng',
-      grade: transcript?.totalBonusScore,
-    },
-    {
-      key: 5,
       label: 'Điểm Trung Bình',
       grade: transcript?.totalAverageScore,
     },
@@ -93,85 +93,152 @@ const Result: React.FC<{}> = ({}) => {
     );
   }, [transcript]);
 
+  const handleDetailTranscript = async (label: string) => {
+    let type = 'ADVISOR';
+    if (label === 'Hướng dẫn') {
+      type = 'ADVISOR';
+    } else if (label === 'Phản Biện') {
+      type = 'REVIEWER';
+    } else {
+      type = 'REPORT';
+    }
+
+    try {
+      const { data } = await transcriptService.getTranscriptByStudent(termState?.id, type);
+
+      console.log('data', data);
+
+      if (data) setTranscriptDetail(data.transcript);
+    } catch (error: any) {
+      console.log('error', error.response.data.msg);
+    }
+
+    showModal();
+  };
+
   return (
     <SafeAreaView style={GlobalStyles.container}>
       <StatusBar barStyle={'dark-content'} backgroundColor={Colors.white} />
       <Header title="Bảng điểm" logo iconLeft={true} home={false} iconRight={true}></Header>
 
       {validateDate(termState?.startPublicResultDate, termState?.endPublicResultDate) ? (
-        <View style={styles.containner}>
-          {infoUser}
-          <Text style={styles.title_Table}>Tổng hợp điểm</Text>
-          <ScrollView>
-            <View>
-              <DataTable>
-                <DataTable.Header>
-                  <DataTable.Title textStyle={styles._titleCol}>Điểm thuộc gđ</DataTable.Title>
-                  <DataTable.Title textStyle={styles._titleCol} numeric>
-                    Điểm TB
-                  </DataTable.Title>
-                </DataTable.Header>
+        <PaperProvider>
+          <View style={styles.containner}>
+            {infoUser}
+            <Text style={styles.title_Table}>Tổng hợp điểm</Text>
+            <ScrollView>
+              <View>
+                <DataTable>
+                  <DataTable.Header>
+                    <DataTable.Title textStyle={styles._titleCol}>
+                      Tiêu chí đánh giá
+                    </DataTable.Title>
+                    <DataTable.Title textStyle={styles._titleCol} numeric>
+                      Điểm TB
+                    </DataTable.Title>
+                  </DataTable.Header>
 
-                {result.map((item, idx) => {
-                  if (item.key === 4) {
+                  {result.map((item, idx) => {
+                    if (item.key === 4) {
+                      return (
+                        <DataTable.Row key={idx}>
+                          <DataTable.Cell textStyle={styles._total} numeric>
+                            {item.label}
+                          </DataTable.Cell>
+                          <DataTable.Cell numeric>
+                            {item.grade !== '0' ? (
+                              <Text style={styles._total}>{item.grade}</Text>
+                            ) : (
+                              <Text style={styles.title_Point}>Chưa có</Text>
+                            )}
+                          </DataTable.Cell>
+                        </DataTable.Row>
+                      );
+                    }
                     return (
                       <DataTable.Row key={idx}>
-                        <DataTable.Cell textStyle={styles._total} numeric>
+                        <DataTable.Cell textStyle={styles._grade} numeric>
                           {item.label}
                         </DataTable.Cell>
-                        <DataTable.Cell textStyle={styles._total} numeric>
-                          {item.grade !== 0 ? (
-                            <Text>{item.grade}</Text>
-                          ) : (
-                            <Text style={styles.title_Point}>Không có</Text>
-                          )}
-                        </DataTable.Cell>
-                      </DataTable.Row>
-                    );
-                  }
-
-                  if (item.key === 5) {
-                    return (
-                      <DataTable.Row key={idx}>
-                        <DataTable.Cell textStyle={styles._total} numeric>
-                          {item.label}
-                        </DataTable.Cell>
-                        <DataTable.Cell textStyle={styles._total} numeric>
-                          {item.grade !== 0 ? (
-                            <Text>{item.grade}</Text>
+                        <DataTable.Cell numeric onPress={() => handleDetailTranscript(item.label)}>
+                          {item.grade !== '0' ? (
+                            <Text style={styles._total}>{item.grade}</Text>
                           ) : (
                             <Text style={styles.title_Point}>Chưa có</Text>
                           )}
                         </DataTable.Cell>
                       </DataTable.Row>
                     );
-                  }
-                  return (
-                    <DataTable.Row key={idx}>
-                      <DataTable.Cell textStyle={styles._grade} numeric>
-                        {item.label}
+                  })}
+                </DataTable>
+              </View>
+            </ScrollView>
+
+            <Portal>
+              <Modal
+                visible={visible}
+                onDismiss={hideModal}
+                contentContainerStyle={{
+                  backgroundColor: 'white',
+                  padding: 10,
+                  marginHorizontal: 10,
+                  borderRadius: 20,
+                }}
+              >
+                <DataTable>
+                  <DataTable.Header>
+                    <DataTable.Title textStyle={styles._titleCol}>Giảng viên chấm</DataTable.Title>
+                    <DataTable.Title textStyle={styles._titleCol} numeric>
+                      Điểm
+                    </DataTable.Title>
+                  </DataTable.Header>
+
+                  {transcriptDetail &&
+                    transcriptDetail?.transcripts.map((item: any, idx: number) => {
+                      return (
+                        <DataTable.Row key={idx}>
+                          <DataTable.Cell textStyle={styles._grade} numeric>
+                            {item.lecturerName}
+                          </DataTable.Cell>
+                          <DataTable.Cell numeric>
+                            {item.avgScore ? (
+                              <Text style={styles._total}>{item.avgScore}</Text>
+                            ) : (
+                              <Text style={styles.title_Point}>Chưa có</Text>
+                            )}
+                          </DataTable.Cell>
+                        </DataTable.Row>
+                      );
+                    })}
+
+                  {transcriptDetail && (
+                    <DataTable.Row>
+                      <DataTable.Cell textStyle={styles._total} numeric>
+                        Điểm trung bình
                       </DataTable.Cell>
-                      <DataTable.Cell textStyle={styles._grade} numeric>
-                        {item.grade !== 0 ? (
-                          <Text>{item.grade}</Text>
+                      <DataTable.Cell numeric>
+                        {transcriptDetail.totalAvgScore ? (
+                          <Text style={styles._total}>{transcriptDetail.totalAvgScore}</Text>
                         ) : (
                           <Text style={styles.title_Point}>Chưa có</Text>
                         )}
                       </DataTable.Cell>
                     </DataTable.Row>
-                  );
-                })}
-              </DataTable>
-            </View>
-            {/* <View style={styles.contentStstus}>
-              <Text style={styles.titleFinal}>
-              {getStatusFinal(String(groupState?.status))
-                ? getStatusFinal(String(groupState?.status))
-                : null}
-            </Text>
-            </View> */}
-          </ScrollView>
-        </View>
+                  )}
+                </DataTable>
+
+                <Button
+                  contentStyle={{ backgroundColor: 'black' }}
+                  labelStyle={{ color: 'white' }}
+                  style={{ marginTop: 10, borderRadius: 10 }}
+                  onPress={hideModal}
+                >
+                  Đóng
+                </Button>
+              </Modal>
+            </Portal>
+          </View>
+        </PaperProvider>
       ) : (
         <NoneData icon title="Chưa đến thời gian công bố điểm!"></NoneData>
       )}
